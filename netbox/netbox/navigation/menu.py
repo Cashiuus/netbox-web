@@ -345,7 +345,7 @@ OPERATIONS_MENU = Menu(
 )
 
 WEB_MENU = Menu(
-    label=_('Web CMDB'),
+    label=_('WIM'),
     icon_class='mdi mdi-domain',
     groups=(
         MenuGroup(
@@ -356,7 +356,7 @@ WEB_MENU = Menu(
             ),
         ),
         # MenuGroup(
-        #     label=_('Ownership'),
+        #     label=_('Business'),
         #     items=(
         #         get_model_item('wim', 'businessgroup', _('Business Group')),
         #         get_model_item('wim', 'businessdivision', _('Business Division')),

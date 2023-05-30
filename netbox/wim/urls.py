@@ -21,4 +21,20 @@ urlpatterns = [
     path('domains/edit/', views.DomainBulkEditView.as_view(), name='domain_bulk_edit'),
     path('domains/delete/', views.DomainBulkDeleteView.as_view(), name='domain_bulk_delete'),
     path('domains/<int:pk>/', include(get_model_urls('wim', 'domain'))),
+
+    # Business Groups
+    path('business-groups/', views.BusinessGroupListView.as_view(), name='businessgroup_list'),
+    path('business-groups/add/', views.BusinessGroupEditView.as_view(), name='businessgroup_add'),
+    path('business-groups/import/', views.BusinessGroupBulkImportView.as_view(), name='businessgroup_import'),
+    path('business-groups/edit/', views.BusinessGroupBulkEditView.as_view(), name='businessgroup_bulk_edit'),
+    path('business-groups/delete/', views.BusinessGroupBulkDeleteView.as_view(), name='businessgroup_bulk_delete'),
+    path('business-groups/<int:pk>/', include(get_model_urls('wim', 'businessgroup'))),
+
+    # Business Divisions
+    path('business-divisions/', views.BusinessGroupListView.as_view(), name='businessdivision_list'),
+    path('business-divisions/add/', views.BusinessGroupEditView.as_view(), name='businessdivision_add'),
+    path('business-divisions/import/', views.BusinessGroupBulkImportView.as_view(), name='businessdivision_import'),
+    path('business-divisions/edit/', views.BusinessGroupBulkEditView.as_view(), name='businessdivision_bulk_edit'),
+    path('business-divisions/delete/', views.BusinessGroupBulkDeleteView.as_view(), name='businessdivision_bulk_delete'),
+    path('business-divisions/<int:pk>/', include(get_model_urls('wim', 'businessdivision'))),
 ]

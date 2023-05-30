@@ -20,10 +20,11 @@ from .models import *
 #
 
 class FQDNListView(generic.ObjectListView):
+    # queryset = FQDN.objects.all()
     queryset = FQDN.objects.annotate(
-        site_count=count_related(Site, 'asns'),
-        provider_count=count_related(Provider, 'asns')
-    )
+        # site_count=count_related(Site, 'asns'),
+        # provider_count=count_related(Provider, 'asns')
+    # )
     filterset = filtersets.FQDNFilterSet
     filterset_form = forms.FQDNFilterForm
     table = tables.FQDNTable
@@ -37,9 +38,7 @@ class FQDNView(generic.ObjectView):
         related_models = (
             (Site.objects.restrict(request.user, 'view').filter(fqdns__in=[instance]), 'id'),
             # (Provider.objects.restrict(request.user, 'view').filter(asns__in=[instance]), 'id'),
-
         )
-
         return {
             'related_models': related_models,
         }
@@ -62,18 +61,20 @@ class FQDNBulkImportView(generic.BulkImportView):
 
 
 class FQDNBulkEditView(generic.BulkEditView):
-    queryset = FQDN.objects.annotate(
-        site_count=count_related(Site, 'fqdns')
-    )
+    queryset = FQDN.objects.all()
+    # queryset = FQDN.objects.annotate(
+    #     site_count=count_related(Site, 'fqdns')
+    # )
     filterset = filtersets.FQDNFilterSet
     table = tables.FQDNTable
     form = forms.FQDNBulkEditForm
 
 
 class FQDNBulkDeleteView(generic.BulkDeleteView):
-    queryset = FQDN.objects.annotate(
-        site_count=count_related(Site, 'fqdns')
-    )
+    queryset = FQDN.objects.all()
+    # queryset = FQDN.objects.annotate(
+    #     site_count=count_related(Site, 'fqdns')
+    # )
     filterset = filtersets.FQDNFilterSet
     table = tables.FQDNTable
 
@@ -132,7 +133,6 @@ class DomainFQDNsView(generic.ObjectChildrenView):
         return parent.get_child_fqdns().restrict(request.user, 'view')
 
 
-
 @register_model_view(Domain, 'edit')
 class DomainEditView(generic.ObjectEditView):
     queryset = Domain.objects.all()
@@ -174,16 +174,96 @@ class DomainBulkDeleteView(generic.BulkDeleteView):
 # Business Group
 # --
 
-# class BusinessGroupListView(generic.ObjectListView):
-#     queryset = BusinessGroup.objects.all()
-#     # queryset = BusinessGroup.objects.annotate(
-#     #     site_count=count_related(Site, 'domains'),
-#     #     # provider_count=count_related(Provider, 'asns')
-#     # )
-#     filterset = filtersets.BusinessGroupFilterSet
-#     filterset_form = forms.BusinessGroupFilterForm
-#     table = tables.BusinessGroupTable
+class BusinessGroupListView(generic.ObjectListView):
+    queryset = BusinessGroup.objects.all()
+    filterset = filtersets.BusinessGroupFilterSet
+    filterset_form = forms.BusinessGroupFilterForm
+    table = tables.BusinessGroupTable
 
 
-# class BusinessGroupView(generic.ObjectChildrenView):
-#     pass
+@register_model_view(BusinessGroup)
+class BusinessGroupView(generic.ObjectView):
+    
+
+@register_model_view(BusinessGroup, 'edit')
+class BusinessGroupEditView(generic.ObjectEditView):
+    queryset = BusinessGroup.objects.all()
+    form = forms.BusinessGroupForm
+
+
+@register_model_view(BusinessGroup, 'delete')
+class BusinessGroupDeleteView(generic.ObjectDeleteView):
+    queryset = BusinessGroup.objects.all()
+
+
+class BusinessGroupBulkImportView(generic.BulkImportView):
+    queryset = BusinessGroup.objects.all()
+    model_form = forms.BusinessGroupImportForm
+
+
+class BusinessGroupBulkEditView(generic.BulkEditView):
+    queryset = BusinessGroup.objects.all()
+    filterset = filtersets.BusinessGroupFilterSet
+    table = tables.BusinessGroupTable
+    form = forms.BusinessGroupBulkEditForm
+
+
+class BusinessGroupBulkDeleteView(generic.BulkDeleteView):
+    queryset = BusinessGroup.objects.all()
+    filterset = filtersets.BusinessGroupFilterSet
+    table = tables.BusinessGroupTable
+
+
+
+
+# --
+# Business Division
+# --
+
+class BusinessDivisionListView(generic.ObjectListView):
+    queryset = BusinessDivision.objects.all()
+    filterset = filtersets.BusinessDivisionFilterSet
+    filterset_form = forms.BusinessDivisionFilterForm
+    table = tables.BusinessDivisionTable
+
+
+@register_model_view(BusinessDivision)
+class BusinessDivisionView(generic.ObjectView):
+    
+
+@register_model_view(BusinessDivision, 'edit')
+class BusinessDivisionEditView(generic.ObjectEditView):
+    queryset = BusinessDivision.objects.all()
+    form = forms.BusinessDivisionForm
+
+
+@register_model_view(BusinessDivision, 'delete')
+class BusinessDivisionDeleteView(generic.ObjectDeleteView):
+    queryset = BusinessDivision.objects.all()
+
+
+class BusinessDivisionBulkImportView(generic.BulkImportView):
+    queryset = BusinessDivision.objects.all()
+    model_form = forms.BusinessDivisionImportForm
+
+
+class BusinessDivisionBulkEditView(generic.BulkEditView):
+    queryset = BusinessDivision.objects.all()
+    filterset = filtersets.BusinessDivisionFilterSet
+    table = tables.BusinessDivisionTable
+    form = forms.BusinessDivisionBulkEditForm
+
+
+class BusinessGroupBulkDeleteView(generic.BulkDeleteView):
+    queryset = BusinessDivision.objects.all()
+    filterset = filtersets.BusinessDivisionFilterSet
+    table = tables.BusinessDivisionTable
+
+
+
+#
+# -- Template Views List --
+#
+# - ListView, View, EditView, DeleteView, BulkImportView, BulkEditView, BulkDeleteView
+
+
