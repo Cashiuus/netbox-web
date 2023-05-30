@@ -41,6 +41,17 @@ if sys.version_info < (3, 8):
 
 DEFAULT_SENTRY_DSN = 'https://198cf560b29d4054ab8e583a1d10ea58@o1242133.ingest.sentry.io/6396485'
 
+
+# 
+# Adding Graph Models support
+#
+# GRAPH_MODELS = {
+#     # 'all_applications': True,
+#     'group_models': True,
+#     'app_labels': ["ipam", "tenancy"],
+# }
+
+
 #
 # Configuration import
 #
@@ -368,6 +379,9 @@ INSTALLED_APPS = [
     'django_rq',  # Must come after extras to allow overriding management commands
     'drf_spectacular',
     'drf_spectacular_sidecar',
+    # @Cashiuus: apps below added during development
+    'wim',      # Web Inv Mgmt new module
+    'django_extensions',
 ]
 
 # Middleware

@@ -26,6 +26,7 @@ _patterns = [
     path('oauth/', include('social_django.urls', namespace='social')),
 
     # Apps
+    path('wim/', include('wim.urls')),
     path('circuits/', include('circuits.urls')),
     path('core/', include('core.urls')),
     path('dcim/', include('dcim.urls')),

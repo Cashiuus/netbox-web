@@ -5,6 +5,7 @@ django-cors-headers==4.0.0
 django-debug-toolbar==4.1.0
 django-filter==23.2
 django-graphiql-debug-toolbar==0.2.0
+django-model-utils==4.3.1                  # Used for my way of doing Choices tuple sets
 django-mptt==0.14
 django-pglocks==1.0.4
 django-prometheus==2.3.1

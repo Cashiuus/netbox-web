@@ -344,9 +344,46 @@ OPERATIONS_MENU = Menu(
     ),
 )
 
+WEB_MENU = Menu(
+    label=_('Web CMDB'),
+    icon_class='mdi mdi-domain',
+    groups=(
+        MenuGroup(
+            label=_('Web Properties'),
+            items=(
+                get_model_item('wim', 'fqdn', _('FQDNs'), actions=['import']),
+                get_model_item('wim', 'domain', _('Domains'), actions=['import']),
+            ),
+        ),
+        # MenuGroup(
+        #     label=_('Ownership'),
+        #     items=(
+        #         get_model_item('wim', 'businessgroup', _('Business Group')),
+        #         get_model_item('wim', 'businessdivision', _('Business Division')),
+        #         get_model_item('wim', 'sitelocation', _('Site Locations')),
+        #         get_model_item('wim', 'supportgroup', _('Support Group')),
+        #     ),
+        # ),
+        # MenuGroup(
+        #     label=_('Categorization'),
+        #     items=(
+        #         get_model_item('wim', 'fqdnstatus', _('FQDN Statuses')),
+        #         get_model_item('wim', 'websitestatus', _('Website Statuses')),
+        #         get_model_item('wim', 'parkedstatus', _('Parked Statuses')),
+        #         get_model_item('wim', 'operatingsystem', _('Operating Systems')),
+        #         get_model_item('wim', 'webserverframework', _('Webserver Frameworks')),
+        #         get_model_item('wim', 'businesscriticality', _('Business Criticality')),
+        #         get_model_item('wim', 'authtype', _('Auth Types')),
+        #         get_model_item('wim', 'complianceprogram', _('Compliance Programs')),
+        #     ),
+        # ),
+    ),
+)
+
 
 MENUS = [
     ORGANIZATION_MENU,
+    WEB_MENU,
     DEVICES_MENU,
     CONNECTIONS_MENU,
     WIRELESS_MENU,

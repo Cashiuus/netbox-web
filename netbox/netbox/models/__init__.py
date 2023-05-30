@@ -92,7 +92,7 @@ class PrimaryModel(NetBoxModel):
     Primary models represent real objects within the infrastructure being modeled.
     """
     description = models.CharField(
-        max_length=200,
+        max_length=255,
         blank=True
     )
     comments = models.TextField(
