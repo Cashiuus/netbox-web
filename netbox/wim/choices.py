@@ -48,6 +48,20 @@ class FQDNStatusChoices(ChoiceSet):
     ]
 
 
+class WebAuthChoices(ChoiceSet):
+    AUTH_BASIC = "basic_auth"
+    AUTH_SSO_CORP = "sso_corp"
+    AUTH_SSO_OTHER = "sso_other"
+    AUTH_STANDALONE = "standalone"
+
+    CHOICES = [
+        (AUTH_BASIC, 'Basic Auth', 'cyan'),
+        (AUTH_SSO_CORP, 'SSO-Corp', 'cyan'),
+        (AUTH_SSO_OTHER, 'SSO-Other', 'cyan'),
+        (AUTH_STANDALONE, 'Standalone', 'cyan'),
+    ]
+
+
 class WebsiteRoleChoices(ChoiceSet):
     ROLE_ECOMMERCE = 'ecommerce'
     ROLE_INFORMATIONAL = 'informational'
@@ -198,15 +212,8 @@ IMPORTANCE_CHOICES = Choices(
     (5, 'unknown', _('Unknown')),
 )
 
-
 SUPPORT_GROUP_TYPE_CHOICES = Choices(
     (1, 'servicenow', _('ServiceNow Group')),
     (2, 'teamname', _('Team/Dept Name')),
 )
-
-
-
-
-
-
 

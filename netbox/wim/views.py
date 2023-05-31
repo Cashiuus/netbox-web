@@ -16,12 +16,12 @@ from .models import *
 
 
 #
-# Assets / FQDNs
+# FQDNs
 #
 
 class FQDNListView(generic.ObjectListView):
-    # queryset = FQDN.objects.all()
-    queryset = FQDN.objects.annotate(
+    queryset = FQDN.objects.all()
+    # queryset = FQDN.objects.annotate(
         # site_count=count_related(Site, 'asns'),
         # provider_count=count_related(Provider, 'asns')
     # )
@@ -183,7 +183,8 @@ class BusinessGroupListView(generic.ObjectListView):
 
 @register_model_view(BusinessGroup)
 class BusinessGroupView(generic.ObjectView):
-    
+    queryset = BusinessGroup.objects.all()
+
 
 @register_model_view(BusinessGroup, 'edit')
 class BusinessGroupEditView(generic.ObjectEditView):
@@ -215,7 +216,6 @@ class BusinessGroupBulkDeleteView(generic.BulkDeleteView):
 
 
 
-
 # --
 # Business Division
 # --
@@ -229,6 +229,7 @@ class BusinessDivisionListView(generic.ObjectListView):
 
 @register_model_view(BusinessDivision)
 class BusinessDivisionView(generic.ObjectView):
+    queryset = BusinessDivision.objects.all()
     
 
 @register_model_view(BusinessDivision, 'edit')
@@ -258,6 +259,54 @@ class BusinessGroupBulkDeleteView(generic.BulkDeleteView):
     queryset = BusinessDivision.objects.all()
     filterset = filtersets.BusinessDivisionFilterSet
     table = tables.BusinessDivisionTable
+
+
+
+
+
+# --
+# Operating Systems
+# --
+
+class OperatingSystemListView(generic.ObjectListView):
+    queryset = OperatingSystem.objects.all()
+    filterset = filtersets.OperatingSystemFilterSet
+    filterset_form = forms.OperatingSystemFilterForm
+    table = tables.OperatingSystemTable
+
+
+@register_model_view(OperatingSystem)
+class OperatingSystemView(generic.ObjectView):
+    queryset = OperatingSystem.objects.all()
+    
+
+@register_model_view(OperatingSystem, 'edit')
+class OperatingSystemEditView(generic.ObjectEditView):
+    queryset = OperatingSystem.objects.all()
+    form = forms.OperatingSystemForm
+
+
+@register_model_view(OperatingSystem, 'delete')
+class OperatingSystemDeleteView(generic.ObjectDeleteView):
+    queryset = OperatingSystem.objects.all()
+
+
+class OperatingSystemBulkImportView(generic.BulkImportView):
+    queryset = OperatingSystem.objects.all()
+    model_form = forms.OperatingSystemImportForm
+
+
+class OperatingSystemBulkEditView(generic.BulkEditView):
+    queryset = OperatingSystem.objects.all()
+    filterset = filtersets.OperatingSystemFilterSet
+    table = tables.OperatingSystemTable
+    form = forms.OperatingSystemBulkEditForm
+
+
+class OperatingSystemBulkDeleteView(generic.BulkDeleteView):
+    queryset = OperatingSystem.objects.all()
+    filterset = filtersets.OperatingSystemFilterSet
+    table = tables.OperatingSystemTable
 
 
 

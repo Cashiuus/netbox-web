@@ -195,7 +195,7 @@ class CloudProvider(OrganizationalModel):
 #     def __str__(self):
 #         return self.name
 
-# ========[ Miscellaneous CMDB Type Lists ]========= #
+
 class OperatingSystem(OrganizationalModel):
     """
         A selection of operating system definitions to be used with Assets.

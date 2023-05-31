@@ -8,7 +8,6 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-
 from netbox.config import get_config
 from netbox.models import OrganizationalModel, PrimaryModel
 from wim.validators import DNSValidator
@@ -205,6 +204,7 @@ class FQDN(PrimaryModel):
         verbose_name='Region NB',
     )
 
+    # TODO: Change this to a choices field instead
     cloud_provider_9 = models.ForeignKey('CloudProvider',
                                        on_delete=models.PROTECT,
                                        blank=True, null=True,
@@ -336,6 +336,7 @@ class FQDN(PrimaryModel):
     # -- Feature tracking
     feature_acct_mgmt = models.BooleanField(_('Account Mgmt'), null=True, default=False,
                                             help_text='Asset uses account management for access control')
+    # TODO: Make this a choices field instead?
     feature_auth_type = models.ForeignKey(
         'WebsiteAuthType', 
         on_delete=models.SET_NULL,

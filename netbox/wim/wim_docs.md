@@ -61,8 +61,33 @@ FQDNStatusChoices
 
 AssetClassChoices
 RedirectStatusChoices
+WebAuthChoices
 WebsiteRoleChoices
 ```
+
+
+Legacy Choices (Integers method):
+
+```
+RECORD_STATUS_CHOICES           # This was replaced (active, archive, delete, new)
+INV_STATUS_CHOICES              # candidate, confirmed, rejected
+ASSET_TYPE_CHOICES              # Not Used; asn, fqdn, ip_subnet
+GEO_REGION_CHOICES              # global, amer, apac, emea
+COMPLIANCE_CHOICES              # acronyms; replaced by DB table
+CMDB_ARCH_MODEL                 # na, saas, onpremise, hybrid
+HOSTING_ARCH_MODEL              # na, unk, saas, onpremise, cloud
+FQDN_STATUS_CHOICES             # Not used
+REDIRECT_STATUS_CHOICES         # Replaced this one
+SITE_ENV_CHOICES                # Website Env (prod, qa, etc)
+OS_ARCH_CHOICES                 # x86 or x64
+LAYER_SECURITY_CHOICES          # TLS Protocol versions
+CONFIDENCE_CHOICES              # candidate, confirmed, dismissed
+IMPORTANCE_CHOICES              # unk, low, med, high, crit
+SUPPORT_GROUP_TYPE_CHOICES      # Group types (e.g. SNOW, versus Team Name)
+```
+
+
+
 
 
 

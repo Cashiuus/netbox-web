@@ -91,7 +91,7 @@ class FQDNFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
     class Meta:
         model = FQDN
         fields = [
-            'id', 'name', 'ipaddress_public_9',
+            'id', 'name', 'ipaddress_public_9', 'owners_9',
         ]
     
     def search(self, queryset, name, value):
@@ -105,20 +105,26 @@ class FQDNFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
         return queryset.filter(qs_filter)
 
 
-class BusinessGroup(OrganizationalModelFilterSet, TenancyFilterSet):
+class BusinessGroupFilterSet(OrganizationalModelFilterSet, TenancyFilterSet):
 
     class Meta:
         model = BusinessGroup
         fields = ['name', 'acronym']
 
 
-class BusinessDivision(OrganizationalModelFilterSet, TenancyFilterSet):
+class BusinessDivisionFilterSet(OrganizationalModelFilterSet, TenancyFilterSet):
 
     class Meta:
         model = BusinessGroup
         fields = ['name', 'acronym']
 
 
+
+class OperatingSystemFilterSet(OrganizationalModelFilterSet, TenancyFilterSet):
+
+    class Meta:
+        model = OperatingSystem
+        fields = ['vendor', 'product']
 
 
 # class IPAddressFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
