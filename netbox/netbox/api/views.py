@@ -39,6 +39,8 @@ class APIRootView(APIView):
             'users': reverse('users-api:api-root', request=request, format=format),
             'virtualization': reverse('virtualization-api:api-root', request=request, format=format),
             'wireless': reverse('wireless-api:api-root', request=request, format=format),
+            # [Cashiuus]: I had to add this because /add/ for my new app failed for api namespace?
+            'wim': reverse('wim-api:api-root', request=request, format=format),
         })
 
 

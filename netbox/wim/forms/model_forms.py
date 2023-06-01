@@ -32,11 +32,33 @@ __all__ = (
 
 
 class DomainForm(TenancyForm, NetBoxModelForm):
+    # FKs
+    registrar_company = DynamicModelChoiceField(
+        queryset=Registrar.objects.all(),
+        required=True,
+        selector=True,
+    )
+
+    # fieldsets = (
+    # )
     
     class Meta:
         model = Domain
         fields = [
-            'name', 'status',
+            'name', 'status_9', 'status', 
+            'confidence', 'meets_standards',
+            'tenant',
+            'date_registrar_expiry', 'date_first_registered',
+            'date_last_recon_scanned',
+            'is_internet_facing', 'is_flagship',
+            'registrar_company_9', 'registrar_iana_id_9',
+            'registrar_company',
+            'registrar_domain_statuses',
+            'registrant_org',
+            'registration_emails_9', 'registration_emails',
+            'nameservers', 'mail_servers', 'whois_servers',
+            'soa_nameservers', 'soa_email',
+            'notes',
         ]
 
 
@@ -120,18 +142,18 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
         required=False,
     )
     tech_webserver_1 = DynamicModelChoiceField(
-        queryset=WebserverFramework.objects.all()
+        queryset=WebserverFramework.objects.all(),
         required=False,
     )
     # parked_status = DynamicModelChoiceField()
 
     vendor_company_1 = DynamicModelChoiceField(
-        queryset=Vendor.objects.all()
+        queryset=Vendor.objects.all(),
         required=False,
     )
     # TODO: Make this choices instead of a FK
     feature_auth_type = DynamicModelChoiceField(
-        queryset=WebsiteAuthType.objects.all()
+        queryset=WebsiteAuthType.objects.all(),
         required=False,
     )
 
@@ -175,7 +197,7 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
         )),
         ("Tenancy", (
             "impacted_group_9", "impacted_division_9",
-            "owners_9", "owners_nb", "tenant",
+            "owners_9", "tenant",
             'support_group_website_technical', 'support_group_website_approvals',
             "is_in_cmdb", 'is_internet_facing', 'is_flagship',
 
@@ -226,7 +248,7 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
             'tech_webserver_1', 'tech_addtl',
             'is_in_cmdb',
             'public_ip_9', 'ipaddress_public_8',
-            'tenant', 'owners_9', 'owners_nb',
+            'tenant', 'owners_9',
             'support_group_website_technical', 'support_group_website_approvals',
             'private_ip_9', 'ipaddress_private_8', 'hostname_9',
             'os_9', 'os_1', 'os_8',

@@ -29,9 +29,42 @@ class DomainImportForm(NetBoxModelImportForm):
         help_text=_('Assigned tenant')
     )
 
+    registrar_company = CSVModelChoiceField(
+        queryset=Registrar.objects.all(),
+        required=False,
+        to_field_name='name',
+        # help_text=_('Regisrar company name')
+    )
+
+    # -- Choices Fields --
+    status = CSVChoiceField(
+        choices=DomainStatusChoices,
+    )
+
+    # -- M2M Fields --
+    # TODO: Unsure how to configure a ManyToMany field for bulk import
+    # registration_emails = 
+
+
     class Meta:
         model = Domain
-        fields = ('name', 'tenant')
+        # fields = ('name', 'tenant')
+        fields = [
+            'name', 'status_9', 'status', 
+            'confidence', 'meets_standards',
+            'tenant',
+            'date_registrar_expiry', 'date_first_registered',
+            'date_last_recon_scanned',
+            'is_internet_facing', 'is_flagship',
+            'registrar_company_9', 'registrar_iana_id_9',
+            'registrar_company',
+            'registrar_domain_statuses',
+            'registrant_org',
+            'registration_emails_9', 'registration_emails',
+            'nameservers', 'mail_servers', 'whois_servers',
+            'soa_nameservers', 'soa_email',
+            'notes',
+        ]
 
 
 

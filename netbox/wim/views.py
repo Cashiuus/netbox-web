@@ -16,6 +16,13 @@ from .models import *
 
 
 #
+# -- Template Views List --
+#
+# - ListView, View, EditView, DeleteView, BulkImportView, BulkEditView, BulkDeleteView
+
+
+
+#
 # FQDNs
 #
 
@@ -309,10 +316,5 @@ class OperatingSystemBulkDeleteView(generic.BulkDeleteView):
     table = tables.OperatingSystemTable
 
 
-
-#
-# -- Template Views List --
-#
-# - ListView, View, EditView, DeleteView, BulkImportView, BulkEditView, BulkDeleteView
 
 
