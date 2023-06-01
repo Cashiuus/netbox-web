@@ -15,25 +15,11 @@ from utilities.forms.fields import (
 # from virtualization.models import VirtualMachine
 
 __all__ = (
-    # 'AggregateFilterForm',
-    # 'ASNFilterForm',
-    # 'ASNRangeFilterForm',
-    # 'FHRPGroupFilterForm',
-    # 'IPAddressFilterForm',
-    # 'IPRangeFilterForm',
-    # 'L2VPNFilterForm',
-    # 'L2VPNTerminationFilterForm',
-    # 'PrefixFilterForm',
-    # 'RIRFilterForm',
-    # 'RoleFilterForm',
-    # 'RouteTargetFilterForm',
-    # 'ServiceFilterForm',
-    # 'ServiceTemplateFilterForm',
-    # 'VLANFilterForm',
-    # 'VLANGroupFilterForm',
-    # 'VRFFilterForm',
     'DomainFilterForm',
     'FQDNFilterForm',
+    'BusinessGroupFilterForm',
+    'BusinessDivisionFilterForm',
+    'OperatingSystemFilterForm',
 )
 
 PREFIX_MASK_LENGTH_CHOICES = add_blank_choice([
@@ -50,6 +36,18 @@ class DomainFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
 
 class FQDNFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
     model = FQDN
+
+
+class BusinessGroupFilterForm(NetBoxModelFilterSetForm):
+    model = BusinessGroup
+
+
+class BusinessDivisionFilterForm(NetBoxModelFilterSetForm):
+    model = BusinessDivision
+
+
+class OperatingSystemFilterForm(NetBoxModelFilterSetForm):
+    model = OperatingSystem
 
 
 

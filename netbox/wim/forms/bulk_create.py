@@ -5,11 +5,13 @@ from utilities.forms import BootstrapMixin
 from utilities.forms.fields import ExpandableIPAddressField
 
 __all__ = (
-    'IPAddressBulkCreateForm',
+    # 'IPAddressBulkCreateForm',
+    # 'DomainBulkCreateForm',
+    # 'FQDNBulkCreateForm',
 )
 
 
-class IPAddressBulkCreateForm(BootstrapMixin, forms.Form):
-    pattern = ExpandableIPAddressField(
-        label=_('Address pattern')
-    )
+
+
+class DomainBulkCreateForm(BootstrapMixin, forms.Form):
+    pass

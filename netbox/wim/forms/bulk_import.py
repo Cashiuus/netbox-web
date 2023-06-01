@@ -15,41 +15,62 @@ from utilities.forms.fields import CSVChoiceField, CSVContentTypeField, CSVModel
 __all__ = (
     'DomainImportForm',
     'FQDNImportForm',
-    # 'AggregateImportForm',
-    # 'ASNImportForm',
-    # 'ASNRangeImportForm',
-    # 'FHRPGroupImportForm',
-    # 'IPAddressImportForm',
-    # 'IPRangeImportForm',
-    # 'L2VPNImportForm',
-    # 'L2VPNTerminationImportForm',
-    # 'PrefixImportForm',
-    # 'RIRImportForm',
-    # 'RoleImportForm',
-    # 'RouteTargetImportForm',
-    # 'ServiceImportForm',
-    # 'ServiceTemplateImportForm',
-    # 'VLANImportForm',
-    # 'VLANGroupImportForm',
-    # 'VRFImportForm',
+    'BusinessGroupImportForm',
+    'BusinessDivisionImportForm',
+    'OperatingSystemImportForm',
 )
 
 
 class DomainImportForm(NetBoxModelImportForm):
-    pass
+    tenant = CSVModelChoiceField(
+        queryset=Tenant.objects.all(),
+        required=False,
+        to_field_name='name',
+        help_text=_('Assigned tenant')
+    )
 
     class Meta:
         model = Domain
-        fields = ('id',)
+        fields = ('name', 'tenant')
 
 
 
 class FQDNImportForm(NetBoxModelImportForm):
-    pass
+    tenant = CSVModelChoiceField(
+        queryset=Tenant.objects.all(),
+        required=False,
+        to_field_name='name',
+        help_text=_('Assigned tenant')
+    )
 
     class Meta:
         model = FQDN
-        fields = ('id',)
+        fields = ('name', 'ipaddress_public_8', 'tenant')
+
+
+class BusinessGroupImportForm(NetBoxModelImportForm):
+
+    class Meta:
+        model = BusinessGroup
+        fields = ('name', 'acronym')
+
+
+class BusinessDivisionImportForm(NetBoxModelImportForm):
+
+    class Meta:
+        model = BusinessDivision
+        fields = ('name', 'acronym')
+
+
+class OperatingSystemImportForm(NetBoxModelImportForm):
+
+    class Meta:
+        model = OperatingSystem
+        fields = ('vendor', 'product', 'update')
+
+
+
+
 
 
 # class AggregateImportForm(NetBoxModelImportForm):

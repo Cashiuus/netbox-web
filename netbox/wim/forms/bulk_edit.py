@@ -13,24 +13,44 @@ from utilities.forms.fields import (
     CommentField, DynamicModelChoiceField, DynamicModelMultipleChoiceField, NumericArrayField,
 )
 from utilities.forms.widgets import BulkEditNullBooleanSelect
+from wim.models import *
+
 
 __all__ = (
     'FQDNBulkEditForm',
     'DomainBulkEditForm',
-    # 'IPAddressBulkEditForm',
-    # 'IPRangeBulkEditForm',
-    # 'PrefixBulkEditForm',
-    # 'RoleBulkEditForm',
-    # 'ServiceBulkEditForm',
-    # 'ServiceTemplateBulkEditForm',
+    'BusinessGroupBulkEditForm',
+    'BusinessDivisionBulkEditForm',
+    'OperatingSystemBulkEditForm',
 )
 
 
 class DomainBulkEditForm(NetBoxModelBulkEditForm):
-    pass
+    model = Domain
+
 
 class FQDNBulkEditForm(NetBoxModelBulkEditForm):
-    pass
+    model = FQDN
+
+
+class BusinessGroupBulkEditForm(NetBoxModelBulkEditForm):
+    model = BusinessGroup
+
+
+class BusinessDivisionBulkEditForm(NetBoxModelBulkEditForm):
+    model = BusinessDivision
+
+
+class OperatingSystemBulkEditForm(NetBoxModelBulkEditForm):
+    model = OperatingSystem
+
+
+
+
+
+
+
+
 
 
 

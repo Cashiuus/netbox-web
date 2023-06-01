@@ -8,58 +8,62 @@ from wim.models import *
 
 __all__ = (
     'BusinessGroupTable',
+    'BusinessDivisionTable',
     'OperatingSystemTable',
 )
 
 
 class BusinessGroupTable(TenancyColumnsMixin, NetBoxTable):
-
-    status = columns.ChoiceFieldColumn()
-
-    is_ = columns.BooleanColumn(verbose_name="")
-
-    notes = columns.MarkdownColumn()
-    tags = columns.TagColumn(
-        url_name='wim:BusinessGroup_list'
-    )
+    # notes = columns.MarkdownColumn()
+    # tags = columns.TagColumn(
+    #     url_name='wim:BusinessGroup_list'
+    # )
 
     class Meta:
         model = BusinessGroup
         exclude = ('id',)
         fields = (
-            'pk', 'name',
+            'name', 'acronym', 'description',
         )
-        default_columns = ('pk', 'name')
+        default_columns = ('name', 'acronym')
 
 
+class BusinessDivisionTable(TenancyColumnsMixin, NetBoxTable):
+    # notes = columns.MarkdownColumn()
+    # tags = columns.TagColumn(
+    #     url_name='wim:BusinessDivision_list'
+    # )
 
+    class Meta:
+        model = BusinessDivision
+        exclude = ('id',)
+        fields = (
+            'name', 'acronym', 'group', 'description'
+        )
+        default_columns = ('name', 'acronym', 'group')
 
 
 
 class OperatingSystemTable(TenancyColumnsMixin, NetBoxTable):
+    # status = columns.ChoiceFieldColumn()
 
-    status = columns.ChoiceFieldColumn()
+    # is_ = columns.BooleanColumn(verbose_name="")
 
-    is_ = columns.BooleanColumn(verbose_name="")
+    # m2m_field = tables.ManyToManyColumn(
+    #     linkify_item=False,
+    #     orderable=False,
+    #     verbose_name=""
+    # )
 
-    m2m_field = tables.ManyToManyColumn(
-        linkify_item=False,
-        orderable=False,
-        verbose_name=""
-    )
-
-    notes = columns.MarkdownColumn()
-    tags = columns.TagColumn(
-        url_name='wim:OperatingSystem_list'
-    )
+    # notes = columns.MarkdownColumn()
+    # tags = columns.TagColumn(
+    #     url_name='wim:OperatingSystem_list'
+    # )
 
     class Meta:
         model = OperatingSystem
         exclude = ('id',)
-        fields = (
-            'vendor', 'product', 'update', 'build', 'family', 'cpe',
-
-        )
+        fields = ('vendor', 'product', 'update', 'build', 'family', 'cpe',)
         default_columns = ('vendor', 'product', 'update', 'family', 'build')
 
 

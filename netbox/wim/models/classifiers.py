@@ -274,7 +274,8 @@ class BusinessGroup(OrganizationalModel):
     )
     acronym = models.CharField(
         _('Acronym'), 
-        max_length=10, 
+        max_length=10,
+        unique=True,
         help_text='Abbrev. name of the business group'
     )
     principal_location_9 = models.ForeignKey(
@@ -316,8 +317,8 @@ class BusinessDivision(OrganizationalModel):
     """ A division that resides under a particular Group in the org hierarchy.
         This is 2nd level grouping (Company -> Group -> Division).
     """
-    name = models.CharField(_('Name'), max_length=100)
-    acronym = models.CharField(_('Acronym'), max_length=10)
+    name = models.CharField(_('Name'), max_length=100, unique=True)
+    acronym = models.CharField(_('Acronym'), max_length=10, unique=True)
     group = models.ForeignKey('BusinessGroup', on_delete=models.CASCADE,
                               verbose_name='Group')
     principal_location = models.ForeignKey('SiteLocation', on_delete=models.SET_NULL, blank=True, null=True)

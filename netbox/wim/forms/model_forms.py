@@ -23,6 +23,9 @@ from wim.models import *
 __all__ = (
     'DomainForm',
     'FQDNForm',
+    'BusinessDivisionForm',
+    'BusinessGroupForm',
+    'OperatingSystemForm',
 )
 
 
@@ -42,6 +45,32 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
         fields = [
             'name', 'status',
         ]
+
+
+
+class BusinessGroupForm(NetBoxModelForm):
+
+    class Meta:
+        model = BusinessGroup
+        fields = ['name', 'acronym']
+
+
+
+class BusinessDivisionForm(NetBoxModelForm):
+
+    class Meta:
+        model = BusinessDivision
+        fields = ['name', 'acronym']
+
+
+
+class OperatingSystemForm(NetBoxModelForm):
+
+    class Meta:
+        model = OperatingSystem
+        fields = ['vendor', 'product', 'update']
+
+
 
 
 

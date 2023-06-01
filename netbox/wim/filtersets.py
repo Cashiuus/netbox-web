@@ -6,7 +6,7 @@ from django.db.models import Q
 from django.utils.translation import gettext as _
 from netaddr.core import AddrFormatError
 
-from dcim.models import Device, Interface, Region, Site, SiteGroup
+from dcim.models import Device, Region, Site
 from netbox.filtersets import ChangeLoggedModelFilterSet, OrganizationalModelFilterSet, NetBoxModelFilterSet
 from tenancy.filtersets import TenancyFilterSet
 from utilities.filters import (
@@ -31,67 +31,49 @@ __all__ = (
 )
 
 class DomainFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
-    
-    contains = django_filters.CharFilter(
-        method='search_contains',
-        label=_('Domains which contain this prefix or IP'),
-    )
+# class DomainFilterSet(NetBoxModelFilterSet):
+    # TODO: Need to add the method this references - search_contains()
+    # contains = django_filters.CharFilter(
+    #     method='search_contains',
+    #     label=_('Domains which contain this prefix or IP'),
+    # )
     # -- Multiple Choice Fields
     status = django_filters.MultipleChoiceFilter(
         choices=FQDNStatusChoices,
+        # null_value=None
+    )
+
+    class Meta:
+        model = Domain
+        fields = ['id', 'name']
+    
+    def search(self, queryset, name, value):
+        if not value.strip():
+            return queryset
+        return queryset.filter(
+            Q(name__icontains=value)
+        )
+
+
+class FQDNFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
+# class FQDNFilterSet(NetBoxModelFilterSet):
+    # -- Model Specific Filters --
+    # contains = django_filters.CharFilter(
+    #     method='search_contains',
+    #     label=_('FQDNs which contain search keyword'),
+    # )
+    status = django_filters.MultipleChoiceFilter(
+        choices=DomainStatusChoices,
         # null_value=None
     )
     role = django_filters.MultipleChoiceFilter(
         choices=WebsiteRoleChoices
     )
 
-
-    class Meta:
-        model = Domain
-        fields = [
-            'name', 
-            'date_last_scanned',
-        ]
-
-class FQDNFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
-    # -- Model Specific Filters --
-    contains = django_filters.CharFilter(
-        method='search_contains',
-        label=_('FQDNs which contain this prefix or IP'),
-    )
-    status = django_filters.MultipleChoiceFilter(
-        choices=DomainStatusChoices,
-        null_value=None
-    )
-    ## -- App-wide Filters --
-    region_id = TreeNodeMultipleChoiceFilter(
-        queryset=Region.objects.all(),
-        field_name='site__region',
-        lookup_expr='in',
-        label=_('Region (ID)'),
-    )
-    region = TreeNodeMultipleChoiceFilter(
-        queryset=Region.objects.all(),
-        field_name='site__region',
-        lookup_expr='in',
-        to_field_name='slug',
-        label=_('Region (slug)'),
-    )
-    site_id = django_filters.ModelMultipleChoiceFilter(
-        queryset=Site.objects.all(),
-        label=_('Site (ID)'),
-    )
-    site = django_filters.ModelMultipleChoiceFilter(
-        field_name='site__slug',
-        queryset=Site.objects.all(),
-        to_field_name='slug',
-        label=_('Site (slug)'),
-    )
-
     class Meta:
         model = FQDN
         fields = [
-            'id', 'name', 'ipaddress_public_9', 'owners_9',
+            'id', 'name', 'ipaddress_public_8', 'owners_9',
         ]
     
     def search(self, queryset, name, value):
@@ -104,675 +86,35 @@ class FQDNFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
         )
         return queryset.filter(qs_filter)
 
+    def search_contains(self, queryset, name, value):
+        value = value.strip()
+        if not value:
+            return queryset
+        try:
+            return queryset.filter(fqdn__contains_or_equals=value)
 
-class BusinessGroupFilterSet(OrganizationalModelFilterSet, TenancyFilterSet):
+        except (AddrFormatError, ValueError):
+            return queryset.none()
+
+
+# class BusinessGroupFilterSet(OrganizationalModelFilterSet, TenancyFilterSet):
+class BusinessGroupFilterSet(OrganizationalModelFilterSet):
 
     class Meta:
         model = BusinessGroup
-        fields = ['name', 'acronym']
+        fields = ['id', 'name', 'acronym']
 
 
-class BusinessDivisionFilterSet(OrganizationalModelFilterSet, TenancyFilterSet):
+class BusinessDivisionFilterSet(OrganizationalModelFilterSet):
 
     class Meta:
-        model = BusinessGroup
-        fields = ['name', 'acronym']
+        model = BusinessDivision
+        fields = ['id', 'name', 'acronym']
 
 
-
-class OperatingSystemFilterSet(OrganizationalModelFilterSet, TenancyFilterSet):
+class OperatingSystemFilterSet(OrganizationalModelFilterSet):
 
     class Meta:
         model = OperatingSystem
-        fields = ['vendor', 'product']
+        fields = ['id', 'vendor', 'product']
 
-
-# class IPAddressFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
-#     family = django_filters.NumberFilter(
-#         field_name='address',
-#         lookup_expr='family'
-#     )
-#     parent = MultiValueCharFilter(
-#         method='search_by_parent',
-#         label=_('Parent prefix'),
-#     )
-#     address = MultiValueCharFilter(
-#         method='filter_address',
-#         label=_('Address'),
-#     )
-#     mask_length = django_filters.NumberFilter(
-#         method='filter_mask_length',
-#         label=_('Mask length'),
-#     )
-#     vrf_id = django_filters.ModelMultipleChoiceFilter(
-#         queryset=VRF.objects.all(),
-#         label=_('VRF'),
-#     )
-#     vrf = django_filters.ModelMultipleChoiceFilter(
-#         field_name='vrf__rd',
-#         queryset=VRF.objects.all(),
-#         to_field_name='rd',
-#         label=_('VRF (RD)'),
-#     )
-#     present_in_vrf_id = django_filters.ModelChoiceFilter(
-#         queryset=VRF.objects.all(),
-#         method='filter_present_in_vrf',
-#         label=_('VRF')
-#     )
-#     present_in_vrf = django_filters.ModelChoiceFilter(
-#         queryset=VRF.objects.all(),
-#         method='filter_present_in_vrf',
-#         to_field_name='rd',
-#         label=_('VRF (RD)'),
-#     )
-#     device = MultiValueCharFilter(
-#         method='filter_device',
-#         field_name='name',
-#         label=_('Device (name)'),
-#     )
-#     device_id = MultiValueNumberFilter(
-#         method='filter_device',
-#         field_name='pk',
-#         label=_('Device (ID)'),
-#     )
-
-#     status = django_filters.MultipleChoiceFilter(
-#         choices=IPAddressStatusChoices,
-#         null_value=None
-#     )
-#     role = django_filters.MultipleChoiceFilter(
-#         choices=IPAddressRoleChoices
-#     )
-
-#     class Meta:
-#         model = IPAddress
-#         fields = ['id', 'dns_name', 'description']
-
-#     def search(self, queryset, name, value):
-#         if not value.strip():
-#             return queryset
-#         qs_filter = (
-#             Q(dns_name__icontains=value) |
-#             Q(description__icontains=value) |
-#             Q(address__istartswith=value)
-#         )
-#         return queryset.filter(qs_filter)
-
-#     def search_by_parent(self, queryset, name, value):
-#         if not value:
-#             return queryset
-#         q = Q()
-#         for prefix in value:
-#             try:
-#                 query = str(netaddr.IPNetwork(prefix.strip()).cidr)
-#                 q |= Q(address__net_host_contained=query)
-#             except (AddrFormatError, ValueError):
-#                 return queryset.none()
-#         return queryset.filter(q)
-
-#     def parse_inet_addresses(self, value):
-#         '''
-#         Parse networks or IP addresses and cast to a format
-#         acceptable by the Postgres inet type.
-
-#         Skips invalid values.
-#         '''
-#         parsed = []
-#         for addr in value:
-#             if netaddr.valid_ipv4(addr) or netaddr.valid_ipv6(addr):
-#                 parsed.append(addr)
-#                 continue
-#             try:
-#                 network = netaddr.IPNetwork(addr)
-#                 parsed.append(str(network))
-#             except (AddrFormatError, ValueError):
-#                 continue
-#         return parsed
-
-#     def filter_address(self, queryset, name, value):
-#         # Let's first parse the addresses passed
-#         # as argument. If they are all invalid,
-#         # we return an empty queryset
-#         value = self.parse_inet_addresses(value)
-#         if (len(value) == 0):
-#             return queryset.none()
-
-#         try:
-#             return queryset.filter(address__net_in=value)
-#         except ValidationError:
-#             return queryset.none()
-
-#     def filter_mask_length(self, queryset, name, value):
-#         if not value:
-#             return queryset
-#         return queryset.filter(address__net_mask_length=value)
-
-#     def filter_present_in_vrf(self, queryset, name, vrf):
-#         if vrf is None:
-#             return queryset.none
-#         return queryset.filter(
-#             Q(vrf=vrf) |
-#             Q(vrf__export_targets__in=vrf.import_targets.all())
-#         )
-
-#     def filter_device(self, queryset, name, value):
-#         devices = Device.objects.filter(**{'{}__in'.format(name): value})
-#         if not devices.exists():
-#             return queryset.none()
-#         interface_ids = []
-#         for device in devices:
-#             interface_ids.extend(device.vc_interfaces().values_list('id', flat=True))
-#         return queryset.filter(
-#             interface__in=interface_ids
-#         )
-
-#     def filter_virtual_machine(self, queryset, name, value):
-#         virtual_machines = VirtualMachine.objects.filter(**{'{}__in'.format(name): value})
-#         if not virtual_machines.exists():
-#             return queryset.none()
-#         interface_ids = []
-#         for vm in virtual_machines:
-#             interface_ids.extend(vm.interfaces.values_list('id', flat=True))
-#         return queryset.filter(
-#             vminterface__in=interface_ids
-#         )
-
-#     def _assigned_to_interface(self, queryset, name, value):
-#         content_types = ContentType.objects.get_for_models(Interface, VMInterface).values()
-#         if value:
-#             return queryset.filter(
-#                 assigned_object_type__in=content_types,
-#                 assigned_object_id__isnull=False
-#             )
-#         else:
-#             return queryset.exclude(
-#                 assigned_object_type__in=content_types,
-#                 assigned_object_id__isnull=False
-#             )
-
-
-# class FHRPGroupFilterSet(NetBoxModelFilterSet):
-#     protocol = django_filters.MultipleChoiceFilter(
-#         choices=FHRPGroupProtocolChoices
-#     )
-#     auth_type = django_filters.MultipleChoiceFilter(
-#         choices=FHRPGroupAuthTypeChoices
-#     )
-#     related_ip = django_filters.ModelMultipleChoiceFilter(
-#         queryset=IPAddress.objects.all(),
-#         method='filter_related_ip'
-#     )
-
-#     class Meta:
-#         model = FHRPGroup
-#         fields = ['id', 'group_id', 'name', 'auth_key']
-
-#     def search(self, queryset, name, value):
-#         if not value.strip():
-#             return queryset
-#         return queryset.filter(
-#             Q(description__icontains=value) |
-#             Q(name__icontains=value)
-#         )
-
-#     def filter_related_ip(self, queryset, name, value):
-#         """
-#         Filter by VRF & prefix of assigned IP addresses.
-#         """
-#         ip_filter = Q()
-#         for ipaddress in value:
-#             if ipaddress.vrf:
-#                 q = Q(
-#                     ip_addresses__address__net_contained_or_equal=ipaddress.address,
-#                     ip_addresses__vrf=ipaddress.vrf
-#                 )
-#             else:
-#                 q = Q(
-#                     ip_addresses__address__net_contained_or_equal=ipaddress.address,
-#                     ip_addresses__vrf__isnull=True
-#                 )
-#             ip_filter |= q
-
-#         return queryset.filter(ip_filter)
-
-
-# class FHRPGroupAssignmentFilterSet(ChangeLoggedModelFilterSet):
-#     interface_type = ContentTypeFilter()
-#     group_id = django_filters.ModelMultipleChoiceFilter(
-#         queryset=FHRPGroup.objects.all(),
-#         label=_('Group (ID)'),
-#     )
-#     device = MultiValueCharFilter(
-#         method='filter_device',
-#         field_name='name',
-#         label=_('Device (name)'),
-#     )
-#     device_id = MultiValueNumberFilter(
-#         method='filter_device',
-#         field_name='pk',
-#         label=_('Device (ID)'),
-#     )
-#     virtual_machine = MultiValueCharFilter(
-#         method='filter_virtual_machine',
-#         field_name='name',
-#         label=_('Virtual machine (name)'),
-#     )
-#     virtual_machine_id = MultiValueNumberFilter(
-#         method='filter_virtual_machine',
-#         field_name='pk',
-#         label=_('Virtual machine (ID)'),
-#     )
-
-#     class Meta:
-#         model = FHRPGroupAssignment
-#         fields = ['id', 'group_id', 'interface_type', 'interface_id', 'priority']
-
-#     def filter_device(self, queryset, name, value):
-#         devices = Device.objects.filter(**{f'{name}__in': value})
-#         if not devices.exists():
-#             return queryset.none()
-#         interface_ids = []
-#         for device in devices:
-#             interface_ids.extend(device.vc_interfaces().values_list('id', flat=True))
-#         return queryset.filter(
-#             Q(interface_type=ContentType.objects.get_for_model(Interface), interface_id__in=interface_ids)
-#         )
-
-#     def filter_virtual_machine(self, queryset, name, value):
-#         virtual_machines = VirtualMachine.objects.filter(**{f'{name}__in': value})
-#         if not virtual_machines.exists():
-#             return queryset.none()
-#         interface_ids = []
-#         for vm in virtual_machines:
-#             interface_ids.extend(vm.interfaces.values_list('id', flat=True))
-#         return queryset.filter(
-#             Q(interface_type=ContentType.objects.get_for_model(VMInterface), interface_id__in=interface_ids)
-#         )
-
-
-# class VLANGroupFilterSet(OrganizationalModelFilterSet):
-#     scope_type = ContentTypeFilter()
-#     region = django_filters.NumberFilter(
-#         method='filter_scope'
-#     )
-#     sitegroup = django_filters.NumberFilter(
-#         method='filter_scope'
-#     )
-#     site = django_filters.NumberFilter(
-#         method='filter_scope'
-#     )
-#     location = django_filters.NumberFilter(
-#         method='filter_scope'
-#     )
-#     rack = django_filters.NumberFilter(
-#         method='filter_scope'
-#     )
-#     clustergroup = django_filters.NumberFilter(
-#         method='filter_scope'
-#     )
-#     cluster = django_filters.NumberFilter(
-#         method='filter_scope'
-#     )
-
-#     class Meta:
-#         model = VLANGroup
-#         fields = ['id', 'name', 'slug', 'min_vid', 'max_vid', 'description', 'scope_id']
-
-#     def search(self, queryset, name, value):
-#         if not value.strip():
-#             return queryset
-#         qs_filter = (
-#             Q(name__icontains=value) |
-#             Q(description__icontains=value)
-#         )
-#         return queryset.filter(qs_filter)
-
-#     def filter_scope(self, queryset, name, value):
-#         return queryset.filter(
-#             scope_type=ContentType.objects.get(model=name),
-#             scope_id=value
-#         )
-
-
-# class VLANFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
-#     region_id = TreeNodeMultipleChoiceFilter(
-#         queryset=Region.objects.all(),
-#         field_name='site__region',
-#         lookup_expr='in',
-#         label=_('Region (ID)'),
-#     )
-#     region = TreeNodeMultipleChoiceFilter(
-#         queryset=Region.objects.all(),
-#         field_name='site__region',
-#         lookup_expr='in',
-#         to_field_name='slug',
-#         label=_('Region (slug)'),
-#     )
-#     site_group_id = TreeNodeMultipleChoiceFilter(
-#         queryset=SiteGroup.objects.all(),
-#         field_name='site__group',
-#         lookup_expr='in',
-#         label=_('Site group (ID)'),
-#     )
-#     site_group = TreeNodeMultipleChoiceFilter(
-#         queryset=SiteGroup.objects.all(),
-#         field_name='site__group',
-#         lookup_expr='in',
-#         to_field_name='slug',
-#         label=_('Site group (slug)'),
-#     )
-#     site_id = django_filters.ModelMultipleChoiceFilter(
-#         queryset=Site.objects.all(),
-#         label=_('Site (ID)'),
-#     )
-#     site = django_filters.ModelMultipleChoiceFilter(
-#         field_name='site__slug',
-#         queryset=Site.objects.all(),
-#         to_field_name='slug',
-#         label=_('Site (slug)'),
-#     )
-#     group_id = django_filters.ModelMultipleChoiceFilter(
-#         queryset=VLANGroup.objects.all(),
-#         label=_('Group (ID)'),
-#     )
-#     group = django_filters.ModelMultipleChoiceFilter(
-#         field_name='group__slug',
-#         queryset=VLANGroup.objects.all(),
-#         to_field_name='slug',
-#         label=_('Group'),
-#     )
-#     role_id = django_filters.ModelMultipleChoiceFilter(
-#         queryset=Role.objects.all(),
-#         label=_('Role (ID)'),
-#     )
-#     role = django_filters.ModelMultipleChoiceFilter(
-#         field_name='role__slug',
-#         queryset=Role.objects.all(),
-#         to_field_name='slug',
-#         label=_('Role (slug)'),
-#     )
-#     status = django_filters.MultipleChoiceFilter(
-#         choices=VLANStatusChoices,
-#         null_value=None
-#     )
-#     available_on_device = django_filters.ModelChoiceFilter(
-#         queryset=Device.objects.all(),
-#         method='get_for_device'
-#     )
-#     available_on_virtualmachine = django_filters.ModelChoiceFilter(
-#         queryset=VirtualMachine.objects.all(),
-#         method='get_for_virtualmachine'
-#     )
-#     l2vpn_id = django_filters.ModelMultipleChoiceFilter(
-#         field_name='l2vpn_terminations__l2vpn',
-#         queryset=L2VPN.objects.all(),
-#         label=_('L2VPN (ID)'),
-#     )
-#     l2vpn = django_filters.ModelMultipleChoiceFilter(
-#         field_name='l2vpn_terminations__l2vpn__identifier',
-#         queryset=L2VPN.objects.all(),
-#         to_field_name='identifier',
-#         label=_('L2VPN'),
-#     )
-
-#     class Meta:
-#         model = VLAN
-#         fields = ['id', 'vid', 'name', 'description']
-
-#     def search(self, queryset, name, value):
-#         if not value.strip():
-#             return queryset
-#         qs_filter = Q(name__icontains=value) | Q(description__icontains=value)
-#         try:
-#             qs_filter |= Q(vid=int(value.strip()))
-#         except ValueError:
-#             pass
-#         return queryset.filter(qs_filter)
-
-#     def get_for_device(self, queryset, name, value):
-#         return queryset.get_for_device(value)
-
-#     def get_for_virtualmachine(self, queryset, name, value):
-#         return queryset.get_for_virtualmachine(value)
-
-
-# class ServiceTemplateFilterSet(NetBoxModelFilterSet):
-#     port = NumericArrayFilter(
-#         field_name='ports',
-#         lookup_expr='contains'
-#     )
-
-#     class Meta:
-#         model = ServiceTemplate
-#         fields = ['id', 'name', 'protocol']
-
-#     def search(self, queryset, name, value):
-#         if not value.strip():
-#             return queryset
-#         qs_filter = Q(name__icontains=value) | Q(description__icontains=value)
-#         return queryset.filter(qs_filter)
-
-
-# class ServiceFilterSet(NetBoxModelFilterSet):
-#     device_id = django_filters.ModelMultipleChoiceFilter(
-#         queryset=Device.objects.all(),
-#         label=_('Device (ID)'),
-#     )
-#     device = django_filters.ModelMultipleChoiceFilter(
-#         field_name='device__name',
-#         queryset=Device.objects.all(),
-#         to_field_name='name',
-#         label=_('Device (name)'),
-#     )
-#     virtual_machine_id = django_filters.ModelMultipleChoiceFilter(
-#         queryset=VirtualMachine.objects.all(),
-#         label=_('Virtual machine (ID)'),
-#     )
-#     virtual_machine = django_filters.ModelMultipleChoiceFilter(
-#         field_name='virtual_machine__name',
-#         queryset=VirtualMachine.objects.all(),
-#         to_field_name='name',
-#         label=_('Virtual machine (name)'),
-#     )
-#     ipaddress_id = django_filters.ModelMultipleChoiceFilter(
-#         field_name='ipaddresses',
-#         queryset=IPAddress.objects.all(),
-#         label=_('IP address (ID)'),
-#     )
-#     ipaddress = django_filters.ModelMultipleChoiceFilter(
-#         field_name='ipaddresses__address',
-#         queryset=IPAddress.objects.all(),
-#         to_field_name='address',
-#         label=_('IP address'),
-#     )
-
-#     port = NumericArrayFilter(
-#         field_name='ports',
-#         lookup_expr='contains'
-#     )
-
-#     class Meta:
-#         model = Service
-#         fields = ['id', 'name', 'protocol', 'description']
-
-#     def search(self, queryset, name, value):
-#         if not value.strip():
-#             return queryset
-#         qs_filter = Q(name__icontains=value) | Q(description__icontains=value)
-#         return queryset.filter(qs_filter)
-
-
-# #
-# # L2VPN
-# #
-
-# class L2VPNFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
-#     type = django_filters.MultipleChoiceFilter(
-#         choices=L2VPNTypeChoices,
-#         null_value=None
-#     )
-#     import_target_id = django_filters.ModelMultipleChoiceFilter(
-#         field_name='import_targets',
-#         queryset=RouteTarget.objects.all(),
-#         label=_('Import target'),
-#     )
-#     import_target = django_filters.ModelMultipleChoiceFilter(
-#         field_name='import_targets__name',
-#         queryset=RouteTarget.objects.all(),
-#         to_field_name='name',
-#         label=_('Import target (name)'),
-#     )
-#     export_target_id = django_filters.ModelMultipleChoiceFilter(
-#         field_name='export_targets',
-#         queryset=RouteTarget.objects.all(),
-#         label=_('Export target'),
-#     )
-#     export_target = django_filters.ModelMultipleChoiceFilter(
-#         field_name='export_targets__name',
-#         queryset=RouteTarget.objects.all(),
-#         to_field_name='name',
-#         label=_('Export target (name)'),
-#     )
-
-#     class Meta:
-#         model = L2VPN
-#         fields = ['id', 'identifier', 'name', 'slug', 'type', 'description']
-
-#     def search(self, queryset, name, value):
-#         if not value.strip():
-#             return queryset
-#         qs_filter = Q(name__icontains=value) | Q(description__icontains=value)
-#         try:
-#             qs_filter |= Q(identifier=int(value))
-#         except ValueError:
-#             pass
-#         return queryset.filter(qs_filter)
-
-
-# class L2VPNTerminationFilterSet(NetBoxModelFilterSet):
-#     l2vpn_id = django_filters.ModelMultipleChoiceFilter(
-#         queryset=L2VPN.objects.all(),
-#         label=_('L2VPN (ID)'),
-#     )
-#     l2vpn = django_filters.ModelMultipleChoiceFilter(
-#         field_name='l2vpn__slug',
-#         queryset=L2VPN.objects.all(),
-#         to_field_name='slug',
-#         label=_('L2VPN (slug)'),
-#     )
-#     region = MultiValueCharFilter(
-#         method='filter_region',
-#         field_name='slug',
-#         label=_('Region (slug)'),
-#     )
-#     region_id = MultiValueNumberFilter(
-#         method='filter_region',
-#         field_name='pk',
-#         label=_('Region (ID)'),
-#     )
-#     site = MultiValueCharFilter(
-#         method='filter_site',
-#         field_name='slug',
-#         label=_('Site (slug)'),
-#     )
-#     site_id = MultiValueNumberFilter(
-#         method='filter_site',
-#         field_name='pk',
-#         label=_('Site (ID)'),
-#     )
-#     device = django_filters.ModelMultipleChoiceFilter(
-#         field_name='interface__device__name',
-#         queryset=Device.objects.all(),
-#         to_field_name='name',
-#         label=_('Device (name)'),
-#     )
-#     device_id = django_filters.ModelMultipleChoiceFilter(
-#         field_name='interface__device',
-#         queryset=Device.objects.all(),
-#         label=_('Device (ID)'),
-#     )
-#     virtual_machine = django_filters.ModelMultipleChoiceFilter(
-#         field_name='vminterface__virtual_machine__name',
-#         queryset=VirtualMachine.objects.all(),
-#         to_field_name='name',
-#         label=_('Virtual machine (name)'),
-#     )
-#     virtual_machine_id = django_filters.ModelMultipleChoiceFilter(
-#         field_name='vminterface__virtual_machine',
-#         queryset=VirtualMachine.objects.all(),
-#         label=_('Virtual machine (ID)'),
-#     )
-#     interface = django_filters.ModelMultipleChoiceFilter(
-#         field_name='interface__name',
-#         queryset=Interface.objects.all(),
-#         to_field_name='name',
-#         label=_('Interface (name)'),
-#     )
-#     interface_id = django_filters.ModelMultipleChoiceFilter(
-#         field_name='interface',
-#         queryset=Interface.objects.all(),
-#         label=_('Interface (ID)'),
-#     )
-#     vminterface = django_filters.ModelMultipleChoiceFilter(
-#         field_name='vminterface__name',
-#         queryset=VMInterface.objects.all(),
-#         to_field_name='name',
-#         label=_('VM interface (name)'),
-#     )
-#     vminterface_id = django_filters.ModelMultipleChoiceFilter(
-#         field_name='vminterface',
-#         queryset=VMInterface.objects.all(),
-#         label=_('VM Interface (ID)'),
-#     )
-#     vlan = django_filters.ModelMultipleChoiceFilter(
-#         field_name='vlan__name',
-#         queryset=VLAN.objects.all(),
-#         to_field_name='name',
-#         label=_('VLAN (name)'),
-#     )
-#     vlan_vid = django_filters.NumberFilter(
-#         field_name='vlan__vid',
-#         label=_('VLAN number (1-4094)'),
-#     )
-#     vlan_id = django_filters.ModelMultipleChoiceFilter(
-#         field_name='vlan',
-#         queryset=VLAN.objects.all(),
-#         label=_('VLAN (ID)'),
-#     )
-#     assigned_object_type = ContentTypeFilter()
-
-#     class Meta:
-#         model = L2VPNTermination
-#         fields = ('id', 'assigned_object_type_id')
-
-#     def search(self, queryset, name, value):
-#         if not value.strip():
-#             return queryset
-#         qs_filter = Q(l2vpn__name__icontains=value)
-#         return queryset.filter(qs_filter)
-
-#     def filter_assigned_object(self, queryset, name, value):
-#         qs = queryset.filter(
-#             Q(**{'{}__in'.format(name): value})
-#         )
-#         return qs
-
-#     def filter_site(self, queryset, name, value):
-#         qs = queryset.filter(
-#             Q(
-#                 Q(**{'vlan__site__{}__in'.format(name): value}) |
-#                 Q(**{'interface__device__site__{}__in'.format(name): value}) |
-#                 Q(**{'vminterface__virtual_machine__site__{}__in'.format(name): value})
-#             )
-#         )
-#         return qs
-
-#     def filter_region(self, queryset, name, value):
-#         qs = queryset.filter(
-#             Q(
-#                 Q(**{'vlan__site__region__{}__in'.format(name): value}) |
-#                 Q(**{'interface__device__site__region__{}__in'.format(name): value}) |
-#                 Q(**{'vminterface__virtual_machine__site__region__{}__in'.format(name): value})
-#             )
-#         )
-#         return qs
