@@ -12,7 +12,7 @@ from utilities.forms import BOOLEAN_WITH_BLANK_CHOICES, add_blank_choice
 from utilities.forms.fields import (
     ContentTypeMultipleChoiceField, DynamicModelChoiceField, DynamicModelMultipleChoiceField, TagFilterField,
 )
-# from virtualization.models import VirtualMachine
+
 
 __all__ = (
     'DomainFilterForm',

@@ -3,9 +3,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 
-from dcim.models import Device, Interface, Location, Rack, Region, Site, SiteGroup
-from ipam.choices import *
-from ipam.constants import *
+from dcim.models import Device, Interface, Location, Platform, Rack, Region, Site, SiteGroup
+# from ipam.choices import *
+# from ipam.constants import *
 from ipam.formfields import IPNetworkFormField
 from ipam.models import *
 from netbox.forms import NetBoxModelForm
@@ -17,8 +17,10 @@ from utilities.forms.fields import (
     SlugField,
 )
 from utilities.forms.widgets import DatePicker
-# from virtualization.models import Cluster, ClusterGroup, VirtualMachine, VMInterface
+# from dcim.models import Platform
+# from ipam.models import IPAddress
 from wim.models import *
+
 
 __all__ = (
     'DomainForm',
@@ -39,11 +41,218 @@ class DomainForm(TenancyForm, NetBoxModelForm):
 
 
 class FQDNForm(TenancyForm, NetBoxModelForm):
-    
+    # FKs
+    fqdn_status = DynamicModelChoiceField(
+        queryset=FqdnStatus.objects.all(),
+        required=True,
+        selector=True,
+    )
+    website_status = DynamicModelChoiceField(
+        queryset=WebsiteStatus.objects.all(),
+        required=False,
+        selector=True,
+    )
+    domain = DynamicModelChoiceField(
+        queryset=Domain.objects.all(),
+        required=True,
+        selector=True,
+    )
+    # ipaddress_public_8 = DynamicModelChoiceField(
+    #     queryset=IPAddress.objects.all(),
+    #     required=False,
+    #     selector=True,
+    # )
+    # ipaddress_private_8 = DynamicModelChoiceField(
+    #     queryset=IPAddress.objects.all(),
+    #     required=False,
+    #     selector=True,
+    # )
+    ipaddress_public_8 = IPNetworkFormField(required=False)
+    ipaddress_private_8 = IPNetworkFormField(required=False)
+    os_1 = DynamicModelChoiceField(
+        queryset=OperatingSystem.objects.all(),
+        required=False,
+        selector=True,
+        label=_("OS_v1")
+    )
+    os_8 = DynamicModelChoiceField(
+        queryset=Platform.objects.all(),
+        required=False,
+        selector=True,
+        label=_('OS_8')
+    )
+    impacted_group_9 = DynamicModelChoiceField(
+        queryset=BusinessGroup.objects.all(),
+        required=False,
+        selector=True,
+    )
+    impacted_division_9 = DynamicModelChoiceField(
+        queryset=BusinessDivision.objects.all(),
+        required=False,
+        selector=True,
+    )
+    location_9 = DynamicModelChoiceField(
+        queryset=SiteLocation.objects.all(),
+        required=False,
+        selector=True,
+    )
+    location = DynamicModelChoiceField(
+        queryset=Site.objects.all(),
+        required=False,
+        # initial_params={
+        #     "location": "$location"
+        # },
+        # query_params={
+        #     "region_id": "$region",
+        #     "group_id": "$sitegroup",
+        # }
+    )
+    geo_region = DynamicModelChoiceField(
+        queryset=Region.objects.all(),
+        required=False,
+        # initial_params={
+        #     "sites": 
+        # }
+    )
+    # cloud_provider_9 = DynamicModelChoiceField()
+    snow_bcdr_criticality = DynamicModelChoiceField(
+        queryset=BusinessCriticality.objects.all(),
+        required=False,
+    )
+    tech_webserver_1 = DynamicModelChoiceField(
+        queryset=WebserverFramework.objects.all()
+        required=False,
+    )
+    # parked_status = DynamicModelChoiceField()
+
+    vendor_company_1 = DynamicModelChoiceField(
+        queryset=Vendor.objects.all()
+        required=False,
+    )
+    # TODO: Make this choices instead of a FK
+    feature_auth_type = DynamicModelChoiceField(
+        queryset=WebsiteAuthType.objects.all()
+        required=False,
+    )
+
+    # M2M
+    compliance_programs = DynamicModelMultipleChoiceField(
+        queryset=ComplianceProgram.objects.all(),
+        required=False,
+    )
+
+    # Booleans
+    is_compliance_required = forms.BooleanField(
+        required=False,
+        label=_('Is Compliance Required')
+    )
+    tls_cert_is_wildcard = forms.BooleanField(required=False)
+
+    is_internet_facing = forms.BooleanField(required=False)
+    is_flagship = forms.BooleanField(required=False)
+    is_cloud_hosted = forms.BooleanField(required=False)
+    is_vendor_managed = forms.BooleanField(required=False)
+    is_vendor_hosted = forms.BooleanField(required=False)
+
+    is_akamai = forms.BooleanField(required=False)
+    is_load_protected = forms.BooleanField(required=False)
+    is_waf_protected = forms.BooleanField(required=False)
+    is_vhost = forms.BooleanField(required=False)
+    is_http2 = forms.BooleanField(required=False)
+
+    had_bugbounty = forms.BooleanField(required=False)
+    is_riskey = forms.BooleanField(required=False)
+
+    fieldsets = (
+        ("FQDN", (
+            "name", "status_9", "status", "fqdn_status", "website_status"
+            'env_used_for_1', 'architectural_model_1', 
+            "geo_region_9", "geo_region",
+            "location_9", "location",
+            "domain", "asset_class",
+            'criticality_score_1', 'snow_bcdr_criticality',
+
+        )),
+        ("Tenancy", (
+            "impacted_group_9", "impacted_division_9",
+            "owners_9", "owners_nb", "tenant",
+            'support_group_website_technical', 'support_group_website_approvals',
+            "is_in_cmdb", 'is_internet_facing', 'is_flagship',
+
+        )),
+        ("Technical Details", (
+            'website_url', 'website_title', 'website_email', 'role',
+            'site_operation_age',
+            "public_ip_9", "ipaddress_public_8",
+            'tech_webserver_1', 'tech_addtl',
+            'redirect_health', 'redirect_url', 'redirect_status_9',
+            'private_ip_9', 'ipaddress_private_8', 'hostname_9',
+            'os_9', 'os_1', 'os_8',
+        )),
+        ("Security", (
+            'had_bugbounty', 'is_risky',
+            'vuln_scan_coverage', 'vuln_scan_last_date',
+            'last_vuln_assessment', 'vuln_assessment_priority',
+            'risk_analysis_notes',
+        )),
+        ("Scoping", (
+            'is_akamai', 'is_load_protected', 'is_waf_protected',
+            'feature_api',
+            'feature_acct_mgmt', 'feature_auth_type', 'feature_auth_self_registration',
+            'scoping_size', 'scoping_complexity', 'scoping_roles',
+            'is_compliance_required', 'compliance_programs',
+        )),
+        ("TLS", (
+            'tls_version', 'tls_cert_expires',
+            'tls_cert_info', 'tls_cert_sha1', 'tls_cert_is_wildcard',
+        )),
+        ("Vendor", (
+            'vendor_company_1', 'vendor_pocs_9', 'vendor_notes',
+        )),
+        ("", (
+            "notes", "tags",
+        ))
+    )
+
     class Meta:
         model = FQDN
         fields = [
-            'name', 'status',
+            'name', 'status_9', 'status', 'fqdn_status', 'website_status',
+            'domain', 'asset_class', 
+            'impacted_group_9', 'impacted_division_9',
+            'location_9', 'location',
+            'geo_region_9', 'geo_region',
+            'env_used_for_1', 'architectural_model_1', 
+            'tech_webserver_1', 'tech_addtl',
+            'is_in_cmdb',
+            'public_ip_9', 'ipaddress_public_8',
+            'tenant', 'owners_9', 'owners_nb',
+            'support_group_website_technical', 'support_group_website_approvals',
+            'private_ip_9', 'ipaddress_private_8', 'hostname_9',
+            'os_9', 'os_1', 'os_8',
+            'criticality_score_1', 'snow_bcdr_criticality',
+            'tls_version', 'tls_cert_expires',
+            'tls_cert_info', 'tls_cert_sha1', 'tls_cert_is_wildcard',
+            'website_url', 'website_title', 'website_email', 'role',
+            'site_operation_age',
+            'redirect_health', 'redirect_url', 'redirect_status_9',
+            'had_bugbounty', 'is_risky',
+            'vuln_scan_coverage', 'vuln_scan_last_date',
+            'last_vuln_assessment', 'vuln_assessment_priority',
+            'risk_analysis_notes',
+            'is_internet_facing', 'is_flagship',
+            'cloud_provider_9',
+            'is_vendor_managed', 'is_vendor_hosted',
+            'vendor_company_1', 'vendor_pocs_9',
+            'vendor_notes',
+            'is_akamai', 'is_load_protected', 'is_waf_protected',
+            'feature_api',
+            'feature_acct_mgmt', 'feature_auth_type', 'feature_auth_self_registration',
+            # Scoping --
+            'scoping_size', 'scoping_complexity', 'scoping_roles',
+            'is_compliance_required', 'compliance_programs',
+            'notes',
+            'tags',
         ]
 
 
