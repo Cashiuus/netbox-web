@@ -8,19 +8,18 @@ from rest_framework.response import Response
 from rest_framework.routers import APIRootView
 from rest_framework.views import APIView
 
-from circuits.models import Provider
+# from circuits.models import Provider
 from dcim.models import Site
 # from ipam import filtersets
-from ipam.models import *
+# from ipam.models import *
 from netbox.api.viewsets import NetBoxModelViewSet
 from netbox.api.viewsets.mixins import ObjectValidationMixin
 from netbox.config import get_config
 # from netbox.constants import ADVISORY_LOCK_KEYS
 from utilities.utils import count_related
 from . import serializers
-# from ipam.models import L2VPN, L2VPNTermination
 from wim import filtersets
-from wim.models import Domain, FQDN
+from wim.models import *
 
 
 class WIMRootView(APIRootView):
@@ -31,11 +30,32 @@ class WIMRootView(APIRootView):
         return "WIM"
 
 
+# -- Mixins Go Here --
+
+
+
+
+# 
+# Model ViewSets
+#
 
 class DomainViewSet(NetBoxModelViewSet):
-    queryset = Domain.objects.prefetch_related(
-        'tenant', 'registrar_company'
-    )
+    # This method came from ipam/api/views.py
+    # queryset = Domain.objects.prefetch_related(
+    #     'tenant', 'registrar_company', 'tags',
+    # )
+    # This method came from dcim/api/views.py
+    # queryset = Domain.objects.add_related_count(
+    #     Domain.objects.all(),
+    #     FQDN,
+    #     'domain',
+    #     'fdn_count',
+    #     cumulative=True,
+    # ).prefetch_related('tags')
+
+    # Test with just objects
+    queryset = Domain.objects.all()
+
     serializer_class = serializers.DomainSerializer
     filterset_class = filtersets.DomainFilterSet
 
@@ -43,6 +63,17 @@ class DomainViewSet(NetBoxModelViewSet):
 class FQDNViewSet(NetBoxModelViewSet):
     queryset = FQDN.objects.prefetch_related(
         'tenant', 'impacted_business_9', 'impacted_division_9', 'domain',
+        'tags',
     )
     serializer_class = serializers.FQDNSerializer
     filterset_class = filtersets.FQDNFilterSet
+
+
+
+# class VendorViewSet(NetBoxModelViewSet):
+#     queryset = Vendor.objects.prefetch_related('tags').
+#     annotate(
+#         fqdn_count=count_related(FQDN, 'vendor')
+#     )
+#     serializer_class = serializers.VendorSerializer
+#     filterset_class = filtersets.VendorFilterSet

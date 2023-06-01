@@ -1,6 +1,6 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Prefetch
-from django.db.models.expressions import RawSQL
+# from django.db.models.expressions import RawSQL
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext as _
@@ -8,6 +8,7 @@ from django.utils.translation import gettext as _
 from circuits.models import Provider
 from dcim.models import Interface, Site
 from netbox.views import generic
+# from tenancy.views import ObjectContactsView
 from utilities.utils import count_related
 from utilities.views import ViewTab, register_model_view
 
@@ -43,7 +44,7 @@ class FQDNView(generic.ObjectView):
 
     def get_extra_context(self, request, instance):
         related_models = (
-            (Site.objects.restrict(request.user, 'view').filter(fqdns__in=[instance]), 'id'),
+            (Site.objects.restrict(request.user, 'view').filter(fqdn__in=[instance]), 'name'),
             # (Provider.objects.restrict(request.user, 'view').filter(asns__in=[instance]), 'id'),
         )
         return {
@@ -119,25 +120,26 @@ class DomainView(generic.ObjectView):
             'related_models': related_models,
         }
 
+# TODO: Test this works later after we have data imported
 # This view class sets up the tab that will show up if you click on a specific domain
 # that will populate the tab with all related FQDNs
-@register_model_view(Domain, 'fqdns', path='domain-fqdns')
-class DomainFQDNsView(generic.ObjectChildrenView):
-    queryset = Domain.objects.all()
-    child_model = FQDN
-    table = tables.FQDNTable
-    filterset = filtersets.FQDNFilterSet
-    template_name = 'wim/domain/domain_fqdns.html'
-    # TODO: Need to define the badge properly with a count of related FQDNs
-    tab = ViewTab(
-        label=_('FQDNs'),
-        badge=lambda x: x.get_child_fqdns().count(),
-        permission='wim.view_fqdns',
-        weight=500,
-    )
+# @register_model_view(Domain, 'fqdns', path='domain-fqdns')
+# class DomainFQDNsView(generic.ObjectChildrenView):
+#     queryset = Domain.objects.all()
+#     child_model = FQDN
+#     table = tables.FQDNTable
+#     filterset = filtersets.FQDNFilterSet
+#     template_name = 'wim/domain/domain_fqdns.html'
+#     # TODO: Need to define the badge properly with a count of related FQDNs
+#     tab = ViewTab(
+#         label=_('FQDNs'),
+#         badge=lambda x: x.get_child_fqdns().count(),
+#         permission='wim.view_fqdns',
+#         weight=500,
+#     )
 
-    def get_children(self, request, parent):
-        return parent.get_child_fqdns().restrict(request.user, 'view')
+#     def get_children(self, request, parent):
+#         return parent.get_child_fqdns().restrict(request.user, 'view')
 
 
 @register_model_view(Domain, 'edit')
