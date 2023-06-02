@@ -1,0 +1,104 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load plugins %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+<div class="row">
+	<div class="col col-md-6">
+      <div class="card">
+          <h5 class="card-header">
+              Domain
+          </h5>
+          <div class="card-body">
+              <table class="table table-hover attr-table">
+                  <tr>
+                      <th scope="row">Name</th>
+                      <td>{{ object.name }}</td>
+                  </tr>
+                  <tr>
+                      <th scope="row">Tenant</th>
+                      <td>
+                          {% if object.tenant.group %}
+                              {{ object.tenant.group|linkify }} /
+                          {% endif %}
+                          {{ object.tenant|linkify|placeholder }}
+                      </td>
+                  </tr>
+                  <tr>
+                      <th scope="row">Status</th>
+                      <td>{% badge object.get_status_display bg_color=object.get_status_color %}</td>
+                  </tr>
+                  <tr>
+                      <th scope="row">Expiry Date</th>
+                      <td>
+                          {% if object.date_registrar_expiry %}
+                              {{ object.date_registrar_expiry }}
+                          {% else %}
+                              {{ ''|placeholder }}
+                          {% endif %}
+                      </td>
+                  </tr>
+                  <tr>
+                      <th scope="row">First Registered Date</th>
+                      <td>{{ object.date_first_registered|placeholder }}</td>
+                  </tr>
+                  <tr>
+                      <th scope="row">Last Recon Date</th>
+                      <td>{{ object.date_last_recon_scanned|placeholder }}</td>
+                  </tr>
+                  <tr>
+                      <th scope="row">Confidence</th>
+                      <td>{{ object.get_confidence_display|placeholder }}</td>
+                  </tr>
+                  <tr>
+                      <th scope="row">Meets Corp Standards</th>
+                      <td>{% checkmark object.meets_standards %}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Flagship?</th>
+                    <td>{% checkmark object.is_flagship %}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Registrar</th>
+                    <td>{{ object.registrar_company_9 }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Registrant Org</th>
+                    <td>{{ object.registrant_org }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Registrant Emails</th>
+                    <td>{{ object.registration_emails_9 }}</td>
+                </tr>
+              </table>
+          </div>
+      </div>
+      {% include 'inc/panels/tags.html' %}
+      {% include 'inc/panels/custom_fields.html' %}
+      {% include 'inc/panels/comments.html' %}
+      {% plugin_left_page object %}
+	</div>
+    <!-- End of Left-Size Cards -->
+    <!-- Below adds panels on the right side of the page -->
+	<!--<div class="col col-md-8">
+    {% include 'inc/panel_table.html' with table=parent_prefixes_table heading='Parent Prefixes' %}
+    {% if duplicate_ips_table.rows %}
+      {% include 'inc/panel_table.html' with table=duplicate_ips_table heading='Duplicate IPs' panel_class='danger' %}
+    {% endif %}
+    <div class="card">
+      <h5 class="card-header">Services</h5>
+      <div class="card-body htmx-container table-responsive"
+        hx-get="{% url 'ipam:service_list' %}?ipaddress_id={{ object.pk }}"
+        hx-trigger="load"
+      ></div>
+    </div>
+    {% plugin_right_page object %}
+	</div>-->
+</div>
+<div class="row">
+  <div class="col col-md-12">
+    {% plugin_full_width_page object %}
+  </div>
+</div>
+{% endblock %}

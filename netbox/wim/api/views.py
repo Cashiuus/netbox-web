@@ -1,25 +1,26 @@
-from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
-from django.db import transaction
-from django.shortcuts import get_object_or_404
-from django_pglocks import advisory_lock
-from drf_spectacular.utils import extend_schema
-from rest_framework import status
-from rest_framework.response import Response
+# from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+# from django.db import transaction
+# from django.shortcuts import get_object_or_404
+# from django_pglocks import advisory_lock
+# from drf_spectacular.utils import extend_schema
+# from rest_framework import status
+# from rest_framework.response import Response
 from rest_framework.routers import APIRootView
-from rest_framework.views import APIView
+# from rest_framework.views import APIView
 
 # from circuits.models import Provider
-from dcim.models import Site
+# from dcim.models import Site
 # from ipam import filtersets
 # from ipam.models import *
 from netbox.api.viewsets import NetBoxModelViewSet
-from netbox.api.viewsets.mixins import ObjectValidationMixin
+# from netbox.api.viewsets.mixins import ObjectValidationMixin
 from netbox.config import get_config
 # from netbox.constants import ADVISORY_LOCK_KEYS
 from utilities.utils import count_related
-from . import serializers
+
 from wim import filtersets
 from wim.models import *
+from wim.api import serializers
 
 
 class WIMRootView(APIRootView):

@@ -42,14 +42,14 @@ class FQDNListView(generic.ObjectListView):
 class FQDNView(generic.ObjectView):
     queryset = FQDN.objects.all()
 
-    def get_extra_context(self, request, instance):
-        related_models = (
-            (Site.objects.restrict(request.user, 'view').filter(fqdn__in=[instance]), 'name'),
-            # (Provider.objects.restrict(request.user, 'view').filter(asns__in=[instance]), 'id'),
-        )
-        return {
-            'related_models': related_models,
-        }
+    # def get_extra_context(self, request, instance):
+    #     related_models = (
+    #         (Site.objects.restrict(request.user, 'view').filter(fqdn__in=[instance]), 'name'),
+    #         # (Provider.objects.restrict(request.user, 'view').filter(asns__in=[instance]), 'id'),
+    #     )
+    #     return {
+    #         'related_models': related_models,
+    #     }
 
 
 @register_model_view(FQDN, 'edit')
@@ -108,17 +108,17 @@ class DomainListView(generic.ObjectListView):
 class DomainView(generic.ObjectView):
     queryset = Domain.objects.all()
 
-    def get_extra_context(self, request, instance):
-        related_models = (
-            (Registrar.objects.restrict(request.user, 'view').filter(domains__in=[instance]), 'id'),
-            (FQDN.objects.restrict(request.user, 'view').filter(domains__in=[instance]), 'id'),
-            # (Site.objects.restrict(request.user, 'view').filter(asns__in=[instance]), 'id'),
-            # (Provider.objects.restrict(request.user, 'view').filter(asns__in=[instance]), 'id'),
-        )
+    # def get_extra_context(self, request, instance):
+    #     related_models = (
+    #         (Registrar.objects.restrict(request.user, 'view').filter(domains__in=[instance]), 'id'),
+    #         (FQDN.objects.restrict(request.user, 'view').filter(domains__in=[instance]), 'id'),
+    #         # (Site.objects.restrict(request.user, 'view').filter(asns__in=[instance]), 'id'),
+    #         # (Provider.objects.restrict(request.user, 'view').filter(asns__in=[instance]), 'id'),
+    #     )
 
-        return {
-            'related_models': related_models,
-        }
+    #     return {
+    #         'related_models': related_models,
+    #     }
 
 # TODO: Test this works later after we have data imported
 # This view class sets up the tab that will show up if you click on a specific domain
@@ -318,5 +318,52 @@ class OperatingSystemBulkDeleteView(generic.BulkDeleteView):
     table = tables.OperatingSystemTable
 
 
+
+
+
+
+# # --
+# # Registrar
+# # --
+
+# class RegistrarListView(generic.ObjectListView):
+#     queryset = Registrar.objects.all()
+#     filterset = filtersets.RegistrarFilterSet
+#     filterset_form = forms.RegistrarFilterForm
+#     table = tables.OperatingSystemTable
+
+
+# @register_model_view(OperatingSystem)
+# class OperatingSystemView(generic.ObjectView):
+#     queryset = OperatingSystem.objects.all()
+    
+
+# @register_model_view(OperatingSystem, 'edit')
+# class OperatingSystemEditView(generic.ObjectEditView):
+#     queryset = OperatingSystem.objects.all()
+#     form = forms.OperatingSystemForm
+
+
+# @register_model_view(OperatingSystem, 'delete')
+# class OperatingSystemDeleteView(generic.ObjectDeleteView):
+#     queryset = OperatingSystem.objects.all()
+
+
+# class OperatingSystemBulkImportView(generic.BulkImportView):
+#     queryset = OperatingSystem.objects.all()
+#     model_form = forms.OperatingSystemImportForm
+
+
+# class OperatingSystemBulkEditView(generic.BulkEditView):
+#     queryset = OperatingSystem.objects.all()
+#     filterset = filtersets.OperatingSystemFilterSet
+#     table = tables.OperatingSystemTable
+#     form = forms.OperatingSystemBulkEditForm
+
+
+# class OperatingSystemBulkDeleteView(generic.BulkDeleteView):
+#     queryset = OperatingSystem.objects.all()
+#     filterset = filtersets.OperatingSystemFilterSet
+#     table = tables.OperatingSystemTable
 
 

@@ -33,11 +33,11 @@ __all__ = (
 
 class DomainForm(TenancyForm, NetBoxModelForm):
     # FKs
-    registrar_company = DynamicModelChoiceField(
-        queryset=Registrar.objects.all(),
-        required=True,
-        selector=True,
-    )
+    # registrar_company = DynamicModelChoiceField(
+    #     queryset=Registrar.objects.all(),
+    #     required=True,
+    #     selector=True,
+    # )
 
     # fieldsets = (
     # )
@@ -52,7 +52,6 @@ class DomainForm(TenancyForm, NetBoxModelForm):
             'date_last_recon_scanned',
             'is_internet_facing', 'is_flagship',
             'registrar_company_9', 'registrar_iana_id_9',
-            'registrar_company',
             'registrar_domain_statuses',
             'registrant_org',
             'registration_emails_9', 'registration_emails',
@@ -64,16 +63,16 @@ class DomainForm(TenancyForm, NetBoxModelForm):
 
 class FQDNForm(TenancyForm, NetBoxModelForm):
     # FKs
-    fqdn_status = DynamicModelChoiceField(
-        queryset=FqdnStatus.objects.all(),
-        required=True,
-        selector=True,
-    )
-    website_status = DynamicModelChoiceField(
-        queryset=WebsiteStatus.objects.all(),
-        required=False,
-        selector=True,
-    )
+    # fqdn_status = DynamicModelChoiceField(
+    #     queryset=FqdnStatus.objects.all(),
+    #     required=True,
+    #     selector=True,
+    # )
+    # website_status = DynamicModelChoiceField(
+    #     queryset=WebsiteStatus.objects.all(),
+    #     required=False,
+    #     selector=True,
+    # )
     domain = DynamicModelChoiceField(
         queryset=Domain.objects.all(),
         required=True,
@@ -91,33 +90,33 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
     # )
     ipaddress_public_8 = IPNetworkFormField(required=False)
     ipaddress_private_8 = IPNetworkFormField(required=False)
-    os_1 = DynamicModelChoiceField(
-        queryset=OperatingSystem.objects.all(),
-        required=False,
-        selector=True,
-        label=_("OS_v1")
-    )
+    # os_1 = DynamicModelChoiceField(
+    #     queryset=OperatingSystem.objects.all(),
+    #     required=False,
+    #     selector=True,
+    #     label=_("OS_v1")
+    # )
     os_8 = DynamicModelChoiceField(
         queryset=Platform.objects.all(),
         required=False,
         selector=True,
         label=_('OS_8')
     )
-    impacted_group_9 = DynamicModelChoiceField(
-        queryset=BusinessGroup.objects.all(),
-        required=False,
-        selector=True,
-    )
-    impacted_division_9 = DynamicModelChoiceField(
-        queryset=BusinessDivision.objects.all(),
-        required=False,
-        selector=True,
-    )
-    location_9 = DynamicModelChoiceField(
-        queryset=SiteLocation.objects.all(),
-        required=False,
-        selector=True,
-    )
+    # impacted_group_9 = DynamicModelChoiceField(
+    #     queryset=BusinessGroup.objects.all(),
+    #     required=False,
+    #     selector=True,
+    # )
+    # impacted_division_9 = DynamicModelChoiceField(
+    #     queryset=BusinessDivision.objects.all(),
+    #     required=False,
+    #     selector=True,
+    # )
+    # location_9 = DynamicModelChoiceField(
+    #     queryset=SiteLocation.objects.all(),
+    #     required=False,
+    #     selector=True,
+    # )
     location = DynamicModelChoiceField(
         queryset=Site.objects.all(),
         required=False,
@@ -137,31 +136,33 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
         # }
     )
     # cloud_provider_9 = DynamicModelChoiceField()
-    snow_bcdr_criticality = DynamicModelChoiceField(
-        queryset=BusinessCriticality.objects.all(),
-        required=False,
-    )
-    tech_webserver_1 = DynamicModelChoiceField(
-        queryset=WebserverFramework.objects.all(),
-        required=False,
-    )
+    # snow_bcdr_criticality = DynamicModelChoiceField(
+    #     queryset=BusinessCriticality.objects.all(),
+    #     required=False,
+    # )
+    # tech_webserver_1 = DynamicModelChoiceField(
+    #     queryset=WebserverFramework.objects.all(),
+    #     required=False,
+    # )
+
     # parked_status = DynamicModelChoiceField()
 
-    vendor_company_1 = DynamicModelChoiceField(
-        queryset=Vendor.objects.all(),
-        required=False,
-    )
+    # vendor_company_1 = DynamicModelChoiceField(
+    #     queryset=Vendor.objects.all(),
+    #     required=False,
+    # )
+
     # TODO: Make this choices instead of a FK
-    feature_auth_type = DynamicModelChoiceField(
-        queryset=WebsiteAuthType.objects.all(),
-        required=False,
-    )
+    # feature_auth_type = DynamicModelChoiceField(
+    #     queryset=WebsiteAuthType.objects.all(),
+    #     required=False,
+    # )
 
     # M2M
-    compliance_programs = DynamicModelMultipleChoiceField(
-        queryset=ComplianceProgram.objects.all(),
-        required=False,
-    )
+    # compliance_programs = DynamicModelMultipleChoiceField(
+    #     queryset=ComplianceProgram.objects.all(),
+    #     required=False,
+    # )
 
     # Booleans
     is_compliance_required = forms.BooleanField(

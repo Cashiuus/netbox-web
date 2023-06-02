@@ -20,7 +20,7 @@ __all__ = (
     'FqdnStatus',
     'OperatingSystem',
     'ParkedStatus',
-    'Registrar',
+    # 'Registrar',
     'SiteLocation',
     'SupportGroup',
     'Vendor',

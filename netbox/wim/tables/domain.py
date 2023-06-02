@@ -37,7 +37,7 @@ class DomainTable(TenancyColumnsMixin, NetBoxTable):
             'date_last_recon_scanned',
             'meets_standards',
             'registrant_org', 'registration_emails',
-            'registrar_company',
+            'registrar_company_9',
             'notes',
             'tags', 'created', 'last_updated', 'date_created', 'date_modified',
         )

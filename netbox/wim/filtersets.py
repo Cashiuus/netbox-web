@@ -39,13 +39,13 @@ class DomainFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
     # )
     # -- Multiple Choice Fields
     status = django_filters.MultipleChoiceFilter(
-        choices=FQDNStatusChoices,
+        choices=DomainStatusChoices,
         # null_value=None
     )
 
     class Meta:
         model = Domain
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'status']
     
     def search(self, queryset, name, value):
         if not value.strip():
@@ -63,7 +63,7 @@ class FQDNFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
     #     label=_('FQDNs which contain search keyword'),
     # )
     status = django_filters.MultipleChoiceFilter(
-        choices=DomainStatusChoices,
+        choices=FQDNStatusChoices,
         # null_value=None
     )
     role = django_filters.MultipleChoiceFilter(
@@ -73,7 +73,8 @@ class FQDNFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
     class Meta:
         model = FQDN
         fields = [
-            'id', 'name', 'ipaddress_public_8', 'owners_9',
+            'id', 'name', 'fqdn_status', 'website_status',
+            'public_ip_9', 'ipaddress_public_8', 'owners_9',
         ]
     
     def search(self, queryset, name, value):

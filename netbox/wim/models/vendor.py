@@ -9,7 +9,7 @@ from netbox.models import OrganizationalModel
 
 
 __all__ = (
-    'Registrar',
+    # 'Registrar',
     'Vendor',
 )
 
@@ -31,17 +31,17 @@ class Vendor(OrganizationalModel):
 
 
 
-class Registrar(OrganizationalModel):
-    """
-    A registrar is a company which provides domain registration services
-    and will be used for the Domains dataset.
-    """
-    # This is built based on how Netbox did: dcim:manufacturer
-    contacts = GenericRelation(
-        to='tenancy.ContactAssignment'
-    )
+# class Registrar(OrganizationalModel):
+#     """
+#     A registrar is a company which provides domain registration services
+#     and will be used for the Domains dataset.
+#     """
+#     # This is built based on how Netbox did: dcim:manufacturer
+#     contacts = GenericRelation(
+#         to='tenancy.ContactAssignment'
+#     )
 
-    iana_id = models.IntegerField(_('Registrar IANA ID'), blank=True, null=True)
+#     iana_id = models.IntegerField(_('Registrar IANA ID'), blank=True, null=True)
 
-    def get_absolute_url(self):
-        return reverse('wim:registrar', args=[self.pk])
+#     def get_absolute_url(self):
+#         return reverse('wim:registrar', args=[self.pk])

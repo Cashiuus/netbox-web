@@ -351,8 +351,8 @@ WEB_MENU = Menu(
         MenuGroup(
             label=_('Web Properties'),
             items=(
-                get_model_item('wim', 'fqdn', _('FQDNs'), actions=['import']),
-                get_model_item('wim', 'domain', _('Domains'), actions=['import']),
+                get_model_item('wim', 'fqdn', _('FQDNs')),
+                get_model_item('wim', 'domain', _('Domains')),
             ),
         ),
         # MenuGroup(

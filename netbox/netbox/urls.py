@@ -26,7 +26,6 @@ _patterns = [
     path('oauth/', include('social_django.urls', namespace='social')),
 
     # Apps
-    path('wim/', include('wim.urls')),
     path('circuits/', include('circuits.urls')),
     path('core/', include('core.urls')),
     path('dcim/', include('dcim.urls')),
@@ -36,6 +35,8 @@ _patterns = [
     path('user/', include('users.urls')),
     path('virtualization/', include('virtualization.urls')),
     path('wireless/', include('wireless.urls')),
+    # [Cashiuus]: Adding "wim" app to global urls includes
+    path('wim/', include('wim.urls')),
 
     # HTMX views
     path('htmx/object-selector/', htmx.ObjectSelectorView.as_view(), name='htmx_object_selector'),
@@ -52,6 +53,8 @@ _patterns = [
     path('api/virtualization/', include('virtualization.api.urls')),
     path('api/wireless/', include('wireless.api.urls')),
     path('api/status/', StatusView.as_view(), name='api-status'),
+    # [Cashiuus]: Adding "wim" app to API, because even regular views fail if this is not here
+    path('api/wim/', include('wim.api.urls')),
 
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='api_docs'),

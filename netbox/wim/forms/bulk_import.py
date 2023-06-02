@@ -29,12 +29,12 @@ class DomainImportForm(NetBoxModelImportForm):
         help_text=_('Assigned tenant')
     )
 
-    registrar_company = CSVModelChoiceField(
-        queryset=Registrar.objects.all(),
-        required=False,
-        to_field_name='name',
-        # help_text=_('Regisrar company name')
-    )
+    # registrar_company = CSVModelChoiceField(
+    #     queryset=Registrar.objects.all(),
+    #     required=False,
+    #     to_field_name='name',
+    #     # help_text=_('Regisrar company name')
+    # )
 
     # -- Choices Fields --
     status = CSVChoiceField(
@@ -57,7 +57,6 @@ class DomainImportForm(NetBoxModelImportForm):
             'date_last_recon_scanned',
             'is_internet_facing', 'is_flagship',
             'registrar_company_9', 'registrar_iana_id_9',
-            'registrar_company',
             'registrar_domain_statuses',
             'registrant_org',
             'registration_emails_9', 'registration_emails',

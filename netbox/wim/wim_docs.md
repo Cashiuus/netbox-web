@@ -101,3 +101,18 @@ SUPPORT_GROUP_TYPE_CHOICES      # Group types (e.g. SNOW, versus Team Name)
 - The development section could benefit from some clarity on the fact that you have to add the `--insecure` flag when running the Netbox locally for testing or it won't load. I'm not certain if this is a built-in function, but the `js` static media files won't load without it, causing the whole site to fail to load. I found this out by accident, but I don't think it was explicitly called out in the docs.
 
 
+
+
+#### API Issues
+
+
+- Ref docs: https://docs.netbox.dev/en/stable/plugins/development/rest-api/
+
+The example here is missing the app_name?
+
+How do we get our app api into the namespace?
+
+File: wim/api/urls.py
+```
+app_name = "wim-api"
+```

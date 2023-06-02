@@ -1,0 +1,121 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load plugins %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+<div class="row">
+	<div class="col col-md-6">
+      <div class="card">
+          <h5 class="card-header">
+              Domain
+          </h5>
+          <div class="card-body">
+              <table class="table table-hover attr-table">
+                  <tr>
+                      <th scope="row">Name</th>
+                      <td>{{ object.name }}</td>
+                  </tr>
+                  <tr>
+                      <th scope="row">Tenant</th>
+                      <td>
+                          {% if object.tenant.group %}
+                              {{ object.tenant.group|linkify }} /
+                          {% endif %}
+                          {{ object.tenant|linkify|placeholder }}
+                      </td>
+                  </tr>
+                  <tr>
+                      <th scope="row">Status</th>
+                      <td>{% badge object.get_status_display bg_color=object.get_status_color %}</td>
+                  </tr>
+                  <tr>
+                      <th scope="row">FQDN Status</th>
+                      <td>
+                          {% if object.fqdn_status %}
+                              {{ object.fqdn_status }}
+                          {% else %}
+                              {{ ''|placeholder }}
+                          {% endif %}
+                      </td>
+                  </tr>
+                  <tr>
+                      <th scope="row">Website Status</th>
+                      <td>
+                        {% if object.website_status %}
+                              {{ object.website_status }}
+                          {% else %}
+                              {{ ''|placeholder }}
+                          {% endif %}
+                      </td>
+                  </tr>
+                  <tr>
+                      <th scope="row">Domain Root</th>
+                      <td>
+                        {% if object.domain %}
+                              {{ object.domain|linkify }}
+                          {% else %}
+                              {{ ''|placeholder }}
+                          {% endif %}
+                      </td>
+                  </tr>
+                  <tr>
+                      <th scope="row">Public IP (orig)</th>
+                      <td>{{ object.public_ip_9|placeholder }}
+                      </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Public IP (nb)</th>
+                    <td>{{ object.ipaddress_public_8|placeholder }}
+                    </td>
+                </tr>
+                  <tr>
+                    <th scope="row">t</th>
+                    <td>{{ object.get_confidence_display|placeholder }}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">t</th>
+                    <td>{{ object.get_confidence_display|placeholder }}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">t</th>
+                    <td>{{ object.get_confidence_display|placeholder }}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">t</th>
+                    <td>{{ object.get_confidence_display|placeholder }}
+                    </td>
+                </tr>
+              </table>
+          </div>
+      </div>
+      {% include 'inc/panels/tags.html' %}
+      {% include 'inc/panels/custom_fields.html' %}
+      {% include 'inc/panels/comments.html' %}
+      {% plugin_left_page object %}
+	</div>
+    <!-- Below adds panels on the right side of the page -->
+	<!--<div class="col col-md-8">
+    {% include 'inc/panel_table.html' with table=parent_prefixes_table heading='Parent Prefixes' %}
+    {% if duplicate_ips_table.rows %}
+      {% include 'inc/panel_table.html' with table=duplicate_ips_table heading='Duplicate IPs' panel_class='danger' %}
+    {% endif %}
+    <div class="card">
+      <h5 class="card-header">Services</h5>
+      <div class="card-body htmx-container table-responsive"
+        hx-get="{% url 'ipam:service_list' %}?ipaddress_id={{ object.pk }}"
+        hx-trigger="load"
+      ></div>
+    </div>
+    {% plugin_right_page object %}
+	</div>-->
+</div>
+<div class="row">
+  <div class="col col-md-12">
+    {% plugin_full_width_page object %}
+  </div>
+</div>
+{% endblock %}

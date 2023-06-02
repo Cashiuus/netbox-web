@@ -102,14 +102,14 @@ class Domain(PrimaryModel):
         max_length=255, 
         blank=True
     )
-    registrar_company = models.ForeignKey(
-        to='wim.Registrar',
-        on_delete=models.PROTECT,
-        related_name='domains',
-        blank=True,
-        null=True,
-        verbose_name='Registrar',
-    )
+    # registrar_company = models.ForeignKey(
+    #     to='wim.Registrar',
+    #     on_delete=models.PROTECT,
+    #     related_name='domains',
+    #     blank=True,
+    #     null=True,
+    #     verbose_name='Registrar',
+    # )
     
     registrant_org = models.CharField(
         _('Registrant Org'), 
