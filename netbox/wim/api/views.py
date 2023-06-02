@@ -63,7 +63,7 @@ class DomainViewSet(NetBoxModelViewSet):
 
 class FQDNViewSet(NetBoxModelViewSet):
     queryset = FQDN.objects.prefetch_related(
-        'tenant', 'impacted_business_9', 'impacted_division_9', 'domain',
+        'tenant', 'impacted_business_orig', 'impacted_division_orig', 'domain',
         'tags',
     )
     serializer_class = serializers.FQDNSerializer
@@ -71,10 +71,60 @@ class FQDNViewSet(NetBoxModelViewSet):
 
 
 
-# class VendorViewSet(NetBoxModelViewSet):
-#     queryset = Vendor.objects.prefetch_related('tags').
-#     annotate(
-#         fqdn_count=count_related(FQDN, 'vendor')
-#     )
-#     serializer_class = serializers.VendorSerializer
-#     filterset_class = filtersets.VendorFilterSet
+class BusinessGroupViewSet(NetBoxModelViewSet):
+    queryset = BusinessGroup.objects.prefetch_related('tags').
+    annotate(
+        fqdn_count=count_related(FQDN, 'impacted_business_orig')
+    )
+    serializer_class = serializers.BusinessGroupSerializer
+    filterset_class = filtersets.BusinessGroupFilterSet
+
+
+
+class BusinessDivisionViewSet(NetBoxModelViewSet):
+    queryset = BusinessDivision.objects.prefetch_related('tags').
+    annotate(
+        fqdn_count=count_related(FQDN, 'impacted_division_orig')
+    )
+    serializer_class = serializers.BusinessDivisionSerializer
+    filterset_class = filtersets.BusinessDivisionFilterSet
+
+
+
+class OperatingSystemViewSet(NetBoxModelViewSet):
+    queryset = OperatingSystem.objects.prefetch_related('tags').
+    annotate(
+        fqdn_count=count_related(FQDN, 'os_1')
+    )
+    serializer_class = serializers.OperatingSystemSerializer
+    filterset_class = filtersets.OperatingSystemFilterSet
+
+
+
+class SiteLocationViewSet(NetBoxModelViewSet):
+    queryset = SiteLocation.objects.prefetch_related('tags').
+    annotate(
+        fqdn_count=count_related(FQDN, 'location_orig')
+    )
+    serializer_class = serializers.SiteLocationSerializer
+    filterset_class = filtersets.SiteLocationFilterSet
+
+
+
+class VendorViewSet(NetBoxModelViewSet):
+    queryset = Vendor.objects.prefetch_related('tags').
+    annotate(
+        fqdn_count=count_related(FQDN, 'vendor_company_orig')
+    )
+    serializer_class = serializers.VendorSerializer
+    filterset_class = filtersets.VendorFilterSet
+
+
+
+class WebserverFrameworkViewSet(NetBoxModelViewSet):
+    queryset = WebserverFramework.objects.prefetch_related('tags').
+    annotate(
+        fqdn_count=count_related(FQDN, 'webserver_tech_1')
+    )
+    serializer_class = serializers.WebserverFrameworkSerializer
+    filterset_class = filtersets.WebserverFrameworkFilterSet

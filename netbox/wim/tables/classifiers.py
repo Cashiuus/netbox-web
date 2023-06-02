@@ -10,6 +10,9 @@ __all__ = (
     'BusinessGroupTable',
     'BusinessDivisionTable',
     'OperatingSystemTable',
+    'SiteLocationTable',
+    'VendorTable',
+    'WebserverFrameworkTable',
 )
 
 
@@ -67,5 +70,39 @@ class OperatingSystemTable(TenancyColumnsMixin, NetBoxTable):
         default_columns = ('vendor', 'product', 'update', 'family', 'build')
 
 
+class SiteLocationTable(TenancyColumnsMixin, NetBoxTable):
+    # notes = columns.MarkdownColumn()
+    # tags = columns.TagColumn(
+    #     url_name='wim:BusinessDivision_list'
+    # )
+
+    class Meta:
+        model = SiteLocation
+        exclude = ('id',)
+        fields = (
+            'name', 'code', 
+            'impacted_group_orig', 'impacted_division_orig',
+            'geo_region_orig', 'geo_region_choice',
+            'geo_region', 'tenant',
+        )
+        default_columns = ('name', 'code', 'geo_region_choice')
 
 
+class VendorTable(NetBoxTable):
+
+    class Meta:
+        model = Vendor
+        exclude = ('id',)
+        fields = (
+            'name',
+        )
+
+
+class WebserverFrameworkTable(NetBoxTable):
+
+    class Meta:
+        model = WebserverFramework
+        exclude = ('id',)
+        fields = (
+            'name', 'product', 'version', 'raw_banner', 'cpe',
+        )

@@ -49,16 +49,17 @@ class FQDNTable(TenancyColumnsMixin, NetBoxTable):
         model = FQDN
         exclude = ('id',)
         fields = (
-            'name', 'status', 'fqdn_status', 'website_status',
+            'name', 'status', 
+            'fqdn_status', 'fqdn_status_orig', 'website_status', 'website_status_orig',
             'domain',
-            'owners_9', 'impacted_group_9', 'impacted_division_9',
-            'location_9', 'location',
+            'owners_orig', 'impacted_group_orig', 'impacted_division_orig',
+            'location_orig', 'location',
             'had_bugbounty', 'is_risky',
-            'public_ip_9', 'ipaddress_public_8',
-            'private_ip_9', 'ipaddress_private_8',
-            'hostname_9',
+            'public_ip_1', 'ipaddress_public_8',
+            'private_ip_1', 'ipaddress_private_8',
+            'hostname_orig',
             'os_1', 'os_8',
-            'env_used_for_1', 'architectural_model_1',
+            'env_used_for', 'architectural_model',
             'tech_webserver_1', 'tech_addtl',
             'redirect_url',
             'vendor_company_1',
@@ -68,7 +69,7 @@ class FQDNTable(TenancyColumnsMixin, NetBoxTable):
 
         )
         default_columns = (
-            'name', 'status', 'fqdn_status', 'website_status', 'owners_9',
+            'name', 'status', 'fqdn_status', 'website_status', 'owners_orig',
         )
 
 

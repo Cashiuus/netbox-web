@@ -7,7 +7,7 @@ from utilities.choices import ChoiceSet
 # ========== netbox way of doing choices ============
 
 #
-# Domains
+# Primary Status Choices
 #
 
 class DomainStatusChoices(ChoiceSet):
@@ -27,10 +27,6 @@ class DomainStatusChoices(ChoiceSet):
     ]
 
 
-#
-# FQDNs
-#
-
 class FQDNStatusChoices(ChoiceSet):
     key = 'FQDN.status'
 
@@ -43,9 +39,150 @@ class FQDNStatusChoices(ChoiceSet):
         # (STATUS_PLANNED, 'Planned', 'cyan'),
         (STATUS_NEW, 'New', 'blue'),
         (STATUS_ACTIVE, 'Active', 'green'),
-        (STATUS_DECOMMISSIONING, 'Decommissioning', 'yellow'),
-        (STATUS_RETIRED, 'Retired', 'red'),
+        (STATUS_DECOMMISSIONING, 'Decommissioning', 'red'),
+        (STATUS_RETIRED, 'Retired', 'gray'),
     ]
+
+
+class FQDNStatusChoices(ChoiceSet):
+    FQDNSTATUS_1 = "1-whois"
+    FQDNSTATUS_2 = "2-dns"
+    FQDNSTATUS_3A = "3-parked"
+    FQDNSTATUS_3B = "3-redirect"
+    FQDNSTATUS_4 = "4-serverdown"
+    FQDNSTATUS_5 = "5-active"
+    
+    CHOICES = (
+        (FQDNSTATUS_1, "1-WHOIS", "gray"),
+        (FQDNSTATUS_2, "2-DNS", "green"),
+        (FQDNSTATUS_3A, "3-PARKED", "gray"),
+        (FQDNSTATUS_3B, "3-REDIRECT", "cyan"),
+        (FQDNSTATUS_4, "4-DNS SERVER DOWN", "orange"),
+        (FQDNSTATUS_5, "5-ACTIVE", "blue"),
+    )
+
+
+class WebsiteStatusChoices(ChoiceSet):
+    WEBSITESTATUS_GOOD = "live_good"
+    WEBSITESTATUS_BROKEN = "live_broken"
+    WEBSITESTATUS_DEFAULT = "live_default"
+    WEBSITESTATUS_NONPROD = "live_nonprod"
+    # WEBSITESTATUS_
+    # WEBSITESTATUS_
+    # WEBSITESTATUS_
+
+    CHOICES = (
+        (WEBSITESTATUS_GOOD, "Live Website Good", "green"),
+        (WEBSITESTATUS_BROKEN, "Live Broken Website", "orange"),
+        (WEBSITESTATUS_DEFAULT, "Live Default Webserver", "orange"),
+        (WEBSITESTATUS_NONPROD, "Live Nonprod Sister Website", "purple"),
+    )
+
+
+
+
+#
+# Supporting Data Choices
+#
+
+
+class AssetClassChoices(ChoiceSet):
+    ASSET_DOMAIN = "domain"
+    ASSET_FQDN = "fqdn"
+
+    CHOICES = (
+        (ASSET_DOMAIN, 'Domain', 'blue'),
+        (ASSET_FQDN, 'FQDN', 'cyan'),
+    )
+
+
+class CloudProviderChoices(ChoiceSet):
+    CLOUD_AWS = "aws"
+    CLOUD_AZURE = "azure"
+    CLOUD_GOOGLE = "google"
+    CLOUD_ALIBABA = "alibaba"
+
+    CHOICES = [
+        (CLOUD_AWS, "AWS", "orange"),
+        (CLOUD_AZURE, "Azure",  "blue"),
+        (CLOUD_GOOGLE, "Google", "cyan"),
+        (CLOUD_ALIBABA, "Alibaba", "red"),
+    ]
+
+
+
+class GeoRegionChoices(ChoiceSet):
+    REGION_AMER = "amer"
+    REGION_APAC = "apac"
+    REGION_EMEA = "emea"
+    REGION_GLOBAL = "global"
+
+    CHOICES = [
+        (REGION_AMER, "AMER", "gray"),
+        (REGION_APAC, "APAC", "gray"),
+        (REGION_EMEA, "EMEA", "gray"),
+        (REGION_GLOBAL, "GLOBAL", "gray"),
+    ]
+
+
+# TODO: How should I best handle N/A type responses for certain web properties?
+class HostingArchModelChoices(ChoiceSet):
+    HOSTARCH_CLOUD = "cloud"          # This would be "hybrid" in ServiceNow
+    HOSTARCH_ONPREM = "onpremise"
+    HOSTARCH_SAAS = "saas"
+
+    CHOICES = (
+        (HOSTARCH_CLOUD, "Cloud", "orange"),
+        (HOSTARCH_ONPREM, "On-Premise", "cyan"),
+        (HOSTARCH_SAAS, "SaaS", "purple"),
+    )
+
+
+class HostingEnvModelChoices(ChoiceSet):
+    HOSTENV_DEMO = "demo"
+    HOSTENV_DEV = "dev"
+    HOSTENV_PROD = "prod"
+    HOSTENV_QA = "qa"
+    HOSTENV_STAGE = "staging"
+    HOSTENV_TEST = "test"
+    HOSTENV_TRAIN = "training"
+    HOSTENV_DR = "dr"
+
+    CHOICES = (
+        (HOSTENV_DEMO, "Demo", "gray"),
+        (HOSTENV_DEV, "Dev", "orange"),
+        (HOSTENV_PROD, "Prod", "blue"),
+        (HOSTENV_QA, "QA", "orange"),
+        (HOSTENV_STAGE, "Staging", "orange"),
+        (HOSTENV_TEST, "Test", "orange"),
+        (HOSTENV_TRAIN, "Training", "gray"),
+        (HOSTENV_DR, "DR", "blue"),
+    )
+
+# SITE_ENV_CHOICES = Choices(
+#     (1, 'demonstration', _('Demonstration')),
+#     (2, 'development', _('Development')),
+#     (3, 'production', _('Production')),
+#     (4, 'qa', _('QA')),
+#     (5, 'staging', _('Staging')),
+#     (6, 'test', _('Test')),
+#     (7, 'training', _('Training')),
+#     (8, 'dr', _('DR')),                         # BC/DR
+#     (9, 'unknown', _('Unknown')),
+#     (10, 'na', _('NA'))
+# )
+
+
+class RedirectStatusChoices(ChoiceSet):
+    REDIRECT_GOOD = 'good'
+    REDIRECT_BAD = 'bad'
+    REDIRECT_UNKNOWN = 'unknown'
+
+    CHOICES = (
+        (REDIRECT_GOOD, 'Good', 'green'),
+        (REDIRECT_BAD, 'Bad', 'red'),
+        (REDIRECT_UNKNOWN, 'Unknown', 'yellow'),
+    )
 
 
 class WebAuthChoices(ChoiceSet):
@@ -55,10 +192,10 @@ class WebAuthChoices(ChoiceSet):
     AUTH_STANDALONE = "standalone"
 
     CHOICES = [
-        (AUTH_BASIC, 'Basic Auth', 'cyan'),
-        (AUTH_SSO_CORP, 'SSO-Corp', 'cyan'),
-        (AUTH_SSO_OTHER, 'SSO-Other', 'cyan'),
-        (AUTH_STANDALONE, 'Standalone', 'cyan'),
+        (AUTH_BASIC, 'Basic Auth', 'orange'),
+        (AUTH_SSO_CORP, 'SSO-Corp', 'blue'),
+        (AUTH_SSO_OTHER, 'SSO-Other', 'blue'),
+        (AUTH_STANDALONE, 'Standalone', 'orange'),
     ]
 
 
@@ -78,26 +215,6 @@ class WebsiteRoleChoices(ChoiceSet):
     )
 
 
-class AssetClassChoices(ChoiceSet):
-    ASSET_DOMAIN = "domain"
-    ASSET_FQDN = "fqdn"
-
-    CHOICES = (
-        (ASSET_DOMAIN, 'Domain', 'blue'),
-        (ASSET_FQDN, 'FQDN', 'cyan'),
-    )
-
-
-class RedirectStatusChoices(ChoiceSet):
-    REDIRECT_GOOD = 'good'
-    REDIRECT_BAD = 'bad'
-    REDIRECT_UNKNOWN = 'unknown'
-
-    CHOICES = (
-        (REDIRECT_GOOD, 'Good', 'green'),
-        (REDIRECT_BAD, 'Bad', 'red'),
-        (REDIRECT_UNKNOWN, 'Unknown', 'yellow'),
-    )
 
 
 # ========== my original way of doing choices ============

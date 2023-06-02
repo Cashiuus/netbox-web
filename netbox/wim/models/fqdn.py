@@ -31,10 +31,11 @@ class FQDN(PrimaryModel):
         validators=[DNSValidator],
         help_text='A fqdn or subdomain of a domain root'
     )
+    # TODO: How to best handle slug fields throughout the app
     slug = models.SlugField(max_length=100)
 
     # My old version of status field
-    status_9 = models.IntegerField(_('Status_9'),
+    status_orig = models.IntegerField(_('Status orig'),
                                  choices=RECORD_STATUS_CHOICES,
                                  default=RECORD_STATUS_CHOICES.new,
                                  help_text='Operational status of this FQDN')
@@ -43,9 +44,9 @@ class FQDN(PrimaryModel):
                               max_length=50,
                               choices=FQDNStatusChoices,
                               default=FQDNStatusChoices.STATUS_NEW,
-                              help_text='Operational status of this FQDN')
+                              help_text='Overall Operational status of this FQDN')
     
-    fqdn_status = models.ForeignKey(
+    fqdn_status_orig = models.ForeignKey(
         'FqdnStatus',
         on_delete=models.CASCADE,
         blank=True, null=True,
@@ -53,7 +54,13 @@ class FQDN(PrimaryModel):
         verbose_name='FQDN Status'
     )
 
-    website_status = models.ForeignKey(
+    fqdn_status = models.CharField(
+        max_length=50,
+        choices=FQDNStatusChoices,
+        help_text='Technical operational status of this FQDN',
+    )
+
+    website_status_orig = models.ForeignKey(
         'WebsiteStatus',
         on_delete=models.CASCADE,
         blank=True, null=True,
@@ -61,22 +68,23 @@ class FQDN(PrimaryModel):
         verbose_name='Website Status'
     )
 
-    domain = models.ForeignKey('Domain', 
-                               on_delete=models.CASCADE,
-                               blank=True, null=True,
-                               help_text='Root Domain for this entry')
+    website_status = models.CharField(
+        max_length=50,
+        choices=WebsiteStatusChoices,
+        help_text='Technical operational status of this website, if applicable',
+    )
 
-    # asset_class = models.ForeignKey('AssetClass',
-    #                                 on_delete=models.CASCADE,
-    #                                 to_field='name',
-    #                                 default='FQDN',
-    #                                 verbose_name='Class')
+    domain = models.ForeignKey(
+        'Domain', 
+        on_delete=models.CASCADE,
+        help_text='Root Domain for this entry'
+    )
 
     asset_class = models.CharField(
         max_length=50,
         choices=AssetClassChoices,
         default=AssetClassChoices.ASSET_FQDN,
-        help_text=_('Class of domain name asset (e.g. Domain or FQDN)')
+        help_text=_('Class of web property asset (e.g. Domain or FQDN)')
     )
 
     role = models.CharField(
@@ -86,7 +94,7 @@ class FQDN(PrimaryModel):
         help_text=_('Primary role of the web property, if applicable')
     )
     # prev names: public_ip_1 and private_ip_1
-    public_ip_9 = models.GenericIPAddressField(_('Public IP_9'), blank=True, null=True, protocol='IPv4')
+    public_ip_1 = models.GenericIPAddressField(_('Public IP (orig)'), blank=True, null=True, protocol='IPv4')
     ipaddress_public_8 = models.ForeignKey(
         to='ipam.IPAddress',
         on_delete=models.SET_NULL,
@@ -94,7 +102,8 @@ class FQDN(PrimaryModel):
         blank=True, null=True,
         verbose_name='Public IP FK'
     )
-    private_ip_9 = models.GenericIPAddressField(_('Private IP_9'), blank=True, null=True, protocol='IPv4',
+    private_ip_1 = models.GenericIPAddressField(_('Private IP (orig)'), 
+                                                blank=True, null=True, protocol='IPv4',
                                                 help_text='Primary internal IP of web server')
     ipaddress_private_8 = models.ForeignKey(
         to='ipam.IPAddress',
@@ -106,17 +115,18 @@ class FQDN(PrimaryModel):
 
     # Turn this into a ForeignKey
     # NOTE: Netbox appears to save hostname as "dns_name" field under IPAddress table, not separately
-    hostname_9 = models.CharField(_('Hostname_9'), max_length=100, blank=True, default='')
+    # Original field name: hostname
+    hostname_orig = models.CharField(_('Hostname orig'), max_length=100, blank=True, default='')
 
     # Turn this into a ForeignKey
     os_9 = models.CharField(
         _('OS'), 
         max_length=100, 
         blank=True, default='', 
-        help_text='Old OS'
+        help_text='OS (char field)'
     )
     os_1 = models.ForeignKey(
-        to='wim.OperatingSystem',
+        to='OperatingSystem',
         on_delete=models.PROTECT,
         related_name='+',
         blank=True,
@@ -140,7 +150,7 @@ class FQDN(PrimaryModel):
         null=True
     )
     # prev name: owners (and this used to be a TextField)
-    owners_9 = models.TextField(_('Owners'), blank=True)
+    owners_orig = models.TextField(_('Owners orig'), blank=True)
     owners_nb = GenericRelation(
         to='tenancy.ContactAssignment'
     )
@@ -153,19 +163,19 @@ class FQDN(PrimaryModel):
     #     verbose_name='Owners Group',
     # )
 
-    impacted_group_9 = models.ForeignKey(
+    impacted_group_orig = models.ForeignKey(
         'BusinessGroup',
         on_delete=models.SET_NULL,
         related_name='fqdns',
         blank=True, null=True,
-        verbose_name='Group_9'
+        verbose_name='Group orig'
     )
-    impacted_division_9 = models.ForeignKey(
+    impacted_division_orig = models.ForeignKey(
         'BusinessDivision',
         on_delete=models.SET_NULL,
         related_name='fqdns',
         blank=True, null=True,
-        verbose_name='Division_9',
+        verbose_name='Division orig',
     )
     
     is_in_cmdb = models.BooleanField(
@@ -175,12 +185,12 @@ class FQDN(PrimaryModel):
         help_text='The asset is in official CMDB'
     )
     
-    location_9 = models.ForeignKey(
+    location_orig = models.ForeignKey(
         'SiteLocation',
         on_delete=models.SET_NULL, 
         blank=True, null=True,
         related_name='fqdns',
-        verbose_name='Location Mine'
+        verbose_name='Location orig'
     )
     
     location = models.ForeignKey(
@@ -190,10 +200,17 @@ class FQDN(PrimaryModel):
         related_name='fqdns',
         verbose_name='Location',
     )
-    geo_region_9 = models.IntegerField(_('Geo Region_9'),
+    geo_region_orig = models.IntegerField(_('Geo Region orig'),
                                   choices=GEO_REGION_CHOICES,
                                   default=GEO_REGION_CHOICES.amer,
                                   help_text='Geographic region site operates in (or Global)')
+
+    geo_region_choice = models.CharField(
+        _('Region choice')
+        max_length=50,
+        choices=GeoRegionChoices,
+        blank=True,
+    )
 
     geo_region = models.ForeignKey(
         to='dcim.Region',
@@ -205,11 +222,18 @@ class FQDN(PrimaryModel):
     )
 
     # TODO: Change this to a choices field instead
-    cloud_provider_9 = models.ForeignKey('CloudProvider',
-                                       on_delete=models.PROTECT,
-                                       blank=True, null=True,
-                                       verbose_name='Cloud Provider')
+    # cloud_provider_9 = models.ForeignKey('CloudProvider',
+    #                                    on_delete=models.PROTECT,
+    #                                    blank=True, null=True,
+    #                                    verbose_name='Cloud Provider')
     
+    cloud_provider = models.CharField(
+        _('Cloud Provider'),
+        max_length=50,
+        choices=CloudProviderChoices,
+        blank=True,
+    )
+
     # prev name: criticality_tmp1
     criticality_score_1 = models.PositiveSmallIntegerField(_('Criticality Score'),
                                                         default=50,
@@ -221,11 +245,11 @@ class FQDN(PrimaryModel):
                                              blank=True, null=True,
                                              verbose_name='Business Criticality',
                                              help_text='SNOW CMDB-defined biz criticality')
-    env_used_for_1 = models.IntegerField(_('Used For'),
+    env_used_for = models.IntegerField(_('Used For'),
                                          choices=SITE_ENV_CHOICES,
                                          default=SITE_ENV_CHOICES.production,
                                          help_text='Environment type the website is used for')
-    architectural_model_1 = models.IntegerField(_('Hosting Model'),
+    architectural_model = models.IntegerField(_('Hosting Model'),
                                               choices=CMDB_ARCH_MODEL,
                                               default=CMDB_ARCH_MODEL.hybrid)
     
@@ -233,6 +257,7 @@ class FQDN(PrimaryModel):
                                          on_delete=models.SET_NULL,
                                          blank=True, null=True,
                                          verbose_name='Webserver Tech-FK')
+
     tech_addtl = models.TextField(_('Addtl Tech'), blank=True, default='',
                                   help_text='Additional tech powering the site')
     
@@ -296,7 +321,7 @@ class FQDN(PrimaryModel):
         on_delete=models.PROTECT,
         related_name='fqdns'
     )
-    vendor_pocs_9 = models.CharField(_('Vendor POCs'), max_length=500, blank=True, default='')
+    vendor_pocs_orig = models.CharField(_('Vendor POCs'), max_length=500, blank=True, default='')
     
     vendor_url = models.URLField(_('Vendor URL'), blank=True, null=True)
     vendor_notes = models.TextField(_('Vendor Notes'), blank=True, default='')
@@ -336,16 +361,23 @@ class FQDN(PrimaryModel):
     # -- Feature tracking
     feature_acct_mgmt = models.BooleanField(_('Account Mgmt'), null=True, default=False,
                                             help_text='Asset uses account management for access control')
-    # TODO: Make this a choices field instead?
-    feature_auth_type = models.ForeignKey(
-        'WebsiteAuthType', 
-        on_delete=models.SET_NULL,
-        blank=True, null=True
+    
+    # feature_auth_type = models.ForeignKey(
+    #     'WebsiteAuthType', 
+    #     on_delete=models.SET_NULL,
+    #     blank=True, null=True
+    # )
+    feature_webauth_type = models.CharField(
+        max_length=50,
+        choices=WebAuthChoices,
+        blank=True,
+        verbose_name='Site Auth Type',
+        help_text='Type of auth method employed for acct mgmt on this website'
     )
     feature_auth_self_registration = models.BooleanField(_('Self Registration'), null=True, default=False,
                                                          help_text='Account self-registration is enabled for anyone')
     feature_api = models.BooleanField(_('Feature: API'), null=True, default=False,
-                                      help_text='Has an API available or accessible on the website')
+                                      help_text='Has an API accessible on the website')
     # -- Scoping Sizing
     scoping_size = models.PositiveSmallIntegerField(_('Content Size'), default=1,
                                                     help_text='Size of site (1-small to 3-large)')

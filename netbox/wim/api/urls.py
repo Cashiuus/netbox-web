@@ -11,6 +11,13 @@ router.APIRootView = views.WIMRootView
 
 router.register('domains', views.DomainViewSet)
 router.register('fqdns', views.FQDNViewSet)
+router.register('fqdns', views.BusinessGroupViewSet)
+router.register('fqdns', views.BusinessDivisionViewSet)
+router.register('fqdns', views.OperatingSystemViewSet)
+router.register('fqdns', views.SiteLocationViewSet)
+router.register('fqdns', views.VendorViewSet)
+router.register('fqdns', views.WebserverFrameworkViewSet)
+
 
 
 # urlpatterns = [

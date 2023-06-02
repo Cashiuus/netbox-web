@@ -170,9 +170,6 @@ class DomainBulkEditView(generic.BulkEditView):
 
 class DomainBulkDeleteView(generic.BulkDeleteView):
     queryset = Domain.objects.all()
-    # queryset = Domain.objects.annotate(
-    #     site_count=count_related(Site, 'asns')
-    # )
     filterset = filtersets.DomainFilterSet
     table = tables.DomainTable
 
@@ -264,12 +261,10 @@ class BusinessDivisionBulkEditView(generic.BulkEditView):
     form = forms.BusinessDivisionBulkEditForm
 
 
-class BusinessGroupBulkDeleteView(generic.BulkDeleteView):
+class BusinessDivisionBulkDeleteView(generic.BulkDeleteView):
     queryset = BusinessDivision.objects.all()
     filterset = filtersets.BusinessDivisionFilterSet
     table = tables.BusinessDivisionTable
-
-
 
 
 
@@ -318,6 +313,144 @@ class OperatingSystemBulkDeleteView(generic.BulkDeleteView):
     table = tables.OperatingSystemTable
 
 
+
+# --
+# SiteLocation
+# --
+
+class SiteLocationListView(generic.ObjectListView):
+    queryset = SiteLocation.objects.all()
+    filterset = filtersets.SiteLocationFilterSet
+    filterset_form = forms.SiteLocationFilterForm
+    table = tables.SiteLocationTable
+
+
+@register_model_view(SiteLocation)
+class SiteLocationView(generic.ObjectView):
+    queryset = SiteLocation.objects.all()
+    
+
+@register_model_view(SiteLocation, 'edit')
+class SiteLocationEditView(generic.ObjectEditView):
+    queryset = SiteLocation.objects.all()
+    form = forms.SiteLocationForm
+
+
+@register_model_view(SiteLocation, 'delete')
+class SiteLocationDeleteView(generic.ObjectDeleteView):
+    queryset = SiteLocation.objects.all()
+
+
+class SiteLocationBulkImportView(generic.BulkImportView):
+    queryset = SiteLocation.objects.all()
+    model_form = forms.SiteLocationImportForm
+
+
+class SiteLocationBulkEditView(generic.BulkEditView):
+    queryset = SiteLocation.objects.all()
+    filterset = filtersets.SiteLocationFilterSet
+    table = tables.SiteLocationTable
+    form = forms.SiteLocationBulkEditForm
+
+
+class SiteLocationBulkDeleteView(generic.BulkDeleteView):
+    queryset = SiteLocation.objects.all()
+    filterset = filtersets.SiteLocationFilterSet
+    table = tables.SiteLocationTable
+
+
+
+
+# --
+# Vendor
+# --
+
+class VendorListView(generic.ObjectListView):
+    queryset = Vendor.objects.all()
+    filterset = filtersets.VendorFilterSet
+    filterset_form = forms.VendorFilterForm
+    table = tables.VendorTable
+
+
+@register_model_view(Vendor)
+class VendorView(generic.ObjectView):
+    queryset = Vendor.objects.all()
+    
+
+@register_model_view(Vendor, 'edit')
+class VendorEditView(generic.ObjectEditView):
+    queryset = Vendor.objects.all()
+    form = forms.VendorForm
+
+
+@register_model_view(Vendor, 'delete')
+class VendorDeleteView(generic.ObjectDeleteView):
+    queryset = Vendor.objects.all()
+
+
+class VendorBulkImportView(generic.BulkImportView):
+    queryset = Vendor.objects.all()
+    model_form = forms.VendorImportForm
+
+
+class VendorBulkEditView(generic.BulkEditView):
+    queryset = Vendor.objects.all()
+    filterset = filtersets.VendorFilterSet
+    table = tables.VendorTable
+    form = forms.VendorBulkEditForm
+
+
+class VendorBulkDeleteView(generic.BulkDeleteView):
+    queryset = Vendor.objects.all()
+    filterset = filtersets.VendorFilterSet
+    table = tables.VendorTable
+
+
+
+
+# --
+# WebserverFramework
+# --
+
+class WebserverFrameworkListView(generic.ObjectListView):
+    queryset = WebserverFramework.objects.all()
+    filterset = filtersets.WebserverFrameworkFilterSet
+    filterset_form = forms.WebserverFrameworkFilterForm
+    table = tables.WebserverFrameworkTable
+
+
+@register_model_view(WebserverFramework)
+class WebserverFrameworkView(generic.ObjectView):
+    queryset = WebserverFramework.objects.all()
+    
+
+@register_model_view(WebserverFramework, 'edit')
+class WebserverFrameworkEditView(generic.ObjectEditView):
+    queryset = WebserverFramework.objects.all()
+    form = forms.WebserverFrameworkForm
+
+
+@register_model_view(WebserverFramework, 'delete')
+class WebserverFrameworkDeleteView(generic.ObjectDeleteView):
+    queryset = WebserverFramework.objects.all()
+
+
+class WebserverFrameworkBulkImportView(generic.BulkImportView):
+    queryset = WebserverFramework.objects.all()
+    model_form = forms.WebserverFrameworkImportForm
+
+
+class WebserverFrameworkBulkEditView(generic.BulkEditView):
+    queryset = WebserverFramework.objects.all()
+    filterset = filtersets.WebserverFrameworkFilterSet
+    table = tables.WebserverFrameworkTable
+    form = forms.WebserverFrameworkBulkEditForm
+
+
+class WebserverFrameworkBulkDeleteView(generic.BulkDeleteView):
+    queryset = WebserverFramework.objects.all()
+    filterset = filtersets.WebserverFrameworkFilterSet
+    table = tables.WebserverFrameworkTable
 
 
 

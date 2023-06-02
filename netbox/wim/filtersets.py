@@ -16,18 +16,16 @@ from utilities.filters import (
 from .choices import *
 from .models import *
 
+
 __all__ = (
     'DomainFilterSet',
     'FQDNFilterSet',
-    # 'AggregateFilterSet',
-    # 'ASNFilterSet',
-    # 'ASNRangeFilterSet',
-    # 'IPAddressFilterSet',
-    # 'IPRangeFilterSet',
-    # 'PrefixFilterSet',
-    # 'RoleFilterSet',
-    # 'ServiceFilterSet',
-    # 'ServiceTemplateFilterSet',
+    'BusinessGroupFilterSet',
+    'BusinessDivisionFilterSet',
+    'OperatingSystemFilterSet',
+    'SiteLocationFilterSet',
+    'VendorFilterSet',
+    'WebserverFrameworkFilterSet',
 )
 
 class DomainFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
@@ -73,8 +71,10 @@ class FQDNFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
     class Meta:
         model = FQDN
         fields = [
-            'id', 'name', 'fqdn_status', 'website_status',
-            'public_ip_9', 'ipaddress_public_8', 'owners_9',
+            'id', 'name', 
+            'fqdn_status', 'fqdn_status_orig',
+            'website_status', 'website_status_orig',
+            'public_ip_1', 'ipaddress_public_8', 'owners_orig',
         ]
     
     def search(self, queryset, name, value):
@@ -82,8 +82,9 @@ class FQDNFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
             return queryset
         qs_filter = (
             Q(name__icontains=value) |
+            Q(public_ip_1__icontains=value) |
             Q(ipaddress_public_8__icontains=value) |
-            Q(owners_9__icontains=value)
+            Q(owners_orig__icontains=value)
         )
         return queryset.filter(qs_filter)
 
@@ -119,3 +120,32 @@ class OperatingSystemFilterSet(OrganizationalModelFilterSet):
         model = OperatingSystem
         fields = ['id', 'vendor', 'product']
 
+
+class SiteLocationFilterSet(OrganizationalModelFilterSet):
+
+    class Meta:
+        model = SiteLocation
+        fields = (
+            'name', 'code', 
+            'impacted_group_orig', 'impacted_division_orig',
+            'geo_region_orig', 'geo_region_choice',
+            'geo_region', 'tenant',
+        )
+
+
+class VendorFilterSet(OrganizationalModelFilterSet):
+
+    class Meta:
+        model = Vendor
+        fields = (
+            'name',
+        )
+
+
+class WebserverFrameworkFilterSet(OrganizationalModelFilterSet):
+
+    class Meta:
+        model = WebserverFramework
+        fields = (
+            'name', 'product', 'version', 'raw_banner', 'cpe',
+        )

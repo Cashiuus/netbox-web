@@ -58,3 +58,123 @@ class FQDNSerializer(NetBoxModelSerializer):
             'fqdn_status', 'website_status',
             'tenant',
         )
+
+
+
+
+
+#
+# BusinessGroup
+#
+
+class BusinessGroupSerializer(NetBoxModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='wim-api:businessgroup-detail')
+    # status = ChoiceField(
+    #     choices=FQDNStatusChoices,
+    #     required=False,
+    # )
+    tenant = NestedTenantSerializer(required=False, allow_null=True)
+
+    class Meta:
+        model = BusinessGroup
+        fields = (
+            'id', 'url', 'name',
+            'tenant',
+        )
+
+
+#
+# BusinessDivision
+#
+
+class BusinessDivisionSerializer(NetBoxModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='wim-api:businessdivision-detail')
+    # status = ChoiceField(
+    #     choices=FQDNStatusChoices,
+    #     required=False,
+    # )
+    tenant = NestedTenantSerializer(required=False, allow_null=True)
+
+    class Meta:
+        model = BusinessDivision
+        fields = (
+            'id', 'url', 'name',
+            'tenant',
+        )
+
+
+
+
+
+#
+# OperatingSystem
+#
+
+class OperatingSystemSerializer(NetBoxModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='wim-api:operatingsystem-detail')
+
+    class Meta:
+        model = OperatingSystem
+        # TODO: Way to put __str__ in here? bc it concats the 3 fields that make up a full OS string
+        fields = (
+            'id', 'url', 'vendor', 'product', 'update', 'family'
+        )
+
+
+#
+# SiteLocation
+#
+
+class SiteLocationSerializer(NetBoxModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='wim-api:sitelocation-detail')
+    # status = ChoiceField(
+    #     choices=FQDNStatusChoices,
+    #     required=False,
+    # )
+    # tenant = NestedTenantSerializer(required=False, allow_null=True)
+
+    class Meta:
+        model = SiteLocation
+        fields = (
+            'id', 'url', 'name', 'code',
+        )
+
+
+#
+# Vendor
+#
+
+class VendorSerializer(NetBoxModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='wim-api:vendor-detail')
+    # status = ChoiceField(
+    #     choices=FQDNStatusChoices,
+    #     required=False,
+    # )
+    # tenant = NestedTenantSerializer(required=False, allow_null=True)
+
+    class Meta:
+        model = Vendor
+        fields = (
+            'id', 'url', 'name',
+        )
+
+
+
+#
+# WebserverFramework
+#
+
+class WebserverFrameworkSerializer(NetBoxModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='wim-api:webserverframework-detail')
+    # status = ChoiceField(
+    #     choices=FQDNStatusChoices,
+    #     required=False,
+    # )
+    # tenant = NestedTenantSerializer(required=False, allow_null=True)
+
+    class Meta:
+        model = WebserverFramework
+        fields = (
+            'id', 'url', 'name', 'product', 'version', 'raw_banner', 'cpe'
+        )
+

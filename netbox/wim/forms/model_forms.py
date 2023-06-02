@@ -28,6 +28,8 @@ __all__ = (
     'BusinessDivisionForm',
     'BusinessGroupForm',
     'OperatingSystemForm',
+    'SiteLocationForm',
+    'WebserverFrameworkForm',
 )
 
 
@@ -63,12 +65,12 @@ class DomainForm(TenancyForm, NetBoxModelForm):
 
 class FQDNForm(TenancyForm, NetBoxModelForm):
     # FKs
-    # fqdn_status = DynamicModelChoiceField(
+    # fqdn_status_orig = DynamicModelChoiceField(
     #     queryset=FqdnStatus.objects.all(),
     #     required=True,
     #     selector=True,
     # )
-    # website_status = DynamicModelChoiceField(
+    # website_status_orig = DynamicModelChoiceField(
     #     queryset=WebsiteStatus.objects.all(),
     #     required=False,
     #     selector=True,
@@ -88,20 +90,26 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
     #     required=False,
     #     selector=True,
     # )
+
+    # TODO: Improve upon this, it just looks like a box to type in, 
+    # doesn't seem to connect to the IPAddress FK
     ipaddress_public_8 = IPNetworkFormField(required=False)
     ipaddress_private_8 = IPNetworkFormField(required=False)
+
     # os_1 = DynamicModelChoiceField(
     #     queryset=OperatingSystem.objects.all(),
     #     required=False,
     #     selector=True,
     #     label=_("OS_v1")
     # )
+
     os_8 = DynamicModelChoiceField(
         queryset=Platform.objects.all(),
         required=False,
         selector=True,
         label=_('OS_8')
     )
+
     # impacted_group_9 = DynamicModelChoiceField(
     #     queryset=BusinessGroup.objects.all(),
     #     required=False,
@@ -117,6 +125,7 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
     #     required=False,
     #     selector=True,
     # )
+
     location = DynamicModelChoiceField(
         queryset=Site.objects.all(),
         required=False,
@@ -128,6 +137,7 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
         #     "group_id": "$sitegroup",
         # }
     )
+
     geo_region = DynamicModelChoiceField(
         queryset=Region.objects.all(),
         required=False,
@@ -135,7 +145,7 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
         #     "sites": 
         # }
     )
-    # cloud_provider_9 = DynamicModelChoiceField()
+    # cloud_provider = DynamicModelChoiceField()
     # snow_bcdr_criticality = DynamicModelChoiceField(
     #     queryset=BusinessCriticality.objects.all(),
     #     required=False,
@@ -188,17 +198,19 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
 
     fieldsets = (
         ("FQDN", (
-            "name", "status_9", "status", "fqdn_status", "website_status"
-            'env_used_for_1', 'architectural_model_1', 
-            "geo_region_9", "geo_region",
-            "location_9", "location",
+            "name", "status_orig", "status", 
+            "fqdn_status", "fqdn_status_orig", "website_status", "website_status_orig",
+            'env_used_for', 'architectural_model', 
+            "geo_region_orig", "geo_region_choice",
+            "geo_region",
+            "location_orig", "location",
             "domain", "asset_class",
             'criticality_score_1', 'snow_bcdr_criticality',
 
         )),
         ("Tenancy", (
-            "impacted_group_9", "impacted_division_9",
-            "owners_9", "tenant",
+            "impacted_group_orig", "impacted_division_orig",
+            "owners_orig", "tenant",
             'support_group_website_technical', 'support_group_website_approvals',
             "is_in_cmdb", 'is_internet_facing', 'is_flagship',
 
@@ -206,10 +218,10 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
         ("Technical Details", (
             'website_url', 'website_title', 'website_email', 'role',
             'site_operation_age',
-            "public_ip_9", "ipaddress_public_8",
+            "public_ip_1", "ipaddress_public_8",
             'tech_webserver_1', 'tech_addtl',
             'redirect_health', 'redirect_url', 'redirect_status_9',
-            'private_ip_9', 'ipaddress_private_8', 'hostname_9',
+            'private_ip_1', 'ipaddress_private_8', 'hostname_orig',
             'os_9', 'os_1', 'os_8',
         )),
         ("Security", (
@@ -240,18 +252,19 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
     class Meta:
         model = FQDN
         fields = [
-            'name', 'status_9', 'status', 'fqdn_status', 'website_status',
+            'name', 'status_orig', 'status', 
+            'fqdn_status', 'fqdn_status_orig', 'website_status', 'website_status_orig',
             'domain', 'asset_class', 
-            'impacted_group_9', 'impacted_division_9',
-            'location_9', 'location',
-            'geo_region_9', 'geo_region',
-            'env_used_for_1', 'architectural_model_1', 
+            'impacted_group_orig', 'impacted_division_orig',
+            'location_orig', 'location',
+            'geo_region_orig', 'geo_region_choice', 'geo_region',
+            'env_used_for', 'architectural_model', 
             'tech_webserver_1', 'tech_addtl',
             'is_in_cmdb',
-            'public_ip_9', 'ipaddress_public_8',
-            'tenant', 'owners_9',
+            'public_ip_1', 'ipaddress_public_8',
+            'tenant', 'owners_orig',
             'support_group_website_technical', 'support_group_website_approvals',
-            'private_ip_9', 'ipaddress_private_8', 'hostname_9',
+            'private_ip_1', 'ipaddress_private_8', 'hostname_orig',
             'os_9', 'os_1', 'os_8',
             'criticality_score_1', 'snow_bcdr_criticality',
             'tls_version', 'tls_cert_expires',
@@ -264,9 +277,9 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
             'last_vuln_assessment', 'vuln_assessment_priority',
             'risk_analysis_notes',
             'is_internet_facing', 'is_flagship',
-            'cloud_provider_9',
+            'cloud_provider',
             'is_vendor_managed', 'is_vendor_hosted',
-            'vendor_company_1', 'vendor_pocs_9',
+            'vendor_company_1', 'vendor_pocs_orig',
             'vendor_notes',
             'is_akamai', 'is_load_protected', 'is_waf_protected',
             'feature_api',
@@ -279,7 +292,6 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
         ]
 
 
-
 class BusinessGroupForm(NetBoxModelForm):
 
     class Meta:
@@ -287,13 +299,11 @@ class BusinessGroupForm(NetBoxModelForm):
         fields = ['name', 'acronym']
 
 
-
 class BusinessDivisionForm(NetBoxModelForm):
 
     class Meta:
         model = BusinessDivision
-        fields = ['name', 'acronym']
-
+        fields = ['name', 'acronym', 'group']
 
 
 class OperatingSystemForm(NetBoxModelForm):
@@ -303,8 +313,26 @@ class OperatingSystemForm(NetBoxModelForm):
         fields = ['vendor', 'product', 'update']
 
 
+class SiteLocationForm(NetBoxModelForm):
+
+    class Meta:
+        model = SiteLocation
+        fields = [
+            'name', 'code', 
+            'impacted_group_orig', 'impacted_division_orig',
+            'geo_region_orig', 'geo_region_choice',
+            'geo_region', 'tenant',
+        ]
 
 
+class WebserverFrameworkForm(NetBoxModelForm):
+
+    class Meta:
+        model = WebserverFramework
+        fields = (
+            'name', 'product', 'version', 'raw_banner', 'cpe',
+            'order',
+        )
 
 
 

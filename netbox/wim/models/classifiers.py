@@ -129,6 +129,7 @@ class WebserverFramework(OrganizationalModel):
         blank=True,
         verbose_name='CPE'
     )
+    raw_banner = models.CharField(_('Raw Banner', max_length=300, blank=True))
     order = models.SmallIntegerField(default=10)
     # color = models.CharField(max_length=20, default="#FF0000")
     notes = models.TextField(_('Notes'), blank=True)
@@ -143,7 +144,7 @@ class WebserverFramework(OrganizationalModel):
         #return '{0}/{1}'.format(self.product, self.version)
 
 
-
+# TODO: For removal, changed this to choices
 class WebsiteAuthType(OrganizationalModel):
     """ FK for categories of authentication methods. """
     name = models.CharField(
@@ -165,6 +166,7 @@ class WebsiteAuthType(OrganizationalModel):
         return self.name
     
 
+# TODO: For removal, changed this to choices
 class CloudProvider(OrganizationalModel):
     """ A list of cloud providers and useful data for each. """
     name = models.CharField(_('Name'), max_length=75, unique=True)
@@ -278,14 +280,14 @@ class BusinessGroup(OrganizationalModel):
         unique=True,
         help_text='Abbrev. name of the business group'
     )
-    principal_location_9 = models.ForeignKey(
+    principal_location_orig = models.ForeignKey(
         'wim.SiteLocation', 
         on_delete=models.SET_NULL, 
         blank=True, null=True,
         related_name='+',
         verbose_name='Principal Location Mine',
     )
-    principal_location_8 = models.ForeignKey(
+    principal_location_nb = models.ForeignKey(
         to='dcim.Site',
         on_delete=models.SET_NULL,
         blank=True, null=True,
@@ -321,7 +323,7 @@ class BusinessDivision(OrganizationalModel):
     acronym = models.CharField(_('Acronym'), max_length=10, unique=True)
     group = models.ForeignKey('BusinessGroup', on_delete=models.CASCADE,
                               verbose_name='Group')
-    principal_location = models.ForeignKey('SiteLocation', on_delete=models.SET_NULL, blank=True, null=True)
+    principal_location_orig = models.ForeignKey('SiteLocation', on_delete=models.SET_NULL, blank=True, null=True)
     description = models.TextField(_('Description'), blank=True, default='')
     # notes = models.TextField(_('Notes'), blank=True, default='',
     #                          help_text='Notable remarks about this division, such as brand names associated')
@@ -413,18 +415,30 @@ class SiteLocation(OrganizationalModel):
         default=50, 
         help_text='Prioritization scoring of site locations (higher score = more critical)'
     )
-    impacted_group = models.ForeignKey('BusinessGroup',
-                                       on_delete=models.CASCADE, blank=True, null=True)
-    impacted_division = models.ForeignKey('BusinessDivision',
-                                          on_delete=models.CASCADE, blank=True, null=True)
+    impacted_group_orig = models.ForeignKey(
+        'BusinessGroup',
+        on_delete=models.CASCADE,
+        blank=True, null=True
+    )
+    impacted_division_orig = models.ForeignKey(
+        'BusinessDivision',
+        on_delete=models.CASCADE, 
+        blank=True, null=True
+    )
     street = models.CharField(_('Street'), max_length=255, blank=True, default='')
     city = models.CharField(_('city'), max_length=50, blank=True, default='')
     state = models.CharField(_('State/Region'), max_length=50, blank=True, default='')
     country_1 = models.CharField(_('Country Code'), max_length=5, default='US')
     # country = CountryField()        # Note: This won't work if countries we want to import aren't in our choices
-    geo_region_9 = models.IntegerField(_('Region'),
+    geo_region_orig = models.IntegerField(_('Region orig'),
                                      choices=GEO_REGION_CHOICES,
                                      default=GEO_REGION_CHOICES.amer)
+    
+    geo_region_choice = models.CharField(
+        max_length=50,
+        choices=GeoRegionChoices,
+        blank=True,
+    )
     
     geo_region = models.ForeignKey(
         to='dcim.Region',

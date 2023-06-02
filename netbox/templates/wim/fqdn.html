@@ -33,22 +33,42 @@
                       <th scope="row">FQDN Status</th>
                       <td>
                           {% if object.fqdn_status %}
-                              {{ object.fqdn_status }}
+                              {% badge object.get_fqdn_status_display bg_color=object.get_fqdn_status_color %}
                           {% else %}
                               {{ ''|placeholder }}
                           {% endif %}
                       </td>
                   </tr>
                   <tr>
+                    <th scope="row">FQDN Status (Orig)</th>
+                    <td>
+                        {% if object.fqdn_status_orig %}
+                            {{ object.fqdn_status_orig }}
+                        {% else %}
+                            {{ ''|placeholder }}
+                        {% endif %}
+                    </td>
+                </tr>
+                  <tr>
                       <th scope="row">Website Status</th>
                       <td>
                         {% if object.website_status %}
-                              {{ object.website_status }}
+                            {% badge object.get_website_status_display bg_color=object.get_website_status_color %}
                           {% else %}
                               {{ ''|placeholder }}
                           {% endif %}
                       </td>
                   </tr>
+                  <tr>
+                    <th scope="row">Website Status (Orig)</th>
+                    <td>
+                        {% if object.website_status_orig %}
+                            {{ object.website_status_orig }}
+                        {% else %}
+                            {{ ''|placeholder }}
+                        {% endif %}
+                    </td>
+                </tr>
                   <tr>
                       <th scope="row">Domain Root</th>
                       <td>
@@ -61,7 +81,7 @@
                   </tr>
                   <tr>
                       <th scope="row">Public IP (orig)</th>
-                      <td>{{ object.public_ip_9|placeholder }}
+                      <td>{{ object.public_ip_1|placeholder }}
                       </td>
                   </tr>
                   <tr>
