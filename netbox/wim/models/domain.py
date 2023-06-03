@@ -33,7 +33,7 @@ class Domain(PrimaryModel):
         help_text='A top-level/parent web domain'
     )
 
-    status_9 = models.IntegerField(
+    status_orig = models.IntegerField(
         _('Status_9'),
         choices=RECORD_STATUS_CHOICES,
         default=RECORD_STATUS_CHOICES.new,
@@ -96,8 +96,8 @@ class Domain(PrimaryModel):
     )
 
     # internal_ad_domain = models.BooleanField(_('AD Domain'), null=True, default=False)
-    registrar_iana_id_9 = models.IntegerField(_('Registrar IANA ID_9'), blank=True, null=True)
-    registrar_company_9 = models.CharField(
+    registrar_iana_id_orig = models.IntegerField(_('Registrar IANA ID_9'), blank=True, null=True)
+    registrar_company_orig = models.CharField(
         _('Registrar_9'), 
         max_length=255, 
         blank=True
@@ -117,7 +117,7 @@ class Domain(PrimaryModel):
         blank=True
     )
     # registrant_email = models.CharField(_('Registrant Email'), max_length=255, blank=True, default='')
-    registration_emails_9 = models.TextField(
+    registration_emails_orig = models.TextField(
         _('Email Addresses_9'), 
         blank=True,
         help_text='List of email addresses tied to a whois registration for this domain'
@@ -144,7 +144,7 @@ class Domain(PrimaryModel):
     date_created = models.DateTimeField(_('Date Created'), auto_now_add=True,
                                         help_text='system field for creation date')
     date_modified = models.DateTimeField(_('Date Modified'), auto_now=True, help_text='system field for modified date')
-    # prev name: notes
+    
     notes = models.TextField(_('Notes'), blank=True, default='')
 
     # @property

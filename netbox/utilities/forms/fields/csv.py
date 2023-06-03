@@ -3,7 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.db.models import Q
 
-from utilities.choices import unpack_grouped_choices
+from utilities.choices import unpack_grouped_choices, unpack_integer_choices
 from utilities.utils import content_type_identifier
 
 __all__ = (
@@ -23,6 +23,16 @@ class CSVChoicesMixin:
     def __init__(self, *, choices=(), **kwargs):
         super().__init__(choices=choices, **kwargs)
         self.choices = unpack_grouped_choices(choices)
+
+
+# [Cashiuus]: Created this to handle choices that are accessed via integer
+# but when importing, we use the display name
+class CSVIntegerChoicesMixin:
+    STATIC_CHOICES = True
+
+    def __init__(self, *, choices=(), **kwargs):
+        super().__init__(choices=choices, **kwargs)
+        self.choices = unpack_integer_choices(choices)
 
 
 class CSVChoiceField(CSVChoicesMixin, forms.ChoiceField):

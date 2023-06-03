@@ -59,6 +59,9 @@ Choices Objects:
 DomainStatusChoices
 FQDNStatusChoices
 
+FQDNOpsStatusChoices
+WebsiteOpsStatusChoices
+
 AssetClassChoices
 RedirectStatusChoices
 WebAuthChoices

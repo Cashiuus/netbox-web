@@ -58,6 +58,17 @@ class ChoiceSet(metaclass=ChoiceSetMeta):
         return [c[0] for c in unpack_grouped_choices(cls._choices)]
 
 
+def unpack_integer_choices(choices):
+    """
+    Unpack a 3-tuple that uses an integer as its accessor
+    [Cashiuus]
+    """
+    pass
+    # TODO: Finish writing this, based on how import_export handles them
+
+
+
+
 def unpack_grouped_choices(choices):
     """
     Unpack a grouped choices hierarchy into a flat list of two-tuples. For example:

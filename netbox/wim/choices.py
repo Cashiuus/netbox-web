@@ -44,7 +44,7 @@ class FQDNStatusChoices(ChoiceSet):
     ]
 
 
-class FQDNStatusChoices(ChoiceSet):
+class FQDNOpsStatusChoices(ChoiceSet):
     FQDNSTATUS_1 = "1-whois"
     FQDNSTATUS_2 = "2-dns"
     FQDNSTATUS_3A = "3-parked"
@@ -62,7 +62,7 @@ class FQDNStatusChoices(ChoiceSet):
     )
 
 
-class WebsiteStatusChoices(ChoiceSet):
+class WebsiteOpsStatusChoices(ChoiceSet):
     WEBSITESTATUS_GOOD = "live_good"
     WEBSITESTATUS_BROKEN = "live_broken"
     WEBSITESTATUS_DEFAULT = "live_default"
@@ -112,10 +112,10 @@ class CloudProviderChoices(ChoiceSet):
 
 
 class GeoRegionChoices(ChoiceSet):
-    REGION_AMER = "amer"
-    REGION_APAC = "apac"
-    REGION_EMEA = "emea"
-    REGION_GLOBAL = "global"
+    REGION_AMER = "AMER"
+    REGION_APAC = "APAC"
+    REGION_EMEA = "EMEA"
+    REGION_GLOBAL = "GLOBAL"
 
     CHOICES = [
         (REGION_AMER, "AMER", "gray"),

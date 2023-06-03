@@ -56,7 +56,7 @@ class FQDN(PrimaryModel):
 
     fqdn_status = models.CharField(
         max_length=50,
-        choices=FQDNStatusChoices,
+        choices=FQDNOpsStatusChoices,
         help_text='Technical operational status of this FQDN',
     )
 
@@ -70,7 +70,7 @@ class FQDN(PrimaryModel):
 
     website_status = models.CharField(
         max_length=50,
-        choices=WebsiteStatusChoices,
+        choices=WebsiteOpsStatusChoices,
         help_text='Technical operational status of this website, if applicable',
     )
 
@@ -200,13 +200,13 @@ class FQDN(PrimaryModel):
         related_name='fqdns',
         verbose_name='Location',
     )
-    geo_region_orig = models.IntegerField(_('Geo Region orig'),
-                                  choices=GEO_REGION_CHOICES,
-                                  default=GEO_REGION_CHOICES.amer,
-                                  help_text='Geographic region site operates in (or Global)')
+    # geo_region_orig = models.IntegerField(_('Geo Region orig'),
+    #                               choices=GEO_REGION_CHOICES,
+    #                               default=GEO_REGION_CHOICES.amer,
+    #                               help_text='Geographic region site operates in (or Global)')
 
     geo_region_choice = models.CharField(
-        _('Region choice')
+        _('Region choice'),
         max_length=50,
         choices=GeoRegionChoices,
         blank=True,
@@ -289,7 +289,7 @@ class FQDN(PrimaryModel):
                                                  help_text='Website recon response content length size')
 
     # Note: These statuses would only be used if FqdnStatus is "3-Redirect"
-    redirect_status_9 = models.IntegerField(_('Redirect Health_9'),
+    redirect_status_orig = models.IntegerField(_('Redirect Health_9'),
                                           choices=REDIRECT_STATUS_CHOICES,
                                           blank=True, null=True)
     redirect_health = models.CharField(
@@ -315,8 +315,9 @@ class FQDN(PrimaryModel):
     is_load_protected = models.BooleanField(_('Load Protected'), null=True, default=False)
     is_waf_protected = models.BooleanField(_('WAF Protected'), null=True, default=False)
 
-    # vendor_company_1 = models.CharField(_('Vendor Name'), max_length=150, blank=True, default='')
-    vendor_company_1 = models.ForeignKey(
+    # orig name: vendor_company_1
+    vendor_company_orig = models.CharField(_('Vendor Name'), max_length=150, blank=True, default='')
+    vendor_company_fk = models.ForeignKey(
         to='Vendor',
         on_delete=models.PROTECT,
         related_name='fqdns'
@@ -395,20 +396,36 @@ class FQDN(PrimaryModel):
     
 
     # Specific CMDB Type Fields We Also Need to Have
-    support_group_website_technical = models.ForeignKey(
-        'SupportGroup',
-        verbose_name='Technical Support Group',
-        on_delete=models.SET_NULL,
-        related_name='fqdns_technical',
-        blank=True, null=True
+    # I made orig fields to temp store my orig values that were FK's before.
+    # storing them at text until this is further built out using FK's to Tenancy
+    support_group_website_technical_orig = models.CharField(
+        _('Support Group Technical'),
+        max_length=100,
+        blank=True,
+        help_text='Technical support group that can administer the webserver'
     )
-    support_group_website_approvals = models.ForeignKey(
-        'SupportGroup',
-        verbose_name='Business Support Group',
-        on_delete=models.SET_NULL,
-        related_name='fqdns_business',
-        blank=True, null=True
+    # support_group_website_technical = models.ForeignKey(
+    #     'SupportGroup',
+    #     verbose_name='Technical Support Group',
+    #     on_delete=models.SET_NULL,
+    #     related_name='fqdns_technical',
+    #     blank=True, null=True
+    # )
+
+    support_group_website_approvals_orig = models.CharField(
+        _('Support Group Business'),
+        max_length=100,
+        blank=True,
+        help_text="Business owners responsible for decision making for the web property"
     )
+
+    # support_group_website_approvals = models.ForeignKey(
+    #     'SupportGroup',
+    #     verbose_name='Business Support Group',
+    #     on_delete=models.SET_NULL,
+    #     related_name='fqdns_business',
+    #     blank=True, null=True
+    # )
 
     is_compliance_required = models.BooleanField(_('Compliance Required'), null=True, default=False)
 
@@ -473,6 +490,12 @@ class FQDN(PrimaryModel):
 
     def get_status_color(self):
         return FQDNStatusChoices.colors.get(self.status)
+    
+    def get_fqdn_status_color(self):
+        return FQDNOpsStatusChoices.colors.get(self.fqdn_status)
+    
+    def get_website_status_color(self):
+        return WebsiteOpsStatusChoices.colors.get(self.website_status)
     
     def get_role_color(self):
         return WebsiteRoleChoices.colors.get(self.role)

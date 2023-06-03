@@ -64,6 +64,12 @@ class FQDNFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
         choices=FQDNStatusChoices,
         # null_value=None
     )
+    fqdn_status = django_filters.MultipleChoiceFilter(
+        choices=FQDNOpsStatusChoices,
+    )
+    website_status = django_filters.MultipleChoiceFilter(
+        choices=WebsiteOpsStatusChoices,
+    )
     role = django_filters.MultipleChoiceFilter(
         choices=WebsiteRoleChoices
     )
@@ -128,7 +134,7 @@ class SiteLocationFilterSet(OrganizationalModelFilterSet):
         fields = (
             'name', 'code', 
             'impacted_group_orig', 'impacted_division_orig',
-            'geo_region_orig', 'geo_region_choice',
+            'geo_region_choice',
             'geo_region', 'tenant',
         )
 

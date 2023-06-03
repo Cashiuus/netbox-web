@@ -4,13 +4,7 @@ from django.test import TestCase, override_settings
 
 from dcim.models import Device, Site
 from ipam.models import IPAddress
-# from wim.choices import (
-#     AssetClassChoices,
-#     DomainStatusChoices,
-#     FQDNStatusChoices,
-#     RedirectStatusChoices,
-#     WebsiteRoleChoices,
-# )
+
 from wim.choices import *
 from wim.models import *
 

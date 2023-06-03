@@ -355,28 +355,29 @@ WEB_MENU = Menu(
                 get_model_item('wim', 'domain', _('Domains')),
             ),
         ),
-        # MenuGroup(
-        #     label=_('Business'),
-        #     items=(
-        #         get_model_item('wim', 'businessgroup', _('Business Group')),
-        #         get_model_item('wim', 'businessdivision', _('Business Division')),
-        #         get_model_item('wim', 'sitelocation', _('Site Locations')),
-        #         get_model_item('wim', 'supportgroup', _('Support Group')),
-        #     ),
-        # ),
-        # MenuGroup(
-        #     label=_('Categorization'),
-        #     items=(
-        #         get_model_item('wim', 'fqdnstatus', _('FQDN Statuses')),
-        #         get_model_item('wim', 'websitestatus', _('Website Statuses')),
-        #         get_model_item('wim', 'parkedstatus', _('Parked Statuses')),
-        #         get_model_item('wim', 'operatingsystem', _('Operating Systems')),
-        #         get_model_item('wim', 'webserverframework', _('Webserver Frameworks')),
-        #         get_model_item('wim', 'businesscriticality', _('Business Criticality')),
-        #         get_model_item('wim', 'authtype', _('Auth Types')),
-        #         get_model_item('wim', 'complianceprogram', _('Compliance Programs')),
-        #     ),
-        # ),
+        MenuGroup(
+            label=_('Business'),
+            items=(
+                get_model_item('wim', 'businessgroup', _('Business Group')),
+                get_model_item('wim', 'businessdivision', _('Business Division')),
+                get_model_item('wim', 'sitelocation', _('Site Locations')),
+                # get_model_item('wim', 'supportgroup', _('Support Group')),
+            ),
+        ),
+        MenuGroup(
+            label=_('Categorization'),
+            items=(
+                # get_model_item('wim', 'fqdnstatus', _('FQDN Statuses')),
+                # get_model_item('wim', 'websitestatus', _('Website Statuses')),
+                # get_model_item('wim', 'parkedstatus', _('Parked Statuses')),
+                get_model_item('wim', 'operatingsystem', _('Operating Systems')),
+                get_model_item('wim', 'vendor', _('Vendors')),
+                get_model_item('wim', 'webserverframework', _('Webserver Frameworks')),
+                # get_model_item('wim', 'businesscriticality', _('Business Criticality')),
+                # get_model_item('wim', 'authtype', _('Auth Types')),
+                # get_model_item('wim', 'complianceprogram', _('Compliance Programs')),
+            ),
+        ),
     ),
 )
 

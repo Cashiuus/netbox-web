@@ -49,6 +49,14 @@ class FQDNSerializer(NetBoxModelSerializer):
         choices=FQDNStatusChoices,
         required=False,
     )
+    fqdn_status = ChoiceField(
+        choices=FQDNOpsStatusChoices,
+        required=False,
+    )
+    website_status = ChoiceField(
+        choices=WebsiteOpsStatusChoices,
+        required=False,
+    )
     tenant = NestedTenantSerializer(required=False, allow_null=True)
 
     class Meta:

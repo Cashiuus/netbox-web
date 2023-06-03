@@ -26,7 +26,7 @@ class BusinessGroupTable(TenancyColumnsMixin, NetBoxTable):
         model = BusinessGroup
         exclude = ('id',)
         fields = (
-            'name', 'acronym', 'description',
+            'name', 'acronym', '',
         )
         default_columns = ('name', 'acronym')
 
@@ -82,7 +82,7 @@ class SiteLocationTable(TenancyColumnsMixin, NetBoxTable):
         fields = (
             'name', 'code', 
             'impacted_group_orig', 'impacted_division_orig',
-            'geo_region_orig', 'geo_region_choice',
+            'geo_region_choice',
             'geo_region', 'tenant',
         )
         default_columns = ('name', 'code', 'geo_region_choice')

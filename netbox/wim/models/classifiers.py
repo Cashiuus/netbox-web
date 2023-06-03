@@ -129,7 +129,7 @@ class WebserverFramework(OrganizationalModel):
         blank=True,
         verbose_name='CPE'
     )
-    raw_banner = models.CharField(_('Raw Banner', max_length=300, blank=True))
+    raw_banner = models.CharField(_('Raw Banner'), max_length=300, blank=True)
     order = models.SmallIntegerField(default=10)
     # color = models.CharField(max_length=20, default="#FF0000")
     notes = models.TextField(_('Notes'), blank=True)
@@ -407,7 +407,7 @@ class SiteLocation(OrganizationalModel):
     """ 
     Digital sites or site codes to which an asset or support team may belong. 
     """
-    code = models.CharField(_('Site Code'), max_length=10, unique=True)
+    code = models.CharField(_('Site Code'), max_length=20, unique=True)
     name = models.CharField(_('Name'), max_length=255, help_text='Brief name of the site or location')
     slug = models.SlugField(max_length=100, unique=True)
     priority = models.PositiveSmallIntegerField(
@@ -430,9 +430,9 @@ class SiteLocation(OrganizationalModel):
     state = models.CharField(_('State/Region'), max_length=50, blank=True, default='')
     country_1 = models.CharField(_('Country Code'), max_length=5, default='US')
     # country = CountryField()        # Note: This won't work if countries we want to import aren't in our choices
-    geo_region_orig = models.IntegerField(_('Region orig'),
-                                     choices=GEO_REGION_CHOICES,
-                                     default=GEO_REGION_CHOICES.amer)
+    # geo_region_orig = models.IntegerField(_('Region orig'),
+    #                                  choices=GEO_REGION_CHOICES,
+    #                                  default=GEO_REGION_CHOICES.amer)
     
     geo_region_choice = models.CharField(
         max_length=50,

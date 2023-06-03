@@ -22,6 +22,9 @@ __all__ = (
     'BusinessGroupBulkEditForm',
     'BusinessDivisionBulkEditForm',
     'OperatingSystemBulkEditForm',
+    'SiteLocationBulkEditForm',
+    'VendorBulkEditForm',
+    'WebserverFrameworkBulkEditForm',
 )
 
 
@@ -45,14 +48,16 @@ class OperatingSystemBulkEditForm(NetBoxModelBulkEditForm):
     model = OperatingSystem
 
 
+class SiteLocationBulkEditForm(NetBoxModelBulkEditForm):
+    model = SiteLocation
 
 
+class VendorBulkEditForm(NetBoxModelBulkEditForm):
+    model = Vendor
 
 
-
-
-
-
+class WebserverFrameworkBulkEditForm(NetBoxModelBulkEditForm):
+    model = WebserverFramework
 
 
 # class AggregateBulkEditForm(NetBoxModelBulkEditForm):
