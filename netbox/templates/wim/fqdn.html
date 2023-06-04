@@ -8,7 +8,7 @@
 	<div class="col col-md-6">
       <div class="card">
           <h5 class="card-header">
-              Domain
+              FQDN Asset Details
           </h5>
           <div class="card-body">
               <table class="table table-hover attr-table">
@@ -40,37 +40,27 @@
                       </td>
                   </tr>
                   <tr>
-                    <th scope="row">FQDN Status (Orig)</th>
-                    <td>
-                        {% if object.fqdn_status_orig %}
-                            {{ object.fqdn_status_orig }}
-                        {% else %}
-                            {{ ''|placeholder }}
-                        {% endif %}
-                    </td>
-                </tr>
-                  <tr>
                       <th scope="row">Website Status</th>
                       <td>
                         {% if object.website_status %}
                             {% badge object.get_website_status_display bg_color=object.get_website_status_color %}
-                          {% else %}
-                              {{ ''|placeholder }}
-                          {% endif %}
+                        {% else %}
+                            {{ ''|placeholder }}
+                        {% endif %}
                       </td>
                   </tr>
                   <tr>
-                    <th scope="row">Website Status (Orig)</th>
+                    <th scope="row">Geo Region</th>
                     <td>
-                        {% if object.website_status_orig %}
-                            {{ object.website_status_orig }}
+                        {% if object.geo_region_choice %}
+                            {% badge object.get_geo_region_choice_display bg_color=object.get_geo_region_choice_color %}
                         {% else %}
                             {{ ''|placeholder }}
                         {% endif %}
                     </td>
-                </tr>
+                  </tr>
                   <tr>
-                      <th scope="row">Domain Root</th>
+                      <th scope="row">Parent Domain</th>
                       <td>
                         {% if object.domain %}
                               {{ object.domain|linkify }}
@@ -80,12 +70,12 @@
                       </td>
                   </tr>
                   <tr>
-                      <th scope="row">Public IP (orig)</th>
+                      <th scope="row">Public IP (Orig)</th>
                       <td>{{ object.public_ip_1|placeholder }}
                       </td>
                   </tr>
                   <tr>
-                    <th scope="row">Public IP (nb)</th>
+                    <th scope="row">Public IP (NB)</th>
                     <td>{{ object.ipaddress_public_8|placeholder }}
                     </td>
                 </tr>

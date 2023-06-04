@@ -313,6 +313,9 @@ class BusinessGroup(OrganizationalModel):
 
     def __str__(self):
         return self.acronym
+    
+    def get_absolute_url(self):
+        return reverse('wim:businessgroup', kwargs={'pk': self.pk})
 
 
 class BusinessDivision(OrganizationalModel):
@@ -339,6 +342,9 @@ class BusinessDivision(OrganizationalModel):
 
     def __str__(self):
         return self.acronym
+    
+    def get_absolute_url(self):
+        return reverse('wim:businessdivision', kwargs={'pk': self.pk})
 
 
 class SupportGroup(OrganizationalModel):
@@ -382,6 +388,9 @@ class SupportGroup(OrganizationalModel):
 
     def __str__(self):
         return self.name
+    
+    def get_absolute_url(self):
+        return reverse('wim:supportgroup', kwargs={'pk': self.pk})
 
 
 class BusinessCriticality(OrganizationalModel):
@@ -401,6 +410,9 @@ class BusinessCriticality(OrganizationalModel):
 
     def __str__(self):
         return self.name
+    
+    def get_absolute_url(self):
+        return reverse('wim:businesscriticality', kwargs={'pk': self.pk})
 
 
 class SiteLocation(OrganizationalModel):

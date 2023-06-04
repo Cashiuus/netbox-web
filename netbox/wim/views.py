@@ -191,6 +191,14 @@ class BusinessGroupListView(generic.ObjectListView):
 class BusinessGroupView(generic.ObjectView):
     queryset = BusinessGroup.objects.all()
 
+    def get_extra_context(self, request, instance):
+        # TODO: The counts are working, but unsure how the links work yet
+        related_models = (
+            (FQDN.objects.restrict(request.user, 'view').filter(impacted_group_orig=instance), 'businessgroup_id'),
+            (BusinessDivision.objects.restrict(request.user, 'view').filter(group=instance), 'businessgroup_id'),
+        )
+        return {'related_models': related_models}
+
 
 @register_model_view(BusinessGroup, 'edit')
 class BusinessGroupEditView(generic.ObjectEditView):
@@ -236,6 +244,12 @@ class BusinessDivisionListView(generic.ObjectListView):
 @register_model_view(BusinessDivision)
 class BusinessDivisionView(generic.ObjectView):
     queryset = BusinessDivision.objects.all()
+
+    def get_extra_context(self, request, instance):
+        related_models = (
+            (FQDN.objects.restrict(request.user, 'view').filter(impacted_division_orig=instance), 'businessdivision_id'),
+        )
+        return {'related_models': related_models}
     
 
 @register_model_view(BusinessDivision, 'edit')

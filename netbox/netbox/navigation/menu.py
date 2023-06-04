@@ -358,8 +358,8 @@ WEB_MENU = Menu(
         MenuGroup(
             label=_('Business'),
             items=(
-                get_model_item('wim', 'businessgroup', _('Business Group')),
-                get_model_item('wim', 'businessdivision', _('Business Division')),
+                get_model_item('wim', 'businessgroup', _('Business Groups')),
+                get_model_item('wim', 'businessdivision', _('Business Divisions')),
                 get_model_item('wim', 'sitelocation', _('Site Locations')),
                 # get_model_item('wim', 'supportgroup', _('Support Group')),
             ),

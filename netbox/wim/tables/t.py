@@ -12,6 +12,7 @@ __all__ = (
 
 
 class {{model_name}}Table(TenancyColumnsMixin, NetBoxTable):
+    name = tables.Column(linkify=True)
 
     status = columns.ChoiceFieldColumn()
 
@@ -28,7 +29,7 @@ class {{model_name}}Table(TenancyColumnsMixin, NetBoxTable):
         url_name='wim:{{model_name}}_list'
     )
 
-    class Meta:
+    class Meta(NetBoxTable.Meta):
         model = {{model_name}}
         exclude = ('id',)
         fields = (
