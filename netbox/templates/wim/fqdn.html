@@ -3,54 +3,107 @@
 {% load plugins %}
 {% load render_table from django_tables2 %}
 
+{% block extra_controls %}
+    {% if perms.wim.add_scan %}
+        <a href="{% url 'wim:fqdn_scan' pk=object.pk %}" class="btn btn-sm btn-success lh-l" title="Scan">
+            <i class="mdi mdi-transit-connection-variant" aria-hidden="true"></i> Launch Scan
+        </a>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}
+
 {% block content %}
 <div class="row">
 	<div class="col col-md-6">
       <div class="card">
           <h5 class="card-header">
-              FQDN Asset Details
+              Main Details
           </h5>
           <div class="card-body">
               <table class="table table-hover attr-table">
-                  <tr>
-                      <th scope="row">Name</th>
-                      <td>{{ object.name }}</td>
-                  </tr>
-                  <tr>
-                      <th scope="row">Tenant</th>
-                      <td>
-                          {% if object.tenant.group %}
-                              {{ object.tenant.group|linkify }} /
-                          {% endif %}
-                          {{ object.tenant|linkify|placeholder }}
-                      </td>
-                  </tr>
-                  <tr>
-                      <th scope="row">Status</th>
-                      <td>{% badge object.get_status_display bg_color=object.get_status_color %}</td>
-                  </tr>
-                  <tr>
-                      <th scope="row">FQDN Status</th>
-                      <td>
-                          {% if object.fqdn_status %}
-                              {% badge object.get_fqdn_status_display bg_color=object.get_fqdn_status_color %}
-                          {% else %}
-                              {{ ''|placeholder }}
-                          {% endif %}
-                      </td>
-                  </tr>
-                  <tr>
-                      <th scope="row">Website Status</th>
-                      <td>
+                {% if object.website_homepage_image %}
+                    <div style="float:right; margin-right: 20px">
+                        {# picture here #}
+                        
+                    </div>
+                {% endif %}
+                <tr>
+                    <th scope="row">Name</th>
+                    <td>
+                        {{ object.name }}
+                        {% if perms.wim.add_scan %}
+                            <div class="float-md-end">
+                                {# <a href="{% url 'wim:fqdn_scan' %}?domain={{ object.name }}&return_url={{ object.get_absolute_url }}"  #}
+                                <a href="{% url 'wim:fqdn_scan' pk=object.pk %}" class="btn btn-sm btn-success lh-l" title="Scan">
+                                    <i class="mdi mdi-transit-connection-variant" aria-hidden="true"></i> Launch Scan
+                                </a>
+                            </div>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Asset Confidence</th>
+                    <td>{{ object.asset_confidence }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Triaging?</th>
+                    <td>{% checkmark object.mark_triaging %}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Status</th>
+                    <td>{% badge object.get_status_display bg_color=object.get_status_color %}</td>
+                </tr>
+                {% if object.status_reason %}
+                <tr>
+                    <th scope="row">Status Reason</th>
+                    <td>{{ object.get_status_reason_display }}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <th scope="row">FQDN Status</th>
+                    <td>
+                        {% if object.fqdn_status %}
+                            {% badge object.get_fqdn_status_display bg_color=object.get_fqdn_status_color %}
+                        {% else %}
+                            {{ ''|placeholder }}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Website Status</th>
+                    <td>
                         {% if object.website_status %}
                             {% badge object.get_website_status_display bg_color=object.get_website_status_color %}
                         {% else %}
                             {{ ''|placeholder }}
                         {% endif %}
-                      </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Geo Region</th>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Asset Class</th>
+                    <td>{{ object.get_asset_class_display }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Parent Domain</th>
+                    <td>
+                    {% if object.domain %}
+                            {{ object.domain|linkify }}
+                        {% else %}
+                            {{ ''|placeholder }}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Site Location (Orig)</th>
+                    <td>{{ object.location_orig|placeholder }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Site Location (NB)</th>
+                    <td>{{ object.location|linkify }}</td>
+                </tr>
+                
+                <tr>
+                    <th scope="row">Geo Region (Choice)</th>
                     <td>
                         {% if object.geo_region_choice %}
                             {% badge object.get_geo_region_choice_display bg_color=object.get_geo_region_choice_color %}
@@ -60,68 +113,396 @@
                     </td>
                   </tr>
                   <tr>
-                      <th scope="row">Parent Domain</th>
-                      <td>
-                        {% if object.domain %}
-                              {{ object.domain|linkify }}
-                          {% else %}
-                              {{ ''|placeholder }}
-                          {% endif %}
-                      </td>
+                    <th scope="row">Geo Region (NB)</th>
+                    <td>{{ object.geo_region|placeholder }}</td>
                   </tr>
                   <tr>
-                      <th scope="row">Public IP (Orig)</th>
-                      <td>{{ object.public_ip_1|placeholder }}
-                      </td>
+                    <th scope="row">Public IP (Orig)</th>
+                    <td>{{ object.public_ip_1|placeholder }}
+                    </td>
+                </tr>
+                <tr>
+                  <th scope="row">Public IP (NB)</th>
+                  <td>{{ object.ipaddress_public_8|placeholder }}
+                  </td>
+                </tr>
+                  <tr>
+                    <th scope="row">Hosting Architecture</th>
+                    <td>{{ object.get_architectural_model_display }}</td>
                   </tr>
                   <tr>
-                    <th scope="row">Public IP (NB)</th>
-                    <td>{{ object.ipaddress_public_8|placeholder }}
-                    </td>
-                </tr>
+                    <th scope="row">Hosting Environ</th>
+                    <td>{{ object.get_env_model_display }}</td>
+                  </tr>
                   <tr>
-                    <th scope="row">t</th>
-                    <td>{{ object.get_confidence_display|placeholder }}
-                    </td>
+                    <th scope="row">Criticality Score</th>
+                    <td>{{ object.criticality_score_1 }}</td>
+                  </tr>
+                <tr>
+                    <th scope="row">In CMDB?</th>
+                    <td>{% checkmark object.is_in_cmdb %}</td>
                 </tr>
                 <tr>
-                    <th scope="row">t</th>
-                    <td>{{ object.get_confidence_display|placeholder }}
-                    </td>
+                    <th scope="row">Flagship?</th>
+                    <td>{% checkmark object.is_flagship %}</td>
                 </tr>
                 <tr>
-                    <th scope="row">t</th>
-                    <td>{{ object.get_confidence_display|placeholder }}
-                    </td>
+                    <th scope="row">Internet Facing?</th>
+                    <td>{% checkmark object.is_internet_facing %}</td>
                 </tr>
                 <tr>
-                    <th scope="row">t</th>
-                    <td>{{ object.get_confidence_display|placeholder }}
-                    </td>
+                    <th scope="row">Cloud Provider</th>
+                    <td>{{ object.get_cloud_provider_display }}</td>
                 </tr>
               </table>
           </div>
       </div>
+
+    {# Start of Tech Details Card #}
+    <div class="card">
+        <h5 class="card-header">
+            Technical Details
+        </h5>
+        <div class="card-body">
+            <table class="table table-hover attr-table">
+                <tr>
+                    <th scope="row">Website URL</th>
+                    <td>{{ object.website_url }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Website Title</th>
+                    <td>{{ object.website_title }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Website Role</th>
+                    <td>{{ object.get_website_role_display }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Website Email</th>
+                    <td>{{ object.website_email_orig }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Private IP (1)</th>
+                    <td>{{ object.private_ip_1 }}</td>
+                </tr>
+                {% if object.private_ip_2 %}
+                <tr>
+                    <th scope="row">Private IP (2)</th>
+                    <td>{{ object.private_ip_2 }}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <th scope="row">Private IP (NB)</th>
+                    <td>
+                        {% if object.ipaddress_private_8 %}
+                            {{ object.ipaddress_private_8 }}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Hostname</th>
+                    <td>{{ object.hostname_orig }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">OS (Orig)</th>
+                    <td>{{ object.os_char }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">OS (myFK)</th>
+                    <td>{{ object.os_1|placeholder }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">OS (NB - Platform)</th>
+                    <td>{{ object.os_8|placeholder }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Webserver Framework</th>
+                    <td>{{ object.tech_webserver_orig }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Webserver Framework (FK)</th>
+                    <td>{{ object.tech_webserver_1|placeholder }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Addtl Technologies</th>
+                    <td>{{ object.tech_addtl }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Redirect Health</th>
+                    <td>{{ object.get_redirect_health_display }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Redirect URL</th>
+                    <td>{{ object.redirect_url|placeholder }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Response Code</th>
+                    <td>{{ object.response_code|placeholder }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Content Length</th>
+                    <td>{{ object.content_length|placeholder }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">VHOST?</th>
+                    <td>{% checkmark object.is_vhost %}</td>
+                </tr>
+                <tr>
+                    <th scope="row">HTTP2?</th>
+                    <td>{% checkmark object.is_http2 %}</td>
+                </tr>
+                <tr>
+                    <th scope="row">CNAMES</th>
+                    <td>{{ object.cnames }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">DNS A Record IPs</th>
+                    <td>{{ object.dns_a_record_ips }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">TLS Protocol</th>
+                    <td>{{ object.tls_protocol_version }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">TLS Cert Expires</th>
+                    <td>{{ object.tls_cert_expires }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Cert is Wildcard?</th>
+                    <td>{% checkmark object.tls_cert_is_wildcard %}</td>
+                </tr>
+                <tr>
+                    <th scope="row">TLS Cert SHA1 Hash</th>
+                    <td>{{ object.tls_cert_sha1 }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">TLS Cert Details</th>
+                    <td>{{ object.tls_cert_info }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Notes</th>
+                    <td>{{ object.notes }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    {# Start : Scoping Info Card #}
+    <div class="card">
+        <h5 class="card-header">
+            Website Scoping
+        </h5>
+        <div class="card-body">
+            <table class="table table-hover attr-table">
+                <tr>
+                    <th scope="row">Feature: API?</th>
+                    <td>{% checkmark object.feature_api %}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Feature: Account Mgmt?</th>
+                    <td>{% checkmark object.feature_acct_mgmt %}</td>
+                </tr>
+                {% if object.feature_acct_mgmt %}
+                <tr>
+                    <th scope="row">Acct Mgmt Auth Method</th>
+                    <td>{{ object.get_feature_webauth_type_display }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Acct Mgmt Self Registration?</th>
+                    <td>{% checkmark object.feature_auth_self_registration %}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <th scope="row">Scoping Size</th>
+                    <td>{{ object.scoping_size }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Scoping Complexity</th>
+                    <td>{{ object.scoping_complexity }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Scoping Test Roles</th>
+                    <td>{{ object.scoping_roles }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Calculated LOE</th>
+                    <td>{{ object.calc_loe }} days</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    {# Start of Vendor Info Card - Future - whole table can be conditional if vendor managed = yes #}
+    <div class="card">
+        <h5 class="card-header">
+            Vendor Data
+        </h5>
+        <div class="card-body">
+            <table class="table table-hover attr-table">
+                <tr>
+                    <th scope="row">Vendor Managed?</th>
+                    <td>{% checkmark object.is_vendor_managed %}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Vendor Hosted?</th>
+                    <td>{% checkmark object.is_vendor_hosted %}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Vendor Name (Orig)</th>
+                    <td>{{ object.vendor_company_orig }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Vendor POCs</th>
+                    <td>{{ object.vendor_pocs_orig }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Vendor URL</th>
+                    <td>{{ object.vendor_url|placeholder }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Vendor Notes</th>
+                    <td>{{ object.vendor_notes }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
       {% include 'inc/panels/tags.html' %}
       {% include 'inc/panels/custom_fields.html' %}
       {% include 'inc/panels/comments.html' %}
       {% plugin_left_page object %}
 	</div>
     <!-- Below adds panels on the right side of the page -->
-	<!--<div class="col col-md-8">
-    {% include 'inc/panel_table.html' with table=parent_prefixes_table heading='Parent Prefixes' %}
-    {% if duplicate_ips_table.rows %}
-      {% include 'inc/panel_table.html' with table=duplicate_ips_table heading='Duplicate IPs' panel_class='danger' %}
-    {% endif %}
-    <div class="card">
-      <h5 class="card-header">Services</h5>
-      <div class="card-body htmx-container table-responsive"
-        hx-get="{% url 'ipam:service_list' %}?ipaddress_id={{ object.pk }}"
-        hx-trigger="load"
-      ></div>
-    </div>
+	<div class="col col-md-6">
+        <div class="card">
+            <h5 class="card-header">Ownership</h5>
+            <div class="card-body">
+                <table class="table table-hover attr-table">
+                    <tr>
+                        <th scope="row">Tenant</th>
+                        <td>
+                            {% if object.tenant.group %}
+                                {{ object.tenant.group|linkify }} /
+                            {% endif %}
+                            {{ object.tenant|linkify|placeholder }}
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Business Group/Division</th>
+                        <td colspan="3">
+                            {% if object.impacted_group_orig %}
+                                {{ object.impacted_group_orig|linkify }}
+                            {% else %}
+                                {{ ''|placeholder }}
+                            {% endif %}
+                            &nbsp;/&nbsp;
+                            {% if object.impacted_division_orig %}
+                                {{ object.impacted_division_orig|linkify }}
+                            {% else %}
+                                {{ ''|placeholder }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Technical Support Group</th>
+                        <td>{{ object.support_group_website_technical_orig }}</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Business Support Group</th>
+                        <td>{{ object.support_group_website_approvals_orig }}</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Owners (Orig)</th>
+                        <td colspan="3">{{ object.owners_orig }}</td>
+                    </tr>
+                    {% if object.owners_nb %}
+                    <tr>
+                        <th scope="row">Owners (NB)</th>
+                        <td>{# TBD {{ object.owners_nb }} #}</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    {% endif %}
+                    
+
+                </table>
+            </div>
+        </div>
+
+        {# Start of Security Info Card #}
+        <div class="card">
+            <h5 class="card-header">
+                Security Info
+            </h5>
+            <div class="card-body">
+                <table class="table table-hover attr-table">
+                  <tr>
+                      <th scope="row">Risky?</th>
+                      <td>{% checkmark object.is_risky %}</td>
+                      <th scope="row">Had Bug Bounty?</th>
+                      <td>{% checkmark object.had_bugbounty %}</td>
+                  </tr>
+                  <tr>
+                      <th scope="row">Akamai?</th>
+                      <td>{% checkmark object.is_akamai %}</td>
+                      <td></td>
+                      <td></td>
+                  </tr>
+                  <tr>
+                      <th scope="row">WAF Protected?</th>
+                      <td>{% checkmark object.is_waf_protected %}</td>
+                      <th scope="row">Load Balanced?</th>
+                      <td>{% checkmark object.is_load_protected %}</td>
+                  </tr>
+                  <tr>
+                      <th scope="row">Vuln Scanner Coverage?</th>
+                      <td>{% checkmark object.vuln_scan_coverage %}</td>
+                      <th scope="row">Last Vuln Scan</th>
+                      <td>{{ object.vuln_scan_last_date|annotated_date }}</td>
+                  </tr>
+                  <tr>
+                      <th scope="row">Last Vuln/Pentest Assessment</th>
+                      <td colspan="3">{{ object.last_vuln_assessment|annotated_date }}</td>
+                  </tr>
+                  <tr>
+                      <th scope="row">Security Assessment Priority</th>
+                      <td colspan="3">{{ object.vuln_assessment_priority|placeholder }}</td>
+                  </tr>
+                  <tr>
+                      <th scope="row">Website Operation Age</th>
+                      <td colspan="3">{{ object.site_operation_age|annotated_date }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Compliance Required?</th>
+                    <td>{% checkmark object.is_compliance_required %}</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th scope="row">Compliance Program(s)</th>
+                    <td colspan="3">
+                        {% if object.compliance_programs %}
+                        {# Tip: Displaying a ManyToMany field #}
+                            {{ object.compliance_programs.all|join:", " }}
+                        {% endif %}
+                    </td>
+                </tr>
+                  <tr>
+                      <th scope="row">Security Analysis Notes</th>
+                      <td colspan="3">{{ object.risk_analysis_notes }}</td>
+                  </tr>
+              </table>
+          </div>
+      </div>
+    {% include 'inc/panels/image_attachments.html' %}
     {% plugin_right_page object %}
-	</div>-->
+	</div>
 </div>
 <div class="row">
   <div class="col col-md-12">

@@ -20,6 +20,7 @@ class WebEmail(PrimaryModel):
     # TODO: Extract the root domain of the email address and 
     # link it to a domain root, always or only if the domain already exists,
     # meaning it's a domain that we know about and are tracking/inventorying?!?
+    
     email_address = models.EmailField(
         unique=True,
         blank=True
@@ -29,8 +30,8 @@ class WebEmail(PrimaryModel):
     class Meta:
         ordering = ('email_address',)
 
-    # def __str__(self):
-    #     self.email
+    def __str__(self):
+        self.email_address
     
     def get_absolute_url(self):
         return reverse('wim:webemail', args=[self.pk])

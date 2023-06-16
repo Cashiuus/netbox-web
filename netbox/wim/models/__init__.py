@@ -1,8 +1,9 @@
 from .classifiers import *
 from .cpe import *
+# Due to config in Domian, need to import FQDN first
+from .fqdn import *
 from .domain import *
 from .email import *
-from .fqdn import *
 # from .ip import *
 from .vendor import *
 
@@ -11,15 +12,12 @@ __all__ = (
     'BusinessDivision',
     'BusinessGroup',
     'BusinessCriticality',
-    'CloudProvider',
-    'ComplianceProgram',
     'CPE',
     # 'DataSource',
     'Domain',
     'FQDN',
-    'FqdnStatus',
     'OperatingSystem',
-    'ParkedStatus',
+    # 'ParkedStatus',
     # 'Registrar',
     'SiteLocation',
     'SupportGroup',
@@ -27,6 +25,4 @@ __all__ = (
     'WebEmail',
     # 'WebIPAddress',
     'WebserverFramework',
-    'WebsiteAuthType',
-    'WebsiteStatus',
 )

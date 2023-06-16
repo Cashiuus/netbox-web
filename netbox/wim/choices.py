@@ -6,78 +6,142 @@ from utilities.choices import ChoiceSet
 
 # ========== netbox way of doing choices ============
 
+
+
 #
 # Primary Status Choices
 #
 
-class DomainStatusChoices(ChoiceSet):
-    key = 'Domain.status'
 
-    STATUS_NEW = 'new'
-    STATUS_ACTIVE = 'active'
-    STATUS_DECOMMISSIONING = 'decommissioning'
-    STATUS_RETIRED = 'retired'
+class AssetConfidenceChoices(ChoiceSet):
+    # Choose the level of confidence in attribution for a particular discovered asset (Domain, FQDN, etc)
+    # Candidate = found during recon and requires manual validation or vetting
+    # Confirmed = Confirmed to belong to attributed entity
+    # Dismissed = Determined the asset is not in fact owned by the entity for which it was a candidate
+    # TODO: WTF is this key used for
+    key = 'FQDN.asset_confidence'
 
+    CONFIDENCE_CANDIDATE = "Candidate"
+    CONFIDENCE_CONFIRMED = "Confirmed"
+    CONFIDENCE_DISMISSED = "Dismissed"
+
+    # NOTE: CHOICES must be a list type (not tuple) if you have a "key" var defined
     CHOICES = [
-        # (STATUS_PLANNED, 'Planned', 'cyan'),
-        (STATUS_NEW, 'New', 'blue'),
-        (STATUS_ACTIVE, 'Active', 'green'),
-        (STATUS_DECOMMISSIONING, 'Decommissioning', 'yellow'),
-        (STATUS_RETIRED, 'Retired', 'red'),
+        (CONFIDENCE_CANDIDATE, "Candidate", "orange"),
+        (CONFIDENCE_CONFIRMED, "Confirmed", "blue"),
+        (CONFIDENCE_DISMISSED, "Dismissed", "gray"),
     ]
 
 
-class FQDNStatusChoices(ChoiceSet):
-    key = 'FQDN.status'
+class AssetStatusReasonChoices(ChoiceSet):
+    """ The reasons behind why an asset has a particular status. 
+    """
+    REASON_PERSONAL = "Personal Registration"
+    REASON_DECOMISSIONED = "Decommissioned Website"
+    REASON_DIVESTED = "Divested"
 
-    STATUS_NEW = 'new'
-    STATUS_ACTIVE = 'active'
-    STATUS_DECOMMISSIONING = 'decommissioning'
-    STATUS_RETIRED = 'retired'
+    CHOICES = [
+        (REASON_PERSONAL, "Personal Registration", "gray"),
+        (REASON_DECOMISSIONED, "Decommissioned Website", "gray"),
+        (REASON_DIVESTED, "Divested", "gray"),
+    ]
+
+
+class DomainStatusChoices(ChoiceSet):
+    key = 'Domain.status'
+
+    STATUS_NEW = 'New'
+    STATUS_ACTIVE = 'Active'
+    STATUS_DECOMMISSIONING = 'Decommissioning'
+    STATUS_RETIRED = 'Archived'
 
     CHOICES = [
         # (STATUS_PLANNED, 'Planned', 'cyan'),
         (STATUS_NEW, 'New', 'blue'),
         (STATUS_ACTIVE, 'Active', 'green'),
         (STATUS_DECOMMISSIONING, 'Decommissioning', 'red'),
-        (STATUS_RETIRED, 'Retired', 'gray'),
+        (STATUS_RETIRED, 'Archived', 'red'),
+    ]
+
+
+class FQDNStatusChoices(ChoiceSet):
+    key = 'FQDN.status'
+
+    STATUS_NEW = 'New'
+    STATUS_ACTIVE = 'Active'
+    STATUS_DECOMMISSIONING = 'Decommissioning'
+    STATUS_RETIRED = 'Archived'
+
+    CHOICES = [
+        # (STATUS_PLANNED, 'Planned', 'cyan'),
+        (STATUS_NEW, 'New', 'blue'),
+        (STATUS_ACTIVE, 'Active', 'green'),
+        (STATUS_DECOMMISSIONING, 'Decommissioning', 'red'),
+        (STATUS_RETIRED, 'Archived', 'gray'),
     ]
 
 
 class FQDNOpsStatusChoices(ChoiceSet):
-    FQDNSTATUS_1 = "1-whois"
-    FQDNSTATUS_2 = "2-dns"
-    FQDNSTATUS_3A = "3-parked"
-    FQDNSTATUS_3B = "3-redirect"
-    FQDNSTATUS_4 = "4-serverdown"
-    FQDNSTATUS_5 = "5-active"
+    FQDNSTATUS_UNKNOWN = "0-Unknown-Test"
+    FQDNSTATUS_1 = "1-Whois"
+    FQDNSTATUS_2 = "2-DNS"
+    FQDNSTATUS_3A = "3-Parked"
+    FQDNSTATUS_3B = "3-Redirect"
+    FQDNSTATUS_4 = "4-DNS Host Server Down"
+    FQDNSTATUS_5 = "5-Active"
+    FQDNSTATUS_NA = "NA"
     
     CHOICES = (
-        (FQDNSTATUS_1, "1-WHOIS", "gray"),
+        (FQDNSTATUS_UNKNOWN, "0-Unknown-Test", "orange"),
+        (FQDNSTATUS_1, "1-Whois", "gray"),
         (FQDNSTATUS_2, "2-DNS", "green"),
-        (FQDNSTATUS_3A, "3-PARKED", "gray"),
-        (FQDNSTATUS_3B, "3-REDIRECT", "cyan"),
-        (FQDNSTATUS_4, "4-DNS SERVER DOWN", "orange"),
-        (FQDNSTATUS_5, "5-ACTIVE", "blue"),
+        (FQDNSTATUS_3A, "3-Parked", "pink"),
+        (FQDNSTATUS_3B, "3-Redirect", "pink"),
+        (FQDNSTATUS_4, "4-DNS Host Server Down", "red"),
+        (FQDNSTATUS_5, "5-Active", "blue"),
+        (FQDNSTATUS_NA, "NA", "gray"),
     )
 
 
 class WebsiteOpsStatusChoices(ChoiceSet):
-    WEBSITESTATUS_GOOD = "live_good"
-    WEBSITESTATUS_BROKEN = "live_broken"
-    WEBSITESTATUS_DEFAULT = "live_default"
-    WEBSITESTATUS_NONPROD = "live_nonprod"
-    # WEBSITESTATUS_
-    # WEBSITESTATUS_
-    # WEBSITESTATUS_
+    WEBSITESTATUS_UNKNOWN = "0-Unknown-Test"
+    WEBSITESTATUS_NONSITE = "3-Live Non-Website Server"
+    WEBSITESTATUS_DEFAULT = "4-Live Default Webserver"
+    WEBSITESTATUS_BROKEN = "4-Live Broken Website"
+    WEBSITESTATUS_GOOD = "5-Live Valid Website"
+    WEBSITESTATUS_NONPROD = "6-Live Nonprod Sister Website"
+    WEBSITESTATUS_DUPEDOMAIN = "6-Live Domain WWW Pointer"      # A domain website duplicate of its www FQDN
+    WEBSITESTATUS_DECOMMISSIONED = "9-Decommissioned"
+    WEBSITESTATUS_NA = "NA"
 
     CHOICES = (
-        (WEBSITESTATUS_GOOD, "Live Website Good", "green"),
-        (WEBSITESTATUS_BROKEN, "Live Broken Website", "orange"),
-        (WEBSITESTATUS_DEFAULT, "Live Default Webserver", "orange"),
-        (WEBSITESTATUS_NONPROD, "Live Nonprod Sister Website", "purple"),
+        (WEBSITESTATUS_UNKNOWN, "0-Unknown-Test", "orange"),
+        (WEBSITESTATUS_NONSITE, "3-Live Non-Website Server", "cyan"),
+        (WEBSITESTATUS_DEFAULT, "4-Live Default Webserver", "red"),
+        (WEBSITESTATUS_BROKEN, "4-Live Broken Website", "red"),
+        (WEBSITESTATUS_GOOD, "5-Live Valid Website", "green"),
+        (WEBSITESTATUS_DUPEDOMAIN, "6-Live Domain WWW Pointer", "gray"),
+        (WEBSITESTATUS_NONPROD, "6-Live Nonprod Sister Website", "gray"),
+        (WEBSITESTATUS_DECOMMISSIONED, "9-Decommissioned", "purple"),
+        (WEBSITESTATUS_NA, "NA", "gray"),
     )
 
+
+
+class DomainOwnershipStatusChoices(ChoiceSet):
+    """
+    Choices that define categories for root domains in our dataset. Not all are owned by
+    this company; many may be related to vendor SaaS offerings, etc.
+    """
+    OWNEDSTATUS_COMPANY = "Company-Owned"
+    OWNEDSTATUS_PROVIDER = "Provider-Owned"
+    OWNEDSTATUS_UNKNOWN = "Unknown"
+
+    CHOICES = (
+        (OWNEDSTATUS_COMPANY, "Company-Owned", "blue"),
+        (OWNEDSTATUS_PROVIDER, "Provider-Owned", "purple"),
+        (OWNEDSTATUS_UNKNOWN, "Unknown", "red"),
+    )
 
 
 
@@ -87,8 +151,8 @@ class WebsiteOpsStatusChoices(ChoiceSet):
 
 
 class AssetClassChoices(ChoiceSet):
-    ASSET_DOMAIN = "domain"
-    ASSET_FQDN = "fqdn"
+    ASSET_DOMAIN = "Domain"
+    ASSET_FQDN = "FQDN"
 
     CHOICES = (
         (ASSET_DOMAIN, 'Domain', 'blue'),
@@ -97,10 +161,11 @@ class AssetClassChoices(ChoiceSet):
 
 
 class CloudProviderChoices(ChoiceSet):
-    CLOUD_AWS = "aws"
-    CLOUD_AZURE = "azure"
-    CLOUD_GOOGLE = "google"
-    CLOUD_ALIBABA = "alibaba"
+    CLOUD_AWS = "AWS"
+    CLOUD_AZURE = "Azure"
+    CLOUD_DIGOCEAN = "Digital Ocean"
+    CLOUD_GOOGLE = "Google"
+    CLOUD_ALIBABA = "Alibaba"
 
     CHOICES = [
         (CLOUD_AWS, "AWS", "orange"),
@@ -127,56 +192,47 @@ class GeoRegionChoices(ChoiceSet):
 
 # TODO: How should I best handle N/A type responses for certain web properties?
 class HostingArchModelChoices(ChoiceSet):
-    HOSTARCH_CLOUD = "cloud"          # This would be "hybrid" in ServiceNow
-    HOSTARCH_ONPREM = "onpremise"
-    HOSTARCH_SAAS = "saas"
+    HOSTARCH_CLOUD = "Hybrid"          # This means company-managed cloud
+    HOSTARCH_ONPREM = "On-Premise"
+    HOSTARCH_SAAS = "SaaS"
+    HOSTARCH_NA = "NA"
 
     CHOICES = (
-        (HOSTARCH_CLOUD, "Cloud", "orange"),
+        (HOSTARCH_CLOUD, "Hybrid", "green"),
         (HOSTARCH_ONPREM, "On-Premise", "cyan"),
         (HOSTARCH_SAAS, "SaaS", "purple"),
+        (HOSTARCH_NA, "NA", "gray"),
     )
 
 
 class HostingEnvModelChoices(ChoiceSet):
-    HOSTENV_DEMO = "demo"
-    HOSTENV_DEV = "dev"
-    HOSTENV_PROD = "prod"
-    HOSTENV_QA = "qa"
-    HOSTENV_STAGE = "staging"
-    HOSTENV_TEST = "test"
-    HOSTENV_TRAIN = "training"
-    HOSTENV_DR = "dr"
+    HOSTENV_DEMO = "Demonstration"
+    HOSTENV_DEV = "Development"
+    HOSTENV_PROD = "Production"
+    HOSTENV_QA = "QA"
+    HOSTENV_STAGE = "Staging"
+    HOSTENV_TEST = "Test"
+    HOSTENV_TRAIN = "Training"
+    HOSTENV_DR = "BC-DR"
+    HOSTENV_NA = "NA"
 
     CHOICES = (
-        (HOSTENV_DEMO, "Demo", "gray"),
-        (HOSTENV_DEV, "Dev", "orange"),
-        (HOSTENV_PROD, "Prod", "blue"),
+        (HOSTENV_DEMO, "Demonstration", "gray"),
+        (HOSTENV_DEV, "Development", "orange"),
+        (HOSTENV_PROD, "Production", "blue"),
         (HOSTENV_QA, "QA", "orange"),
         (HOSTENV_STAGE, "Staging", "orange"),
         (HOSTENV_TEST, "Test", "orange"),
-        (HOSTENV_TRAIN, "Training", "gray"),
-        (HOSTENV_DR, "DR", "blue"),
+        (HOSTENV_TRAIN, "Training", "orange"),
+        (HOSTENV_DR, "BC-DR", "blue"),
+        (HOSTENV_NA, "NA", "gray"),
     )
-
-# SITE_ENV_CHOICES = Choices(
-#     (1, 'demonstration', _('Demonstration')),
-#     (2, 'development', _('Development')),
-#     (3, 'production', _('Production')),
-#     (4, 'qa', _('QA')),
-#     (5, 'staging', _('Staging')),
-#     (6, 'test', _('Test')),
-#     (7, 'training', _('Training')),
-#     (8, 'dr', _('DR')),                         # BC/DR
-#     (9, 'unknown', _('Unknown')),
-#     (10, 'na', _('NA'))
-# )
 
 
 class RedirectStatusChoices(ChoiceSet):
-    REDIRECT_GOOD = 'good'
-    REDIRECT_BAD = 'bad'
-    REDIRECT_UNKNOWN = 'unknown'
+    REDIRECT_GOOD = 'Good'
+    REDIRECT_BAD = 'Bad'
+    REDIRECT_UNKNOWN = 'Unknown'
 
     CHOICES = (
         (REDIRECT_GOOD, 'Good', 'green'),
@@ -186,10 +242,10 @@ class RedirectStatusChoices(ChoiceSet):
 
 
 class WebAuthChoices(ChoiceSet):
-    AUTH_BASIC = "basic_auth"
-    AUTH_SSO_CORP = "sso_corp"
-    AUTH_SSO_OTHER = "sso_other"
-    AUTH_STANDALONE = "standalone"
+    AUTH_BASIC = "Basic Auth"
+    AUTH_SSO_CORP = "SSO-Corp"
+    AUTH_SSO_OTHER = "SSO-Other"
+    AUTH_STANDALONE = "Standalone"
 
     CHOICES = [
         (AUTH_BASIC, 'Basic Auth', 'orange'),
@@ -200,21 +256,96 @@ class WebAuthChoices(ChoiceSet):
 
 
 class WebsiteRoleChoices(ChoiceSet):
-    ROLE_ECOMMERCE = 'ecommerce'
-    ROLE_INFORMATIONAL = 'informational'
-    ROLE_INTERNAL = 'internal'
-    ROLE_MARKETING = 'marketing'
-    ROLE_OTHER = 'other'
+    ROLE_B2B = "B2B"
+    ROLE_CUSTSERVICE = "Customer Service"
+    ROLE_ECOMMERCE = 'E-Commerce'
+    ROLE_INFORMATIONAL = 'Informational'
+    ROLE_INTERNAL = 'Internal'
+    ROLE_MARKETING = 'Marketing'
+    ROLE_PRODSERVICES = 'Product Services'
+    ROLE_OTHER = 'Other'
 
     CHOICES = (
+        (ROLE_B2B, 'B2B', 'green'),
+        (ROLE_CUSTSERVICE, 'Customer Service', 'purple'),
         (ROLE_ECOMMERCE, 'E-Commerce', 'green'),
         (ROLE_INFORMATIONAL, 'Informational', 'blue'),
         (ROLE_INTERNAL, 'Internal', 'orange'),
         (ROLE_MARKETING, 'Marketing', 'purple'),
+        (ROLE_PRODSERVICES, 'Product Services', 'purple'),
         (ROLE_OTHER, 'Other', 'yellow'),
     )
 
 
+class TransportLayerSecurityVersionChoices(ChoiceSet):
+    TLS_10 = "tls 1.0"
+    TLS_11 = "tls 1.1"
+    TLS_12 = "tls 1.2"
+    TLS_13 = "tls 1.3"
+    TLS_SSL3 = "ssl 3.0"
+    TLS_SSL2 = "ssl 2.0"
+
+    CHOICES = (
+        (TLS_10, "tls 1.0", "orange"),
+        (TLS_11, "tls 1.1", "orange"),
+        (TLS_12, "tls 1.2", "green"),
+        (TLS_13, "tls 1.3", "green"),
+        (TLS_SSL3, "ssl 3.0", "red"),
+        (TLS_SSL2, "ssl 2.0", "red"),
+    )
+
+
+
+class ComplianceProgramChoices(ChoiceSet):
+    COMPLIANCE_CDI = "CDI"
+    COMPLIANCE_GTC = "GTC"
+    COMPLIANCE_GXP = "GxP"
+    COMPLIANCE_HIPAA = "HIPAA"
+    COMPLIANCE_HITRUST = "HITRUST"
+    COMPLIANCE_KISMS = "K-ISMS"
+    COMPLIANCE_PCI = "PCI-DSS"
+    COMPLIANCE_SOX = "SOX"
+
+    CHOICES = (
+        (COMPLIANCE_CDI, "CDI", "gray"),
+        (COMPLIANCE_GTC, "GTC", "gray"),
+        (COMPLIANCE_GXP, "GxP", "gray"),
+        (COMPLIANCE_HIPAA, "HIPAA", "gray"),
+        (COMPLIANCE_HITRUST, "HITRUST", "gray"),
+        (COMPLIANCE_KISMS, "K-ISMS", "gray"),
+        (COMPLIANCE_PCI, "PCI-DSS", "gray"),
+        (COMPLIANCE_SOX, "SOX", "gray"),
+    )
+
+
+class PlatformFamilyChoices(ChoiceSet):
+    PLATFORMFAMILY_LINUX = "Linux"
+    PLATFORMFAMILY_WINDOWS = "Windows"
+    PLATFORMFAMILY_OSX = "OSX"
+    PLATFORMFAMILY_OTHER = "Other"
+
+    CHOICES = [
+        (PLATFORMFAMILY_LINUX, "Linux", ""),
+        (PLATFORMFAMILY_WINDOWS, "Windows", ""),
+        (PLATFORMFAMILY_OSX, "OSX", ""),
+        (PLATFORMFAMILY_OTHER, "Other", ""),
+    ]
+
+
+class PlatformTypeChoices(ChoiceSet):
+    PLATFORMTYPE_SERVER = "Server"
+    PLATFORMTYPE_WORKSTATION = "Workstation"
+    PLATFORMTYPE_NETWORK = "Network"
+    PLATFORMTYPE_OT = "OT"
+    PLATFORMTYPE_PERIPHERAL = "Peripheral"      # e.g. Printer, Phone, etc.
+
+    CHOICES = [
+        (PLATFORMTYPE_SERVER, "Server", "blue"),
+        (PLATFORMTYPE_WORKSTATION, "Workstation", "blue"),
+        (PLATFORMTYPE_NETWORK, "Network", "green"),
+        (PLATFORMTYPE_OT, "OT", "purple"),
+        (PLATFORMTYPE_PERIPHERAL, "Peripheral", "cyan"),
+    ]
 
 
 # ========== my original way of doing choices ============
@@ -333,4 +464,3 @@ SUPPORT_GROUP_TYPE_CHOICES = Choices(
     (1, 'servicenow', _('ServiceNow Group')),
     (2, 'teamname', _('Team/Dept Name')),
 )
-

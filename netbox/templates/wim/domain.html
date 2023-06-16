@@ -8,7 +8,7 @@
 	<div class="col col-md-6">
       <div class="card">
           <h5 class="card-header">
-              Domain
+              Domain Details
           </h5>
           <div class="card-body">
               <table class="table table-hover attr-table">
@@ -17,20 +17,19 @@
                       <td>{{ object.name }}</td>
                   </tr>
                   <tr>
-                      <th scope="row">Tenant</th>
-                      <td>
-                          {% if object.tenant.group %}
-                              {{ object.tenant.group|linkify }} /
-                          {% endif %}
-                          {{ object.tenant|linkify|placeholder }}
-                      </td>
-                  </tr>
-                  <tr>
                       <th scope="row">Status</th>
                       <td>{% badge object.get_status_display bg_color=object.get_status_color %}</td>
                   </tr>
                   <tr>
-                      <th scope="row">Expiry Date</th>
+                    <th scope="row">Confidence</th>
+                    <td>{{ object.get_asset_confidence_display|placeholder }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Ownership</th>
+                    <td>{% badge object.get_ownership_type_display bg_color=object.get_ownership_type_color %}</td>
+                  </tr>
+                  <tr>
+                      <th scope="row">Expires</th>
                       <td>
                           {% if object.date_registrar_expiry %}
                               {{ object.date_registrar_expiry }}
@@ -40,19 +39,27 @@
                       </td>
                   </tr>
                   <tr>
-                      <th scope="row">First Registered Date</th>
+                      <th scope="row">Registered</th>
                       <td>{{ object.date_first_registered|placeholder }}</td>
                   </tr>
                   <tr>
-                      <th scope="row">Last Recon Date</th>
-                      <td>{{ object.date_last_recon_scanned|placeholder }}</td>
+                      <th scope="row">Last Recon Scan</th>
+                      <td>
+                        {% if object.date_last_recon_scanned %}
+                            {{ object.date_last_recon_scanned }} ({{ object.date_last_recon_scanned|timesince }})
+                        {% endif %}
+                        {% if perms.wim.add_scan %}
+                            <div class="float-md-end">
+                                {# <a href="{% url 'wim:domain_scan' %}?domain={{ object.name }}&return_url={{ object.get_absolute_url }}"  #}
+                                <a href="{% url 'wim:domain_scan' pk=object.pk %}" class="btn btn-sm btn-success lh-l" title="Scan">
+                                    <i class="mdi mdi-transit-connection-variant" aria-hidden="true"></i> Launch Scan
+                                </a>
+                            </div
+                        {% endif %}
+                      </td>
                   </tr>
                   <tr>
-                      <th scope="row">Confidence</th>
-                      <td>{{ object.get_confidence_display|placeholder }}</td>
-                  </tr>
-                  <tr>
-                      <th scope="row">Meets Corp Standards</th>
+                      <th scope="row">Meets Corp Standards?</th>
                       <td>{% checkmark object.meets_standards %}</td>
                   </tr>
                   <tr>
@@ -60,8 +67,16 @@
                     <td>{% checkmark object.is_flagship %}</td>
                 </tr>
                 <tr>
-                    <th scope="row">Registrar</th>
-                    <td>{{ object.registrar_company_9 }}</td>
+                    <th scope="row">Internet Facing?</th>
+                    <td>{% checkmark object.is_internet_facing %}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Registrar Name</th>
+                    <td>{{ object.registrar_company_orig }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Registrar IANA ID</th>
+                    <td>{{ object.registrar_iana_id_orig }}</td>
                 </tr>
                 <tr>
                     <th scope="row">Registrant Org</th>
@@ -71,8 +86,64 @@
                     <th scope="row">Registrant Emails</th>
                     <td>{{ object.registration_emails_orig }}</td>
                 </tr>
+                <tr>
+                    <th scope="row">Registrant Emails (M2M)</th>
+                    <td>
+                        {% if object.registration_emails %}
+                            {{ object.registration_emails.all|join:", " }}
+                        {% else %}
+                            {{ ''|placeholder }}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Tenant</th>
+                    <td>
+                        {% if object.tenant.group %}
+                            {{ object.tenant.group|linkify }} /
+                        {% endif %}
+                        {{ object.tenant|linkify|placeholder }}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Notes</th>
+                    <td>{{ object.notes }}</td>
+                </tr>
               </table>
           </div>
+      </div>
+      <div class="card">
+        <h5 class="card-header">
+            Domain Technical Data
+        </h5>
+        <div class="card-body">
+            <table class="table table-hover attr-table">
+                <tr>
+                    <th scope="row">Domain Statuses</th>
+                    <td>{{ object.registrar_domain_statuses }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Nameservers</th>
+                    <td>{{ object.nameservers }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">WHOIS Servers</th>
+                    <td>{{ object.whois_servers }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Mail Servers</th>
+                    <td>{{ object.mail_servers }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">SOA Nameservers</th>
+                    <td>{{ object.soa_nameservers }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">SOA Email</th>
+                    <td>{{ object.soa_email }}</td>
+                </tr>
+            </table>
+        </div>
       </div>
       {% include 'inc/panels/tags.html' %}
       {% include 'inc/panels/custom_fields.html' %}
@@ -81,20 +152,10 @@
 	</div>
     <!-- End of Left-Size Cards -->
     <!-- Below adds panels on the right side of the page -->
-	<!--<div class="col col-md-8">
-    {% include 'inc/panel_table.html' with table=parent_prefixes_table heading='Parent Prefixes' %}
-    {% if duplicate_ips_table.rows %}
-      {% include 'inc/panel_table.html' with table=duplicate_ips_table heading='Duplicate IPs' panel_class='danger' %}
-    {% endif %}
-    <div class="card">
-      <h5 class="card-header">Services</h5>
-      <div class="card-body htmx-container table-responsive"
-        hx-get="{% url 'ipam:service_list' %}?ipaddress_id={{ object.pk }}"
-        hx-trigger="load"
-      ></div>
-    </div>
-    {% plugin_right_page object %}
-	</div>-->
+	<div class="col col-md-6">
+        {% include 'inc/panels/related_objects.html' %}
+        {% plugin_right_page object %}
+	</div>
 </div>
 <div class="row">
   <div class="col col-md-12">

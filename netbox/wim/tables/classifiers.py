@@ -85,7 +85,7 @@ class OperatingSystemTable(NetBoxTable):
     # TODO: Check this and add it to fields list once it's working
     fqdn_count = columns.LinkedCountColumn(
         viewname='wim:fqdn_list',
-        url_params={'os_1_id', 'pk'},
+        url_params={'os_1_id': 'pk'},
         verbose_name="FQDNs"
     )
     # status = columns.ChoiceFieldColumn()
@@ -98,6 +98,8 @@ class OperatingSystemTable(NetBoxTable):
     #     verbose_name=""
     # )
 
+    color = columns.ColorColumn()
+
     # notes = columns.MarkdownColumn()
     # tags = columns.TagColumn(
     #     url_name='wim:OperatingSystem_list'
@@ -105,15 +107,22 @@ class OperatingSystemTable(NetBoxTable):
 
     class Meta(NetBoxTable.Meta):
         model = OperatingSystem
-        exclude = ('id',)
-        fields = ('vendor', 'product', 'update', 'build', 'family', 'cpe', 'fqdn_count')
-        default_columns = ('vendor', 'product', 'update', 'family', 'build')
+        # exclude = ('id',)
+        fields = (
+            'vendor', 'product', 'update',
+            'platform_family', 'platform_type',
+            'build_number', 'cpe', 'color',
+            'fqdn_count',
+        )
+        default_columns = (
+            'vendor', 'product', 'update', 'fqdn_count', 'platform_type', 'color'
+        )
 
 
 class SiteLocationTable(TenancyColumnsMixin, NetBoxTable):
     code = tables.Column(linkify=True)
 
-    geo_region_choice = columns.ChoiceFieldColumn(verbose_name="Geo Region")
+    # geo_region_choice = columns.ChoiceFieldColumn(verbose_name="Geo Region")
 
     # TODO: This is how we'll link to the NetBox way of doing geo regions
     # However, this links through the "site" object, so may not be able to do that in here
@@ -127,25 +136,26 @@ class SiteLocationTable(TenancyColumnsMixin, NetBoxTable):
     # TODO: Doesn't work
     fqdn_count = columns.LinkedCountColumn(
         viewname='wim:fqdn_list',
-        url_params={'location_orig_id', 'pk'},
+        url_params={'location_orig_id': 'pk'},
         verbose_name="FQDNs"
     )
 
     notes = columns.MarkdownColumn()
-    tags = columns.TagColumn(
-        url_name='wim:sitelocation_list'
-    )
+    tags = columns.TagColumn(url_name='wim:sitelocation_list')
 
     class Meta(NetBoxTable.Meta):
         model = SiteLocation
-        exclude = ('id',)
+        # exclude = ('id',)
         fields = (
-            'code', 'name', 'priority',
+            'pk', 'id', 'code', 'name', 'priority',
             'impacted_group_orig', 'impacted_division_orig',
             'geo_region_choice', 'geo_region', 'tenant',
             'fqdn_count', 'notes', 'tags',
         )
-        default_columns = ('code', 'name', 'priority', 'geo_region_choice')
+        default_columns = (
+            'pk', 'id', 'code', 'name', 'fqdn_count',
+            'priority', 'geo_region_choice',
+        )
 
 
 class VendorTable(NetBoxTable):

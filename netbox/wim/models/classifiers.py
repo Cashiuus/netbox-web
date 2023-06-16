@@ -16,17 +16,12 @@ __all__ = (
     'BusinessDivision',
     'BusinessGroup',
     'BusinessCriticality',
-    'CloudProvider',
-    'ComplianceProgram',
     # 'DataSource',
-    'FqdnStatus',
     'OperatingSystem',
     'ParkedStatus',
     'SiteLocation',
     'SupportGroup',
     'WebserverFramework',
-    'WebsiteAuthType',
-    'WebsiteStatus',
 )
 
 # class AssetClass(OrganizationalModel):
@@ -55,42 +50,42 @@ __all__ = (
     
 
 
-class FqdnStatus(OrganizationalModel):
-    """ A basic operational status for FQDNs. """
-    name = models.CharField(_('Name'), max_length=50, unique=True)
-    description = models.TextField(_('Description'))
-    order = models.SmallIntegerField(default=10)
-    color = ColorField(
-        default=ColorChoices.COLOR_GREY
-    )
-    # color = models.CharField(max_length=20, default="#FF0000")
+# class FqdnStatus(OrganizationalModel):
+#     """ A basic operational status for FQDNs. """
+#     name = models.CharField(_('Name'), max_length=50, unique=True)
+#     description = models.TextField(_('Description'))
+#     order = models.SmallIntegerField(default=10)
+#     color = ColorField(
+#         default=ColorChoices.COLOR_GREY
+#     )
+#     # color = models.CharField(max_length=20, default="#FF0000")
 
-    class Meta:
-        ordering = ('order', 'name')
-        verbose_name = _('FQDN Status')
-        verbose_name_plural = _('FQDN Statuses')
+#     class Meta:
+#         ordering = ('order', 'name')
+#         verbose_name = _('FQDN Status')
+#         verbose_name_plural = _('FQDN Statuses')
 
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
 
 
-class WebsiteStatus(OrganizationalModel):
-    """ A basic operational status for Live Websites. """
-    name = models.CharField(_('Name'), max_length=50, unique=True)
-    description = models.TextField(_('Description'))
-    order = models.SmallIntegerField(default=10)
-    color = ColorField(
-        default=ColorChoices.COLOR_GREY
-    )
-    # color = models.CharField(max_length=20, default="#FF0000")
+# class WebsiteStatus(OrganizationalModel):
+#     """ A basic operational status for Live Websites. """
+#     name = models.CharField(_('Name'), max_length=50, unique=True)
+#     description = models.TextField(_('Description'))
+#     order = models.SmallIntegerField(default=10)
+#     color = ColorField(
+#         default=ColorChoices.COLOR_GREY
+#     )
+#     # color = models.CharField(max_length=20, default="#FF0000")
 
-    class Meta:
-        ordering = ('order', 'name')
-        verbose_name = _('Website Status')
-        verbose_name_plural = _('Website Statuses')
+#     class Meta:
+#         ordering = ('order', 'name')
+#         verbose_name = _('Website Status')
+#         verbose_name_plural = _('Website Statuses')
 
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
 
 
 class ParkedStatus(OrganizationalModel):
@@ -126,7 +121,7 @@ class WebserverFramework(OrganizationalModel):
         to='wim.CPE',
         on_delete=models.PROTECT,
         related_name='webserver_frameworks',
-        blank=True,
+        blank=True, null=True,
         verbose_name='CPE'
     )
     raw_banner = models.CharField(_('Raw Banner'), max_length=300, blank=True)
@@ -142,40 +137,44 @@ class WebserverFramework(OrganizationalModel):
     def __str__(self):
         return self.name
         #return '{0}/{1}'.format(self.product, self.version)
+    
+    def get_absolute_url(self):
+        return reverse('wim:webserverframework', args=[self.pk])
 
 
 # TODO: For removal, changed this to choices
-class WebsiteAuthType(OrganizationalModel):
-    """ FK for categories of authentication methods. """
-    name = models.CharField(
-        _('Auth Type'), 
-        max_length=100, 
-        unique=True,
-        help_text='An authentication method for use in fingerprinting website features'
-    )
-    order = models.SmallIntegerField(default=10)
-    # color = models.CharField(max_length=20, default="#FF0000")
+# class WebsiteAuthType(OrganizationalModel):
+#     """ FK for categories of authentication methods. """
+#     name = models.CharField(
+#         _('Auth Type'), 
+#         max_length=100, 
+#         unique=True,
+#         help_text='An authentication method for use in fingerprinting website features'
+#     )
+#     order = models.SmallIntegerField(default=10)
+#     # color = models.CharField(max_length=20, default="#FF0000")
 
-    class Meta:
-        #default_manager_name =
-        ordering = ['name']
-        verbose_name = _('Auth Type')
-        verbose_name_plural = _('Auth Types')
+#     class Meta:
+#         #default_manager_name =
+#         ordering = ['name']
+#         verbose_name = _('Auth Type')
+#         verbose_name_plural = _('Auth Types')
 
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
+    
     
 
 # TODO: For removal, changed this to choices
-class CloudProvider(OrganizationalModel):
-    """ A list of cloud providers and useful data for each. """
-    name = models.CharField(_('Name'), max_length=75, unique=True)
-    description = models.TextField(_('Description'), blank=True)
-    testing_reqs = models.TextField(_('Testing Requirements'), blank=True,
-                                    help_text='List instructions or approvals this vendor requires before authorizing pentesting')
+# class CloudProvider(OrganizationalModel):
+#     """ A list of cloud providers and useful data for each. """
+#     name = models.CharField(_('Name'), max_length=75, unique=True)
+#     description = models.TextField(_('Description'), blank=True)
+#     testing_reqs = models.TextField(_('Testing Requirements'), blank=True,
+#                                     help_text='List instructions or approvals this vendor requires before authorizing pentesting')
 
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
 
 
 # class DataSource(OrganizationalModel):
@@ -203,19 +202,43 @@ class OperatingSystem(OrganizationalModel):
         A selection of operating system definitions to be used with Assets.
     """
     vendor = models.CharField(_('Vendor'), max_length=100)
-    product = models.CharField(_('Name'), max_length=100)
-    family = models.CharField(_('Family'), max_length=100, blank=True,
-                              help_text='Grouping OS together, such as Linux and Windows')
-    update = models.CharField(_('Service Pack'), max_length=10, blank=True,
-                              help_text='Revision or Service Pack value')
-    build = models.CharField(_("OS Build"), max_length=50, blank=True)
+    product = models.CharField(
+        _('Product Name'), 
+        max_length=100,
+        help_text=_('Product name and major version')
+    )
+    update = models.CharField(
+        _('Update/Service Pack'), 
+        max_length=10, 
+        blank=True,
+        help_text='Revision or Service Pack value'
+    )
+    build_number = models.CharField(_("OS Build"), max_length=50, blank=True)
+    platform_family = models.CharField(
+        _('Platform Family'), 
+        max_length=50,
+        choices=PlatformFamilyChoices,
+        blank=True,
+        help_text='Grouping OS together, such as Linux and Windows'
+    )
+    # NOTE: This could point to DeviceRole table, has things like Database Server, Application Server, etc.
+    platform_type = models.CharField(
+        _('Platform Type'),
+        max_length=50,
+        choices=PlatformTypeChoices,
+        default=PlatformTypeChoices.PLATFORMTYPE_SERVER,
+        help_text='The category type of platform to which this belongs'
+    )
+
     cpe = models.OneToOneField(
         to='wim.CPE',
         on_delete=models.PROTECT,
         related_name='+',
         blank=True,
+        null=True,
         verbose_name='CPE'
     )
+
     color = ColorField(
         default=ColorChoices.COLOR_GREY
     )
@@ -229,31 +252,37 @@ class OperatingSystem(OrganizationalModel):
     def __str__(self):
         return u'%s %s %s' % (self.vendor, self.product, self.update)
 
+    def get_absolute_url(self):
+        return reverse('wim:operatingsystem', args=[self.pk])
 
 
-class ComplianceProgram(OrganizationalModel):
-    """ A compliance/regulation program under which a web application or server may be subject. """
-    name = models.CharField(_('Name'), max_length=255, unique=True)
-    acronym = models.CharField(_('Acronym'), max_length=15, unique=True)
-    description = models.TextField(_('Description'))
-    website = models.URLField(_('Website'), blank=True, null=True)
-    mandates_pentesting_9 = models.BooleanField(_('Mandates Pentests'), null=True, default=False)
-    mandates_vulnscanning_9 = models.BooleanField(_('Mandates Vuln Scans'), null=True, default=True)
-    # originating_country = CountryField(_('Country'))
 
-    # TODO: Future use may include fields for dot notation directive numbers or reference maps
-    # like is done with NIST CSR and like frameworks to map requirements across programs for similar
-    # defense techniques or checks
+# class ComplianceProgram(OrganizationalModel):
+#     """ A compliance/regulation program under which a web application or server may be subject. """
+#     name = models.CharField(_('Name'), max_length=255, unique=True)
+#     acronym = models.CharField(_('Acronym'), max_length=15, unique=True)
+#     description = models.TextField(_('Description'))
+#     website = models.URLField(_('Website'), blank=True, null=True)
+#     mandates_pentesting_orig = models.BooleanField(_('Mandates Pentests'), null=True, default=False)
+#     mandates_vulnscanning_orig = models.BooleanField(_('Mandates Vuln Scans'), null=True, default=True)
+#     # originating_country = CountryField(_('Country'))
 
-    order = models.SmallIntegerField(default=10)
+#     # TODO: Future use may include fields for dot notation directive numbers or reference maps
+#     # like is done with NIST CSR and like frameworks to map requirements across programs for similar
+#     # defense techniques or checks
 
-    class Meta:
-        ordering = ('acronym',)
-        verbose_name = _('compliance program')
-        verbose_name_plural = _('compliance programs')
+#     order = models.SmallIntegerField(default=10)
 
-    def __str__(self):
-        return self.acronym
+#     class Meta:
+#         ordering = ('acronym',)
+#         verbose_name = _('compliance program')
+#         verbose_name_plural = _('compliance programs')
+
+#     def __str__(self):
+#         return self.acronym
+
+#     def get_absolute_url(self):
+#         return reverse('wim:complianceprogram', kwargs={'pk': self.pk})
 
 
 
@@ -315,6 +344,7 @@ class BusinessGroup(OrganizationalModel):
         return self.acronym
     
     def get_absolute_url(self):
+        # return reverse('wim:businessgroup', kwargs=[self.pk])
         return reverse('wim:businessgroup', kwargs={'pk': self.pk})
 
 
@@ -344,6 +374,7 @@ class BusinessDivision(OrganizationalModel):
         return self.acronym
     
     def get_absolute_url(self):
+        # return reverse('wim:businessdivision', kwargs=[self.pk])
         return reverse('wim:businessdivision', kwargs={'pk': self.pk})
 
 
@@ -352,19 +383,19 @@ class SupportGroup(OrganizationalModel):
                             help_text='SNOW group name or App Team Name')
     description = models.TextField(_('Description'), blank=True)
 
-    group_type = models.IntegerField(_('Geo Region'),
+    group_type_int = models.IntegerField(_('Geo Region'),
                                      choices=SUPPORT_GROUP_TYPE_CHOICES,
                                      default=SUPPORT_GROUP_TYPE_CHOICES.servicenow,
                                      help_text='Is this an official group name for ticketing or just a team name')
 
     # TODO: I can infer group from a selected division at some point because they are already linked there.
-    group = models.ForeignKey('BusinessGroup', on_delete=models.CASCADE)
-    division = models.ForeignKey('BusinessDivision', on_delete=models.CASCADE)
+    group_orig = models.ForeignKey('BusinessGroup', on_delete=models.CASCADE)
+    division_orig = models.ForeignKey('BusinessDivision', on_delete=models.CASCADE)
 
-    group_members = models.TextField(_('Group Members'), blank=True, default='',
+    group_members_orig = models.TextField(_('Group Members'), blank=True, default='',
                                      help_text='List all members of the group')
 
-    group_leader = models.CharField(_('Group Leader'), max_length=255, blank=True, default='',
+    group_leader_orig = models.CharField(_('Group Leader'), max_length=255, blank=True, default='',
                                     help_text='Group leader or highest ranking executive')
 
     #owner = models.ForeignKey('Person', on_delete=models.PROTECT)
@@ -390,7 +421,7 @@ class SupportGroup(OrganizationalModel):
         return self.name
     
     def get_absolute_url(self):
-        return reverse('wim:supportgroup', kwargs={'pk': self.pk})
+        return reverse('wim:supportgroup', kwargs=[self.pk])
 
 
 class BusinessCriticality(OrganizationalModel):
@@ -401,7 +432,6 @@ class BusinessCriticality(OrganizationalModel):
     color = ColorField(
         default=ColorChoices.COLOR_GREY
     )
-    # color = models.CharField(max_length=20, default="#FF0000")
 
     class Meta:
         ordering = ('order', 'name',)
@@ -412,7 +442,7 @@ class BusinessCriticality(OrganizationalModel):
         return self.name
     
     def get_absolute_url(self):
-        return reverse('wim:businesscriticality', kwargs={'pk': self.pk})
+        return reverse('wim:businesscriticality', kwargs=[self.pk])
 
 
 class SiteLocation(OrganizationalModel):
@@ -514,4 +544,5 @@ class SiteLocation(OrganizationalModel):
         return self.code
     
     def get_absolute_url(self):
+        # return reverse('wim:sitelocation', args=[self.pk])
         return reverse('wim:sitelocation', args=[self.pk])

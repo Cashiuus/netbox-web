@@ -31,20 +31,23 @@ class DomainTable(TenancyColumnsMixin, NetBoxTable):
 
     class Meta(NetBoxTable.Meta):
         model = Domain
-        exclude = ('id',)
+        # exclude = ('id',)
         fields = (
-            'name', 'status', 
+            'name', 'fqdn_count', 'status', 
+            'asset_confidence', 'ownership_type',
             'date_first_registered', 'date_registrar_expiry',
             'date_last_recon_scanned',
-            'meets_standards',
+            'meets_standards', 'is_flagship', 'is_internet_facing',
+            'registrar_company_orig', 'registrar_iana_id_orig',
             'registrant_org', 'registration_emails_orig', 'registration_emails',
-            'registrar_company_orig',
             'notes',
+            'tenant',
             'tags', 'created', 'last_updated', 'date_created', 'date_modified',
         )
         default_columns = (
-            'name', 'status', 
+            'name', 'fqdn_count', 'status',
+            'asset_confidence', 'ownership_type',
             'date_first_registered', 'date_registrar_expiry', 
             'date_last_recon_scanned',
-            'meets_standards'
+            'meets_standards', 'registrar_company_orig', 'registrant_org',
         )

@@ -12,6 +12,7 @@ urlpatterns = [
     path('fqdns/import/', views.FQDNBulkImportView.as_view(), name='fqdn_import'),
     path('fqdns/edit/', views.FQDNBulkEditView.as_view(), name='fqdn_bulk_edit'),
     path('fqdns/delete/', views.FQDNBulkDeleteView.as_view(), name='fqdn_bulk_delete'),
+    # NOTE: Because '/scan/' is a model view like the others, it should fall under this inclusion
     path('fqdns/<int:pk>/', include(get_model_urls('wim', 'fqdn'))),
 
     # Domain Roots

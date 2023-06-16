@@ -11,12 +11,14 @@ router.APIRootView = views.WIMRootView
 
 router.register('domains', views.DomainViewSet)
 router.register('fqdns', views.FQDNViewSet)
-router.register('fqdns', views.BusinessGroupViewSet)
-router.register('fqdns', views.BusinessDivisionViewSet)
-router.register('fqdns', views.OperatingSystemViewSet)
-router.register('fqdns', views.SiteLocationViewSet)
-router.register('fqdns', views.VendorViewSet)
-router.register('fqdns', views.WebserverFrameworkViewSet)
+router.register('business-groups', views.BusinessGroupViewSet)
+router.register('business-divisions', views.BusinessDivisionViewSet)
+# router.register('business-criticalities', views.BusinessCriticalityViewSet)
+router.register('operating-systems', views.OperatingSystemViewSet)
+router.register('site-locations', views.SiteLocationViewSet)
+router.register('vendors', views.VendorViewSet)
+router.register('webemails', views.WebEmailViewSet)
+router.register('webserver-frameworks', views.WebserverFrameworkViewSet)
 
 
 

@@ -29,6 +29,7 @@ from .models import *
 
 class FQDNListView(generic.ObjectListView):
     queryset = FQDN.objects.all()
+    # queryset = FQDN.objects.prefetch_related('impacted_group_orig', 'impacted_division_orig')
     # queryset = FQDN.objects.annotate(
         # site_count=count_related(Site, 'asns'),
         # provider_count=count_related(Provider, 'asns')
@@ -94,11 +95,10 @@ class FQDNBulkDeleteView(generic.BulkDeleteView):
 #
 
 class DomainListView(generic.ObjectListView):
-    queryset = Domain.objects.all()
-    # queryset = Domain.objects.annotate(
-    #     site_count=count_related(Site, 'domains'),
-    #     # provider_count=count_related(Provider, 'asns')
-    # )
+    # queryset = Domain.objects.all()
+    queryset = Domain.objects.annotate(
+        fqdn_count=count_related(FQDN, 'domain'),
+    )
     filterset = filtersets.DomainFilterSet
     filterset_form = forms.DomainFilterForm
     table = tables.DomainTable
@@ -108,33 +108,28 @@ class DomainListView(generic.ObjectListView):
 class DomainView(generic.ObjectView):
     queryset = Domain.objects.all()
 
-    # def get_extra_context(self, request, instance):
-    #     related_models = (
-    #         (Registrar.objects.restrict(request.user, 'view').filter(domains__in=[instance]), 'id'),
-    #         (FQDN.objects.restrict(request.user, 'view').filter(domains__in=[instance]), 'id'),
-    #         # (Site.objects.restrict(request.user, 'view').filter(asns__in=[instance]), 'id'),
-    #         # (Provider.objects.restrict(request.user, 'view').filter(asns__in=[instance]), 'id'),
-    #     )
+    def get_extra_context(self, request, instance):
+        related_models = (
+            (FQDN.objects.restrict(request.user, 'view').filter(domain=instance), 'domain_id'),
+        )
+        return {'related_models': related_models}
 
-    #     return {
-    #         'related_models': related_models,
-    #     }
 
 # TODO: Test this works later after we have data imported
 # This view class sets up the tab that will show up if you click on a specific domain
 # that will populate the tab with all related FQDNs
-# @register_model_view(Domain, 'fqdns', path='domain-fqdns')
+# @register_model_view(Domain, 'fqdns', path='fqdns')
 # class DomainFQDNsView(generic.ObjectChildrenView):
 #     queryset = Domain.objects.all()
 #     child_model = FQDN
 #     table = tables.FQDNTable
 #     filterset = filtersets.FQDNFilterSet
-#     template_name = 'wim/domain/domain_fqdns.html'
+#     template_name = 'wim/domain/fqdns.html'
 #     # TODO: Need to define the badge properly with a count of related FQDNs
 #     tab = ViewTab(
 #         label=_('FQDNs'),
 #         badge=lambda x: x.get_child_fqdns().count(),
-#         permission='wim.view_fqdns',
+#         permission='wim.view_fqdn',
 #         weight=500,
 #     )
 
@@ -247,7 +242,7 @@ class BusinessDivisionView(generic.ObjectView):
 
     def get_extra_context(self, request, instance):
         related_models = (
-            (FQDN.objects.restrict(request.user, 'view').filter(impacted_division_orig=instance), 'businessdivision_id'),
+            (FQDN.objects.restrict(request.user, 'view').filter(impacted_division_orig=instance), 'impacted_division_orig_id'),
         )
         return {'related_models': related_models}
     
@@ -287,7 +282,10 @@ class BusinessDivisionBulkDeleteView(generic.BulkDeleteView):
 # --
 
 class OperatingSystemListView(generic.ObjectListView):
-    queryset = OperatingSystem.objects.all()
+    # queryset = OperatingSystem.objects.all()
+    queryset = OperatingSystem.objects.annotate(
+        fqdn_count=count_related(FQDN, 'os_1')
+    )
     filterset = filtersets.OperatingSystemFilterSet
     filterset_form = forms.OperatingSystemFilterForm
     table = tables.OperatingSystemTable
@@ -296,6 +294,12 @@ class OperatingSystemListView(generic.ObjectListView):
 @register_model_view(OperatingSystem)
 class OperatingSystemView(generic.ObjectView):
     queryset = OperatingSystem.objects.all()
+
+    def get_extra_context(self, request, instance):
+        related_models = (
+            (FQDN.objects.restrict(request.user, 'view').filter(os_1=instance), 'os_1_id'),
+        )
+        return {'related_models': related_models}
     
 
 @register_model_view(OperatingSystem, 'edit')
@@ -333,7 +337,10 @@ class OperatingSystemBulkDeleteView(generic.BulkDeleteView):
 # --
 
 class SiteLocationListView(generic.ObjectListView):
-    queryset = SiteLocation.objects.all()
+    # queryset = SiteLocation.objects.all()
+    queryset = SiteLocation.objects.annotate(
+        fqdn_count=count_related(FQDN, 'location_orig')
+    )
     filterset = filtersets.SiteLocationFilterSet
     filterset_form = forms.SiteLocationFilterForm
     table = tables.SiteLocationTable
@@ -342,6 +349,12 @@ class SiteLocationListView(generic.ObjectListView):
 @register_model_view(SiteLocation)
 class SiteLocationView(generic.ObjectView):
     queryset = SiteLocation.objects.all()
+
+    def get_extra_context(self, request, instance):
+        related_models = (
+            (FQDN.objects.restrict(request.user, 'view').filter(location_orig=instance), 'location_orig_id'),
+        )
+        return {'related_models': related_models}
     
 
 @register_model_view(SiteLocation, 'edit')
@@ -436,6 +449,12 @@ class WebserverFrameworkListView(generic.ObjectListView):
 @register_model_view(WebserverFramework)
 class WebserverFrameworkView(generic.ObjectView):
     queryset = WebserverFramework.objects.all()
+
+    def get_extra_context(self, request, instance):
+        related_models = (
+            (FQDN.objects.restrict(request.user, 'view').filter(tech_webserver_1=instance), 'tech_webserver_1_id'),
+        )
+        return {'related_models': related_models}
     
 
 @register_model_view(WebserverFramework, 'edit')
@@ -468,49 +487,51 @@ class WebserverFrameworkBulkDeleteView(generic.BulkDeleteView):
 
 
 
+# --
+# Action Views
+# --
 
-# # --
-# # Registrar
-# # --
+# Registering the /scan/ path for a domain
+# register_model_view(
+#     Domain,
+#     'scan',
+#     kwargs={'model': Domain}
+# )
 
-# class RegistrarListView(generic.ObjectListView):
-#     queryset = Registrar.objects.all()
-#     filterset = filtersets.RegistrarFilterSet
-#     filterset_form = forms.RegistrarFilterForm
-#     table = tables.OperatingSystemTable
+@register_model_view(Domain, 'scan')
+class DomainScanView(generic.ObjectView):
+    """
+    Run a domain enumeration scan and display the results.
+    NOTE: See dcim.views.py -> PathTraceView() for example of doing this
+    """
+    pass
+    # additional_permissions = ['wim.view_scans']
+    # template_name = "wim/scan/domain_scan.html"
 
+    queryset = Domain.objects.all()
 
-# @register_model_view(OperatingSystem)
-# class OperatingSystemView(generic.ObjectView):
-#     queryset = OperatingSystem.objects.all()
-    
+    # def dispatch(self, request, *args, **kwargs):
+    #     model = kwargs.pop('model')
+    #     self.queryset = Domain.objects.all()
+    #     return super().dispatch(request, *args, **kwargs)
 
-# @register_model_view(OperatingSystem, 'edit')
-# class OperatingSystemEditView(generic.ObjectEditView):
-#     queryset = OperatingSystem.objects.all()
-#     form = forms.OperatingSystemForm
-
-
-# @register_model_view(OperatingSystem, 'delete')
-# class OperatingSystemDeleteView(generic.ObjectDeleteView):
-#     queryset = OperatingSystem.objects.all()
-
-
-# class OperatingSystemBulkImportView(generic.BulkImportView):
-#     queryset = OperatingSystem.objects.all()
-#     model_form = forms.OperatingSystemImportForm
-
-
-# class OperatingSystemBulkEditView(generic.BulkEditView):
-#     queryset = OperatingSystem.objects.all()
-#     filterset = filtersets.OperatingSystemFilterSet
-#     table = tables.OperatingSystemTable
-#     form = forms.OperatingSystemBulkEditForm
+    # TODO: My goal is to maybe send this to a job/task, and
+    # send user back to the return_url path for now.
+    # They can go pull up the job results later.
+    # Otherwise, the job will run, finish, and automatically update
+    # our dataset with the results of the scan, without requiring user to
+    # review it or do anything other than push the scan button from the start.
 
 
-# class OperatingSystemBulkDeleteView(generic.BulkDeleteView):
-#     queryset = OperatingSystem.objects.all()
-#     filterset = filtersets.OperatingSystemFilterSet
-#     table = tables.OperatingSystemTable
 
+@register_model_view(FQDN, 'scan')
+class FQDNScanView(generic.ObjectView):
+    """
+    Run a domain enumeration scan and display the results.
+    NOTE: See dcim.views.py -> PathTraceView() for example of doing this
+    """
+    pass
+    # additional_permissions = ['wim.view_scans']
+    # template_name = "wim/scan/domain_scan.html"
 
+    queryset = FQDN.objects.all()

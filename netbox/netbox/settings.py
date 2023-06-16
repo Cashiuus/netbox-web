@@ -43,7 +43,7 @@ DEFAULT_SENTRY_DSN = 'https://198cf560b29d4054ab8e583a1d10ea58@o1242133.ingest.s
 
 
 # 
-# Adding Graph Models support
+# Adding Graph Models support - [Cashiuus]
 #
 # GRAPH_MODELS = {
 #     # 'all_applications': True,

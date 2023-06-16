@@ -367,14 +367,10 @@ WEB_MENU = Menu(
         MenuGroup(
             label=_('Categorization'),
             items=(
-                # get_model_item('wim', 'fqdnstatus', _('FQDN Statuses')),
-                # get_model_item('wim', 'websitestatus', _('Website Statuses')),
-                # get_model_item('wim', 'parkedstatus', _('Parked Statuses')),
+                # get_model_item('wim', 'businesscriticality', _('Business Criticalities')),
                 get_model_item('wim', 'operatingsystem', _('Operating Systems')),
                 get_model_item('wim', 'vendor', _('Vendors')),
                 get_model_item('wim', 'webserverframework', _('Webserver Frameworks')),
-                # get_model_item('wim', 'businesscriticality', _('Business Criticality')),
-                # get_model_item('wim', 'authtype', _('Auth Types')),
                 # get_model_item('wim', 'complianceprogram', _('Compliance Programs')),
             ),
         ),

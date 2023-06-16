@@ -63,9 +63,9 @@ class DomainViewSet(NetBoxModelViewSet):
 
 class FQDNViewSet(NetBoxModelViewSet):
     queryset = FQDN.objects.prefetch_related(
-        'tenant', 'impacted_group_orig', 'impacted_division_orig', 'domain',
+        'impacted_group_orig', 'impacted_division_orig', 'domain',
         'tags',
-    )
+    ).all()
     serializer_class = serializers.FQDNSerializer
     filterset_class = filtersets.FQDNFilterSet
 
@@ -99,9 +99,7 @@ class OperatingSystemViewSet(NetBoxModelViewSet):
 
 
 class SiteLocationViewSet(NetBoxModelViewSet):
-    queryset = SiteLocation.objects.prefetch_related('tags').annotate(
-        fqdn_count=count_related(FQDN, 'location_orig')
-    )
+    queryset = SiteLocation.objects.prefetch_related('tags')
     serializer_class = serializers.SiteLocationSerializer
     filterset_class = filtersets.SiteLocationFilterSet
 
@@ -122,3 +120,13 @@ class WebserverFrameworkViewSet(NetBoxModelViewSet):
     )
     serializer_class = serializers.WebserverFrameworkSerializer
     filterset_class = filtersets.WebserverFrameworkFilterSet
+
+
+class WebEmailViewSet(NetBoxModelViewSet):
+    queryset = WebEmail.objects.annotate(
+        # For WebEmail, its related_name = "domains"
+        # Its ManyToManyField FK fieldname in Domains table is "registration_emails"
+        fqdn_count=count_related(Domain, 'registration_emails')
+    )
+    serializer_class = serializers.WebEmailSerializer
+    filterset_class = filtersets.WebEmailFilterSet

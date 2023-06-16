@@ -14,6 +14,7 @@ from utilities.forms.fields import (
 )
 from utilities.forms.widgets import BulkEditNullBooleanSelect
 from wim.models import *
+from wim.choices import *
 
 
 __all__ = (
@@ -31,9 +32,92 @@ __all__ = (
 class DomainBulkEditForm(NetBoxModelBulkEditForm):
     model = Domain
 
+    status = forms.ChoiceField(choices=DomainStatusChoices)
+
+    date_last_recon_scanned = forms.DateField()
+
+    # comments = CommentField(label='Comments')
+
+    fieldsets = (
+        (None, (
+            'status', 'asset_confidence', 'ownership_type',
+            'meets_standards',
+            'date_last_recon_scanned',
+        )),
+    )
+    # nullable_fields = ('tenant', 'comments')
+
 
 class FQDNBulkEditForm(NetBoxModelBulkEditForm):
     model = FQDN
+
+    # -- Choices --
+    # status = forms.ChoiceField(
+    #   choices=add_blank_choice(FQDNStatusChoices),
+    #   required=False,
+    # )
+    # asset_confidence = forms.ChoiceField(choices=AssetConfidenceChoices)
+    # fqdn_status = forms.ChoiceField(choices=FQDNOpsStatusChoices)
+    # website_status = forms.ChoiceField(choices=WebsiteOpsStatusChoices)
+
+    # -- Bools --
+    # NOTE: NetBox approach is this:
+    #       - the model def is a "BooleanField" with default=False
+    #       - then, forms use this "NullBooleanField"
+    mark_triaging = forms.NullBooleanField(
+        required=False,
+        widget=BulkEditNullBooleanSelect(),
+        label=_('Triaging'),
+    )
+
+    # -- FKs --
+    impacted_group_orig = DynamicModelChoiceField(
+        queryset=BusinessGroup.objects.all(),
+        required=False,
+        label=_('Group'),
+    )
+    impacted_division_orig = DynamicModelChoiceField(
+        queryset=BusinessDivision.objects.all(),
+        required=False,
+        label=_('Division'),
+    )
+    # location_orig = DynamicModelChoiceField(
+    #     queryset=SiteLocation.objects.all(),
+    # )
+    # location = DynamicModelChoiceField(
+    #     queryset=Site.objects.all(),
+    # )
+
+    owners_orig = forms.CharField(
+        required=False,
+        label=_('Owners (Orig)'),
+    )
+
+    # tenant = DynamicModelChoiceField(
+    #     queryset=Tenant.objects.all(),
+    #     required=False
+    # )
+    
+    # -- NetBox Built-In Fields --
+    description = forms.CharField(
+        max_length=255,
+        required=False,
+    )
+    comments = CommentField()
+
+    fieldsets = (
+        ("Edit Ownership", (
+            # 'status', 'asset_confidence',
+            # 'impacted_group_orig', 'impacted_division_orig',
+            # 'owners_orig',
+            # 'tenant',
+            "mark_triaging",
+        )),
+        # (None, (
+        #     "mark_triaging",
+        # )),
+    )
+    nullable_fields = ('description', 'comments')
 
 
 class BusinessGroupBulkEditForm(NetBoxModelBulkEditForm):
@@ -58,168 +142,3 @@ class VendorBulkEditForm(NetBoxModelBulkEditForm):
 
 class WebserverFrameworkBulkEditForm(NetBoxModelBulkEditForm):
     model = WebserverFramework
-
-
-# class AggregateBulkEditForm(NetBoxModelBulkEditForm):
-#     rir = DynamicModelChoiceField(
-#         queryset=RIR.objects.all(),
-#         required=False,
-#         label=_('RIR')
-#     )
-#     tenant = DynamicModelChoiceField(
-#         queryset=Tenant.objects.all(),
-#         required=False
-#     )
-#     date_added = forms.DateField(
-#         required=False
-#     )
-#     description = forms.CharField(
-#         max_length=200,
-#         required=False
-#     )
-#     comments = CommentField(
-#         label='Comments'
-#     )
-
-#     model = Aggregate
-#     fieldsets = (
-#         (None, ('rir', 'tenant', 'date_added', 'description')),
-#     )
-#     nullable_fields = ('date_added', 'description', 'comments')
-
-
-# class RoleBulkEditForm(NetBoxModelBulkEditForm):
-#     weight = forms.IntegerField(
-#         required=False
-#     )
-#     description = forms.CharField(
-#         max_length=200,
-#         required=False
-#     )
-
-#     model = Role
-#     fieldsets = (
-#         (None, ('weight', 'description')),
-#     )
-#     nullable_fields = ('description',)
-
-
-
-# class IPRangeBulkEditForm(NetBoxModelBulkEditForm):
-#     vrf = DynamicModelChoiceField(
-#         queryset=VRF.objects.all(),
-#         required=False,
-#         label=_('VRF')
-#     )
-#     tenant = DynamicModelChoiceField(
-#         queryset=Tenant.objects.all(),
-#         required=False
-#     )
-#     status = forms.ChoiceField(
-#         choices=add_blank_choice(IPRangeStatusChoices),
-#         required=False
-#     )
-#     role = DynamicModelChoiceField(
-#         queryset=Role.objects.all(),
-#         required=False
-#     )
-#     mark_utilized = forms.NullBooleanField(
-#         required=False,
-#         widget=BulkEditNullBooleanSelect(),
-#         label=_('Treat as 100% utilized')
-#     )
-#     description = forms.CharField(
-#         max_length=200,
-#         required=False
-#     )
-#     comments = CommentField(
-#         label='Comments'
-#     )
-
-#     model = IPRange
-#     fieldsets = (
-#         (None, ('status', 'role', 'vrf', 'tenant', 'mark_utilized', 'description')),
-#     )
-#     nullable_fields = (
-#         'vrf', 'tenant', 'role', 'description', 'comments',
-#     )
-
-
-# class IPAddressBulkEditForm(NetBoxModelBulkEditForm):
-#     vrf = DynamicModelChoiceField(
-#         queryset=VRF.objects.all(),
-#         required=False,
-#         label=_('VRF')
-#     )
-#     mask_length = forms.IntegerField(
-#         min_value=IPADDRESS_MASK_LENGTH_MIN,
-#         max_value=IPADDRESS_MASK_LENGTH_MAX,
-#         required=False
-#     )
-#     tenant = DynamicModelChoiceField(
-#         queryset=Tenant.objects.all(),
-#         required=False
-#     )
-#     status = forms.ChoiceField(
-#         choices=add_blank_choice(IPAddressStatusChoices),
-#         required=False
-#     )
-#     role = forms.ChoiceField(
-#         choices=add_blank_choice(IPAddressRoleChoices),
-#         required=False
-#     )
-#     dns_name = forms.CharField(
-#         max_length=255,
-#         required=False,
-#         label=_('DNS name')
-#     )
-#     description = forms.CharField(
-#         max_length=200,
-#         required=False
-#     )
-#     comments = CommentField(
-#         label='Comments'
-#     )
-
-#     model = IPAddress
-#     fieldsets = (
-#         (None, ('status', 'role', 'tenant', 'description')),
-#         ('Addressing', ('vrf', 'mask_length', 'dns_name')),
-#     )
-#     nullable_fields = (
-#         'vrf', 'role', 'tenant', 'dns_name', 'description', 'comments',
-#     )
-
-
-
-
-# class ServiceTemplateBulkEditForm(NetBoxModelBulkEditForm):
-#     protocol = forms.ChoiceField(
-#         choices=add_blank_choice(ServiceProtocolChoices),
-#         required=False
-#     )
-#     ports = NumericArrayField(
-#         base_field=forms.IntegerField(
-#             min_value=SERVICE_PORT_MIN,
-#             max_value=SERVICE_PORT_MAX
-#         ),
-#         required=False
-#     )
-#     description = forms.CharField(
-#         max_length=200,
-#         required=False
-#     )
-#     comments = CommentField(
-#         label='Comments'
-#     )
-
-#     model = ServiceTemplate
-#     fieldsets = (
-#         (None, ('protocol', 'ports', 'description')),
-#     )
-#     nullable_fields = ('description', 'comments')
-
-
-# class ServiceBulkEditForm(ServiceTemplateBulkEditForm):
-#     model = Service
-

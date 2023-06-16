@@ -33,8 +33,6 @@ Supporting Models:
 BusinessDivision
 BusinessGroup
 BusinessCriticality
-CloudProvider
-ComplianceProgram
 CPE
 # DataSource - Disabled, Netbox already has a table named this in core/
 FqdnStatus
@@ -94,6 +92,113 @@ SUPPORT_GROUP_TYPE_CHOICES      # Group types (e.g. SNOW, versus Team Name)
 
 
 
+## Initial Onboarding
+
+To first start setting up this project as a new application, you need to start importing data to get going. Here are the first things you should import (because they are used by objects that get imported later in the sequence):
+
+
+1. Tenant groups and Tenants
+2. BusinessGroups (Groups first, so divisions can have a valid FK to them when imported next)
+2. BusinessDivisions
+3. Regions
+4. Site Groups, and Sites (also SiteLocations for now)
+    - For reference, pytz valid timezones: https://github.com/stub42/pytz/tree/master/tz
+5. Manufacturers, Providers and/or Vendors
+6. RIRs
+7. ASNs
+8. Platforms, OperatingSystems
+8. Device Types, Roles
+9. IP/VLAN Roles
+10. Prefixes, IP Ranges, and IP Addresses
+11. VLANs
+12. Domains
+13. FQDNs
+
+
+
+
+
+
+
+
+
+## Development - Full File Breakdown Explanations
+
+
+project_root/
+
+
+
+    netbox/
+
+        templates/
+            app/
+                {files}.html        - The HTML templates for app pages
+
+
+
+
+    app/
+        api/        - For netbox, this is required for an app to function correctly, or views won't render, because data lookups are done via API calls.
+            nested_serializers.py   - For ForeignKey references to get context behind a model's serializer. called by a serializer
+            serializers.py          - A serializer of data when API calls are made.
+            urls.py                 - Like the app urls.py file, but for the rest_framework's API router
+            views.py                - Like the app views.py file, but for API definitions
+        fields/                 - A fields file or directory is for custom model fields, like in cases where you want to create your own version of a CharField or IntegerField with different validation or something
+            cpe.py              - Potential custom model field for CPE's
+
+        forms/
+            bulk_edit.py        - Define what models/fields can be bulk edited and how
+            bulk_import.py      - Define what models/fields can be bulk imported and how
+            filtersets.py       - The filters defined for the "Filters" view tab on list views
+            model_forms.py      - Define the "edit" view for a particular model record
+        management/
+            commands/           - Create custom commands to use with manage.py
+                update_domains.py   _ A custom created command
+        migrations/             - All of this app's DB migrations
+        models/                 - All of this app's DB models
+        tables/
+            {model_name}.py     - A table definition for a model that defines default columns, and fields that may be viewed in a table "list view". Linked to views.py as the defined table to use for the view.
+        tests/
+            test_models.py      - Basic app tests can go here, and are necessary if you wish to make a PR.
+    
+
+        apps.py         - Once you configure search.py, you will import it here to enable it for inclusion in the global search
+        choices.py      - All choices definitions for CharField's that use choices in this app
+        constants.py    - Any constants for the app (e.g. min/max port integers)
+        filtersets.py   - This main app filtersets file is for filtering UI and API queries and every app has one.
+        managers.py     - ipam uses this for a manager that sorts IP's in a better way
+        querysets.py    - For really complicated/nested queryset definitions
+        search.py       - Sets up indices on your models and fields you specify. Doesn't function on its own, other configurations are needed to make global search work, I believe this is in the apps.py file
+        signals.py      - Handlers for post-save, pre-delete type actions
+        urls.py         - App urls for routing, core file for all apps
+        validators.py   - Custom validators to use in fields or forms, ensure good data is submitted. Caveat: the built-in URLValidator hates underscores...
+        views.py        - Core app file, contains views that are configured in urls.py
+        widgets.py      - Define custom form widgets for use in the app
+
+
+
+
+
+### The global search feature
+
+
+- The backend exists in /netbox/search/backends.py but doesn't contain too much code. It basically registers search for each enabled app into its global registry.
+
+
+- Under netbox/forms/__init__.py, is the definition of the search form itself, and is where the code is at to setup the lookup choices, and preload the objects available from all of the apps
+
+
+- Finally, the actual "view" for the Search is defined in netbox/netbox/views/misc.py as "SearchView".
+
+
+- You can manually reindex all or a specific app using a manage.py custom command which is defined in netbox/extras/management/commands/reindex.py
+
+```
+python manage.py reindex <app>
+# or, can only reindex if no cache already exists
+python manage.py reindex <app> --lazy
+```
 
 
 
@@ -119,3 +224,13 @@ File: wim/api/urls.py
 ```
 app_name = "wim-api"
 ```
+
+
+
+
+#### Global Search
+
+According to the docs, you just have to subclass SearchIndex, but when I did that it still was not working:
+- https://docs.netbox.dev/en/stable/development/adding-models/
+
+

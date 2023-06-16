@@ -8,9 +8,8 @@ from netbox.constants import NESTED_SERIALIZER_PREFIX
 from tenancy.api.nested_serializers import NestedTenantSerializer
 from utilities.api import get_serializer_for_model
 
-# from .nested_serializers import *
 # from .field_serializers import IPAddressField
-
+from .nested_serializers import *
 from wim.choices import *
 from wim.models import *
 
@@ -33,7 +32,7 @@ class DomainSerializer(NestedGroupModelSerializer):
     class Meta:
         model = Domain
         fields = (
-            'id', 'url', 'name', 'status',
+            'id', 'url', 'display', 'name', 'status',
             'date_registrar_expiry', 'date_first_registered',
             'tenant',
         )
@@ -45,6 +44,10 @@ class DomainSerializer(NestedGroupModelSerializer):
 
 class FQDNSerializer(NetBoxModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='wim-api:fqdn-detail')
+    # -- Nested for FK Lookups --
+    impacted_group_orig = NestedBusinessGroupSerializer(required=False, allow_null=True)
+    impacted_division_orig = NestedBusinessDivisionSerializer(required=False, allow_null=True)
+    # -- Choices --
     status = ChoiceField(
         choices=FQDNStatusChoices,
         required=False,
@@ -52,22 +55,27 @@ class FQDNSerializer(NetBoxModelSerializer):
     fqdn_status = ChoiceField(
         choices=FQDNOpsStatusChoices,
         required=False,
+        allow_blank=True,
     )
     website_status = ChoiceField(
         choices=WebsiteOpsStatusChoices,
         required=False,
+        allow_blank=True,
     )
     tenant = NestedTenantSerializer(required=False, allow_null=True)
+    # site = NestedSiteSerializer(required=False, allow_null=True)
+
+    sitelocation_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = FQDN
         fields = (
-            'id', 'url', 'name', 'status',
+            'id', 'url', 'display', 'name', 'status',
             'fqdn_status', 'website_status',
+            'impacted_group_orig', 'impacted_division_orig',
             'tenant',
+            'sitelocation_count',
         )
-
-
 
 
 
@@ -86,7 +94,7 @@ class BusinessGroupSerializer(NetBoxModelSerializer):
     class Meta:
         model = BusinessGroup
         fields = (
-            'id', 'url', 'name',
+            'id', 'url', 'display', 'name', 'acronym',
             'tenant',
         )
 
@@ -106,11 +114,9 @@ class BusinessDivisionSerializer(NetBoxModelSerializer):
     class Meta:
         model = BusinessDivision
         fields = (
-            'id', 'url', 'name',
+            'id', 'url', 'display', 'name', 'acronym',
             'tenant',
         )
-
-
 
 
 
@@ -125,7 +131,8 @@ class OperatingSystemSerializer(NetBoxModelSerializer):
         model = OperatingSystem
         # TODO: Way to put __str__ in here? bc it concats the 3 fields that make up a full OS string
         fields = (
-            'id', 'url', 'vendor', 'product', 'update', 'family'
+            'id', 'url', 'display', 'vendor', 'product', 'update',
+            'platform_family', 'platform_type',
         )
 
 
@@ -144,7 +151,7 @@ class SiteLocationSerializer(NetBoxModelSerializer):
     class Meta:
         model = SiteLocation
         fields = (
-            'id', 'url', 'name', 'code',
+            'id', 'url', 'display', 'name', 'code',
         )
 
 
@@ -163,7 +170,27 @@ class VendorSerializer(NetBoxModelSerializer):
     class Meta:
         model = Vendor
         fields = (
-            'id', 'url', 'name',
+            'id', 'url', 'display', 'name',
+        )
+
+
+
+#
+# WebEmail
+#
+
+class WebEmailSerializer(NetBoxModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='wim-api:webemail-detail')
+    # status = ChoiceField(
+    #     choices=FQDNStatusChoices,
+    #     required=False,
+    # )
+    # tenant = NestedTenantSerializer(required=False, allow_null=True)
+
+    class Meta:
+        model = WebEmail
+        fields = (
+            'id', 'url', 'display', 'email_address',
         )
 
 
@@ -183,6 +210,5 @@ class WebserverFrameworkSerializer(NetBoxModelSerializer):
     class Meta:
         model = WebserverFramework
         fields = (
-            'id', 'url', 'name', 'product', 'version', 'raw_banner', 'cpe'
+            'id', 'url', 'display', 'name', 'product', 'version', 'raw_banner', 'cpe'
         )
-

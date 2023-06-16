@@ -3,6 +3,8 @@ from django.db.models import Q
 # from .choices import FHRPGroupProtocolChoices, IPAddressRoleChoices
 
 
+WEBSITE_IMAGE_FORMATS = 'image/bmp,image/gif,image/jpeg,image/png,image/tiff,image/webp'
+
 #
 # WIM Dashboard Widgets
 #
