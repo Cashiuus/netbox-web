@@ -9,3 +9,5 @@ class FQDNManager(Manager.from_queryset(RestrictedQuerySet)):
     def get_queryset(self):
         # return super().get_queryset().annotate
         pass
+
+
