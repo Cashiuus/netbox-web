@@ -534,6 +534,12 @@ class FQDN(PrimaryModel):
         help_text='If asset is beholden to one or more cybersecurity regulatory compliance programs',
     )
     
+    scan_fingerprint_json = models.JSONField(
+        _('Scan Fingerprint Data'),
+        blank=True,
+        null=True,
+        help_text='Store the raw recon scan fingerprint data in JSON format',
+    )
 
     # data_source_m2m = models.ManyToManyField('DataSource', blank=True,
     #                                          related_name='assets_m2m')
@@ -590,6 +596,35 @@ class FQDN(PrimaryModel):
 
     def get_absolute_url(self):
         return reverse('wim:fqdn', args=[self.pk])
+    
+    ACTIVE_STATUS_LIST = (
+        FQDNStatusChoices.STATUS_NEW,
+        FQDNStatusChoices.STATUS_ACTIVE,
+        FQDNStatusChoices.STATUS_DECOMMISSIONING,
+    )
+
+    ACTIVE_WEBSITE_LIST = (
+        WebsiteOpsStatusChoices.WEBSITESTATUS_GOOD,
+        WebsiteOpsStatusChoices.WEBSITESTATUS_BROKEN,
+        WebsiteOpsStatusChoices.WEBSITESTATUS_DEFAULT,
+        WebsiteOpsStatusChoices.WEBSITESTATUS_NONPROD,
+    )
+
+    @property
+    def is_active(self):
+        return self.status in FQDN.ACTIVE_STATUS_LIST
+
+    def is_live_website(self):
+        return self.website_status in FQDN.ACTIVE_WEBSITE_LIST
+    
+    # def record_count(self):
+    #     return FQDN.objects.all().count()
+
+    # def record_count(self, fqdn_status=None, website_status=None):
+    #     if fqdn_status:
+    #         return self.objects.filter(fqdn_status=fqdn_status).count()
+    #     elif website_status:
+    #         return self.objects.filter(website_status=website_status).count()
 
     # NOTE: You must define a function if you want colored labels for a field
     #       in the table "ListView" view
@@ -610,3 +645,14 @@ class FQDN(PrimaryModel):
     
     def get_role_color(self):
         return WebsiteRoleChoices.colors.get(self.website_role)
+    
+    # def save(self, *args, **kwargs):
+    #     self.full_clean()
+
+    #     new_entry = self.pk is None
+    #     if not new_entry:
+    #         existing = FQDN.objects.get(pk=self.pk)
+        
+    #     super().save(*args, **kwargs)
+
+

@@ -35,18 +35,14 @@ BusinessGroup
 BusinessCriticality
 CPE
 # DataSource - Disabled, Netbox already has a table named this in core/
-FqdnStatus
 OperatingSystem
-ParkedStatus
-Registrar
+Registrar - Deleting this in favor of a common Registrar/Vendor/Provider table
 SiteLocation
-SupportGroup
+SupportGroup - Unsure if using this
 Vendor
 WebEmail
 # WebIPAddress - Disabled and attempting to use Netbox version in ipam/
 WebserverFramework
-WebsiteAuthType
-WebsiteStatus
 ```
 
 
@@ -56,15 +52,14 @@ Choices Objects:
 ```
 DomainStatusChoices
 FQDNStatusChoices
-
 FQDNOpsStatusChoices
 WebsiteOpsStatusChoices
-
 AssetClassChoices
 RedirectStatusChoices
 WebAuthChoices
 WebsiteRoleChoices
 ```
+
 
 
 Legacy Choices (Integers method):
@@ -106,13 +101,14 @@ To first start setting up this project as a new application, you need to start i
 5. Manufacturers, Providers and/or Vendors
 6. RIRs
 7. ASNs
-8. Platforms, OperatingSystems
-8. Device Types, Roles
-9. IP/VLAN Roles
-10. Prefixes, IP Ranges, and IP Addresses
-11. VLANs
-12. Domains
-13. FQDNs
+8. Platforms, OperatingSystems, WebserverFrameworks
+9. Device Types, Roles
+10. VRFs (Virtual Routing and Forwarding) - Create a general "Public Internet" one w/ no Tenant that our public subnets can fall into
+11. IP/VLAN Roles
+12. Prefixes, IP Ranges, and IP Addresses
+13. VLANs
+14. Domains
+15. FQDNs
 
 
 

@@ -9,7 +9,9 @@ from utilities.exceptions import PermissionsViolation
 from utilities.forms import BootstrapMixin, add_blank_choice
 from utilities.forms.fields import (
     CommentField, ContentTypeChoiceField, 
-    DynamicModelChoiceField, DynamicModelMultipleChoiceField, NumericArrayField,
+    DynamicModelChoiceField, DynamicModelMultipleChoiceField,
+    JSONField,
+    NumericArrayField,
     SlugField,
 )
 from utilities.forms.widgets import DatePicker, ClearableFileInput
@@ -265,6 +267,9 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
     is_http2 = forms.BooleanField(required=False)
     tls_cert_is_wildcard = forms.BooleanField(required=False)
 
+    # -- JSON fields --
+    # scan_fingerprint_json = JSONField(required=False)
+
     fieldsets = (
         ("FQDN", (
             "name", "mark_triaging", "asset_confidence",
@@ -275,7 +280,7 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
             "geo_region_choice",
             "geo_region",
             "location_orig", "location",
-            "is_in_cmdb", 'is_internet_facing', 'is_flagship',
+            "is_in_cmdb", 'is_flagship',
 
         )),
         ("Tenancy", (
@@ -285,6 +290,8 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
         )),
         ("Technical Details", (
             "public_ip_1", "ipaddress_public_8",
+            'is_internet_facing',
+            'is_cloud_hosted', 'cloud_provider',
             'tech_webserver_orig', 'tech_webserver_1', 'tech_addtl',
             'private_ip_1', 'private_ip_2',
             # 'ipaddress_private_8', 
@@ -305,6 +312,7 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
             'vuln_scan_coverage', 'vuln_scan_last_date',
             'last_vuln_assessment',
             'risk_analysis_notes',
+            'scan_fingerprint_json',
         )),
         ("Scoping", (
             'feature_api',
@@ -339,10 +347,12 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
             'impacted_group_orig', 'impacted_division_orig',
             'location_orig', 'location',
             'geo_region_choice', 'geo_region',
-            'env_model', 'architectural_model', 
-            'tech_webserver_orig', 'tech_webserver_1', 'tech_addtl',
-            'is_in_cmdb',
+            'env_model', 'architectural_model',
             'public_ip_1', 'ipaddress_public_8',
+            'tech_webserver_orig', 'tech_webserver_1', 'tech_addtl',
+            'is_in_cmdb', 'is_flagship',
+            'is_internet_facing',
+            'is_akamai', 'is_load_protected', 'is_waf_protected',
             'tenant', 'owners_orig',
             'support_group_website_technical_orig', 'support_group_website_approvals_orig',
             'private_ip_1', 'private_ip_2',
@@ -359,14 +369,14 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
             'had_bugbounty', 'is_risky',
             'vuln_scan_coverage', 'vuln_scan_last_date',
             'last_vuln_assessment', 'vuln_assessment_priority',
-            'risk_analysis_notes',
-            'is_internet_facing', 'is_flagship',
-            'cloud_provider',
+            'risk_analysis_notes', 'scan_fingerprint_json',
+            
+            'is_cloud_hosted', 'cloud_provider',
             'is_vendor_managed', 'is_vendor_hosted',
             'vendor_company_orig', 
             'vendor_pocs_orig',
             'vendor_notes',
-            'is_akamai', 'is_load_protected', 'is_waf_protected',
+            
             'feature_api',
             'feature_acct_mgmt', 'feature_webauth_type', 'feature_auth_self_registration',
             # Scoping --

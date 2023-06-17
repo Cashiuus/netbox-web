@@ -71,6 +71,14 @@ urlpatterns = [
     path('web-frameworks/delete/', views.WebserverFrameworkBulkDeleteView.as_view(), name='webserverframework_bulk_delete'),
     path('web-frameworks/<int:pk>/', include(get_model_urls('wim', 'webserverframework'))),
 
+    # CPEs
+    # path('cpes/', views.CPEListView.as_view(), name='cpe_list'),
+    # path('cpes/add/', views.CPEEditView.as_view(), name='cpe_add'),
+    # path('cpes/import/', views.CPEBulkImportView.as_view(), name='cpe_import'),
+    # path('cpes/edit/', views.CPEBulkEditView.as_view(), name='cpe_bulk_edit'),
+    # path('cpes/delete/', views.CPEBulkDeleteView.as_view(), name='cpe_bulk_delete'),
+    # path('cpes/<int:pk>/', include(get_model_urls('wim', 'cpe'))),
+
     # T
     # path('<model_path>/', views.{{model_name}}ListView.as_view(), name='{{model_name}}_list'),
     # path('/add/', views.{{model_name}}EditView.as_view(), name='{{model_name}}_add'),
