@@ -25,13 +25,13 @@ __all__ = (
 )
 
 # class AssetClass(OrganizationalModel):
-#     """ 
-#     Primary classficiation types for assets in our inventory 
-#     (Domain, FQDN, Server, etc). 
+#     """
+#     Primary classficiation types for assets in our inventory
+#     (Domain, FQDN, Server, etc).
 #     """
 #     name = models.CharField(
-#         _('Type'), 
-#         max_length=100, 
+#         _('Type'),
+#         max_length=100,
 #         unique=True,
 #         help_text='An asset type category'
 #     )
@@ -47,7 +47,7 @@ __all__ = (
 
 #     def __str__(self):
 #         return self.name
-    
+
 
 
 # class FqdnStatus(OrganizationalModel):
@@ -110,8 +110,8 @@ class ParkedStatus(OrganizationalModel):
 class WebserverFramework(OrganizationalModel):
     """ Data sources that will feed this CMDB, so we can mark where data came from. """
     name = models.CharField(
-        _('Name'), 
-        max_length=50, 
+        _('Name'),
+        max_length=50,
         unique=True,
         help_text='The name and version of the server framework (e.g. Apache/2.4.9)'
     )
@@ -137,7 +137,7 @@ class WebserverFramework(OrganizationalModel):
     def __str__(self):
         return self.name
         #return '{0}/{1}'.format(self.product, self.version)
-    
+
     def get_absolute_url(self):
         return reverse('wim:webserverframework', args=[self.pk])
 
@@ -146,8 +146,8 @@ class WebserverFramework(OrganizationalModel):
 # class WebsiteAuthType(OrganizationalModel):
 #     """ FK for categories of authentication methods. """
 #     name = models.CharField(
-#         _('Auth Type'), 
-#         max_length=100, 
+#         _('Auth Type'),
+#         max_length=100,
 #         unique=True,
 #         help_text='An authentication method for use in fingerprinting website features'
 #     )
@@ -162,8 +162,8 @@ class WebserverFramework(OrganizationalModel):
 
 #     def __str__(self):
 #         return self.name
-    
-    
+
+
 
 # TODO: For removal, changed this to choices
 # class CloudProvider(OrganizationalModel):
@@ -203,19 +203,19 @@ class OperatingSystem(OrganizationalModel):
     """
     vendor = models.CharField(_('Vendor'), max_length=100)
     product = models.CharField(
-        _('Product Name'), 
+        _('Product Name'),
         max_length=100,
         help_text=_('Product name and major version')
     )
     update = models.CharField(
-        _('Update/Service Pack'), 
-        max_length=10, 
+        _('Update/Service Pack'),
+        max_length=10,
         blank=True,
         help_text='Revision or Service Pack value'
     )
     build_number = models.CharField(_("OS Build"), max_length=50, blank=True)
     platform_family = models.CharField(
-        _('Platform Family'), 
+        _('Platform Family'),
         max_length=50,
         choices=PlatformFamilyChoices,
         blank=True,
@@ -298,20 +298,20 @@ class BusinessGroup(OrganizationalModel):
         This is first level grouping (Company -> Group).
     """
     name = models.CharField(
-        _('Name'), 
-        max_length=100, 
-        unique=True, 
+        _('Name'),
+        max_length=100,
+        unique=True,
         help_text='Full name of the business group'
     )
     acronym = models.CharField(
-        _('Acronym'), 
+        _('Acronym'),
         max_length=10,
         unique=True,
         help_text='Abbrev. name of the business group'
     )
     principal_location_orig = models.ForeignKey(
-        'wim.SiteLocation', 
-        on_delete=models.SET_NULL, 
+        'wim.SiteLocation',
+        on_delete=models.SET_NULL,
         blank=True, null=True,
         related_name='+',
         verbose_name='Principal Location Mine',
@@ -325,14 +325,14 @@ class BusinessGroup(OrganizationalModel):
 
     )
     description = models.TextField(_('Description'), blank=True)
-    # notes = models.TextField(_('Notes'), 
+    # notes = models.TextField(_('Notes'),
     #                          blank=True,
     #                          help_text='Notable remarks about this business group, such as brand names associated')
-    date_created = models.DateTimeField(_('Date Created'), 
+    date_created = models.DateTimeField(_('Date Created'),
                                         auto_now_add=True,
                                         help_text='system field for creation date')
     date_modified = models.DateTimeField(_('Date Modified'),
-                                         auto_now=True, 
+                                         auto_now=True,
                                          help_text='system field for modified date')
 
     class Meta:
@@ -342,10 +342,10 @@ class BusinessGroup(OrganizationalModel):
 
     def __str__(self):
         return self.acronym
-    
+
     def get_absolute_url(self):
-        # return reverse('wim:businessgroup', kwargs=[self.pk])
-        return reverse('wim:businessgroup', kwargs={'pk': self.pk})
+        return reverse('wim:businessgroup', args=[self.pk])
+        # return reverse('wim:businessgroup', kwargs={'pk': self.pk})
 
 
 class BusinessDivision(OrganizationalModel):
@@ -372,10 +372,10 @@ class BusinessDivision(OrganizationalModel):
 
     def __str__(self):
         return self.acronym
-    
+
     def get_absolute_url(self):
-        # return reverse('wim:businessdivision', kwargs=[self.pk])
-        return reverse('wim:businessdivision', kwargs={'pk': self.pk})
+        return reverse('wim:businessdivision', args=[self.pk])
+        # return reverse('wim:businessdivision', kwargs={'pk': self.pk})
 
 
 class SupportGroup(OrganizationalModel):
@@ -419,7 +419,7 @@ class SupportGroup(OrganizationalModel):
 
     def __str__(self):
         return self.name
-    
+
     def get_absolute_url(self):
         return reverse('wim:supportgroup', kwargs=[self.pk])
 
@@ -440,32 +440,37 @@ class BusinessCriticality(OrganizationalModel):
 
     def __str__(self):
         return self.name
-    
+
     def get_absolute_url(self):
         return reverse('wim:businesscriticality', kwargs=[self.pk])
 
 
 class SiteLocation(OrganizationalModel):
-    """ 
-    Digital sites or site codes to which an asset or support team may belong. 
+    """
+    Digital sites or site codes to which an asset or support team may belong.
     """
     code = models.CharField(_('Site Code'), max_length=20, unique=True)
     name = models.CharField(_('Name'), max_length=255, help_text='Brief name of the site or location')
     slug = models.SlugField(max_length=100, unique=True)
+    active = models.BooleanField(
+        default=True,
+        verbose_name='Active',
+        help_text=_('Location is active or inactive (closed)')
+    )
     priority = models.PositiveSmallIntegerField(
-        _('Priority'), 
-        default=50, 
+        _('Priority'),
+        default=50,
         help_text='Prioritization scoring of site locations (higher score = more critical)'
     )
     impacted_group_orig = models.ForeignKey(
         'BusinessGroup',
         on_delete=models.CASCADE,
-        blank=True, null=True
+        blank=True, null=True,
     )
     impacted_division_orig = models.ForeignKey(
         'BusinessDivision',
-        on_delete=models.CASCADE, 
-        blank=True, null=True
+        on_delete=models.CASCADE,
+        blank=True, null=True,
     )
     street = models.CharField(_('Street'), max_length=255, blank=True, default='')
     city = models.CharField(_('city'), max_length=50, blank=True, default='')
@@ -475,13 +480,13 @@ class SiteLocation(OrganizationalModel):
     # geo_region_orig = models.IntegerField(_('Region orig'),
     #                                  choices=GEO_REGION_CHOICES,
     #                                  default=GEO_REGION_CHOICES.amer)
-    
+
     geo_region_choice = models.CharField(
         max_length=50,
         choices=GeoRegionChoices,
         blank=True,
     )
-    
+
     geo_region = models.ForeignKey(
         to='dcim.Region',
         on_delete=models.SET_NULL,
@@ -520,8 +525,8 @@ class SiteLocation(OrganizationalModel):
     )
 
     it_infra_contact = models.CharField(
-        _('IT Infra POC'), 
-        max_length=255, 
+        _('IT Infra POC'),
+        max_length=255,
         blank=True, default='',
         help_text='Primary Site IT Infrastructure Point of Contact'
     )
@@ -542,7 +547,7 @@ class SiteLocation(OrganizationalModel):
 
     def __str__(self):
         return self.code
-    
+
     def get_absolute_url(self):
         # return reverse('wim:sitelocation', args=[self.pk])
         return reverse('wim:sitelocation', args=[self.pk])

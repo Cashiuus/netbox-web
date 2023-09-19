@@ -64,8 +64,9 @@ class DomainViewSet(NetBoxModelViewSet):
 class FQDNViewSet(NetBoxModelViewSet):
     queryset = FQDN.objects.prefetch_related(
         'impacted_group_orig', 'impacted_division_orig', 'domain',
+        'vendor_company_fk',
         'tags',
-    ).all()
+    )
     serializer_class = serializers.FQDNSerializer
     filterset_class = filtersets.FQDNFilterSet
 
@@ -107,7 +108,7 @@ class SiteLocationViewSet(NetBoxModelViewSet):
 
 class VendorViewSet(NetBoxModelViewSet):
     queryset = Vendor.objects.prefetch_related('tags').annotate(
-        fqdn_count=count_related(FQDN, 'vendor_company_orig')
+        fqdn_count=count_related(FQDN, 'vendor_company_fk')
     )
     serializer_class = serializers.VendorSerializer
     filterset_class = filtersets.VendorFilterSet

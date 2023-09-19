@@ -3,7 +3,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from netbox.models import PrimaryModel
+from netbox.models import OrganizationalModel
 
 
 __all__ = (
@@ -11,7 +11,7 @@ __all__ = (
 )
 
 
-class WebEmail(PrimaryModel):
+class WebEmail(OrganizationalModel):
     """
     A short-term solution for cross-referencing/grouping email addresses
     found during web/dns recon, rather than simply using a Char/EmailField in tables.

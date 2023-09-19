@@ -33,21 +33,28 @@
                         {{ object.name }}
                         {% if perms.wim.add_scan %}
                             <div class="float-md-end">
+                                <a href="https://community.riskiq.com/search/{{ object.name }}/resolutions" target="_blank" rel="noopener noreferrer" style="padding-right:20px;">RiskIQ</a>
+
                                 {# <a href="{% url 'wim:fqdn_scan' %}?domain={{ object.name }}&return_url={{ object.get_absolute_url }}"  #}
                                 <a href="{% url 'wim:fqdn_scan' pk=object.pk %}" class="btn btn-sm btn-success lh-l" title="Scan">
                                     <i class="mdi mdi-transit-connection-variant" aria-hidden="true"></i> Launch Scan
                                 </a>
+                            
                             </div>
                         {% endif %}
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row">Asset Confidence</th>
-                    <td>{{ object.asset_confidence }}</td>
-                </tr>
-                <tr>
                     <th scope="row">Triaging?</th>
                     <td>{% checkmark object.mark_triaging %}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Date Last Recon</th>
+                    <td>{{ object.date_last_recon|annotated_date }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Asset Confidence</th>
+                    <td>{{ object.asset_confidence }}</td>
                 </tr>
                 <tr>
                     <th scope="row">Status</th>
@@ -149,6 +156,10 @@
                 <tr>
                     <th scope="row">Internet Facing?</th>
                     <td>{% checkmark object.is_internet_facing %}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Is Nonprod Mirror?</th>
+                    <td>{% checkmark object.is_nonprod_mirror %}</td>
                 </tr>
                 <tr>
                     <th scope="row">Cloud Provider</th>
@@ -268,65 +279,25 @@
                     <td>{{ object.tls_cert_expires }}</td>
                 </tr>
                 <tr>
+                    <th scope="row">TLS Cert Details</th>
+                    <td>{{ object.tls_cert_info }}</td>
+                </tr>
+                <tr>
                     <th scope="row">Cert is Wildcard?</th>
                     <td>{% checkmark object.tls_cert_is_wildcard %}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Cert is Self Signed?</th>
+                    <td>{% checkmark object.tls_cert_self_signed %}</td>
                 </tr>
                 <tr>
                     <th scope="row">TLS Cert SHA1 Hash</th>
                     <td>{{ object.tls_cert_sha1 }}</td>
                 </tr>
-                <tr>
-                    <th scope="row">TLS Cert Details</th>
-                    <td>{{ object.tls_cert_info }}</td>
-                </tr>
+                
                 <tr>
                     <th scope="row">Notes</th>
                     <td>{{ object.notes }}</td>
-                </tr>
-            </table>
-        </div>
-    </div>
-
-    {# Start : Scoping Info Card #}
-    <div class="card">
-        <h5 class="card-header">
-            Website Scoping
-        </h5>
-        <div class="card-body">
-            <table class="table table-hover attr-table">
-                <tr>
-                    <th scope="row">Feature: API?</th>
-                    <td>{% checkmark object.feature_api %}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Feature: Account Mgmt?</th>
-                    <td>{% checkmark object.feature_acct_mgmt %}</td>
-                </tr>
-                {% if object.feature_acct_mgmt %}
-                <tr>
-                    <th scope="row">Acct Mgmt Auth Method</th>
-                    <td>{{ object.get_feature_webauth_type_display }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Acct Mgmt Self Registration?</th>
-                    <td>{% checkmark object.feature_auth_self_registration %}</td>
-                </tr>
-                {% endif %}
-                <tr>
-                    <th scope="row">Scoping Size</th>
-                    <td>{{ object.scoping_size }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Scoping Complexity</th>
-                    <td>{{ object.scoping_complexity }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Scoping Test Roles</th>
-                    <td>{{ object.scoping_roles }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Calculated LOE</th>
-                    <td>{{ object.calc_loe }} days</td>
                 </tr>
             </table>
         </div>
@@ -406,18 +377,6 @@
                         </td>
                     </tr>
                     <tr>
-                        <th scope="row">Technical Support Group</th>
-                        <td>{{ object.support_group_website_technical_orig }}</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Business Support Group</th>
-                        <td>{{ object.support_group_website_approvals_orig }}</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
                         <th scope="row">Owners (Orig)</th>
                         <td colspan="3">{{ object.owners_orig }}</td>
                     </tr>
@@ -429,8 +388,18 @@
                         <td></td>
                     </tr>
                     {% endif %}
-                    
-
+                    <tr>
+                        <th scope="row">Technical Support Group</th>
+                        <td>{{ object.support_group_website_technical_orig }}</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Business Support Group</th>
+                        <td>{{ object.support_group_website_approvals_orig }}</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
                 </table>
             </div>
         </div>
@@ -449,35 +418,33 @@
                       <td>{% checkmark object.had_bugbounty %}</td>
                   </tr>
                   <tr>
-                      <th scope="row">Akamai?</th>
-                      <td>{% checkmark object.is_akamai %}</td>
-                      <td></td>
-                      <td></td>
-                  </tr>
-                  <tr>
-                      <th scope="row">WAF Protected?</th>
-                      <td>{% checkmark object.is_waf_protected %}</td>
-                      <th scope="row">Load Balanced?</th>
-                      <td>{% checkmark object.is_load_protected %}</td>
-                  </tr>
-                  <tr>
                       <th scope="row">Vuln Scanner Coverage?</th>
                       <td>{% checkmark object.vuln_scan_coverage %}</td>
                       <th scope="row">Last Vuln Scan</th>
-                      <td>{{ object.vuln_scan_last_date|annotated_date }}</td>
+                      <td>{{ object.date_last_vulnscan|annotated_date }}</td>
                   </tr>
                   <tr>
-                      <th scope="row">Last Vuln/Pentest Assessment</th>
-                      <td colspan="3">{{ object.last_vuln_assessment|annotated_date }}</td>
-                  </tr>
-                  <tr>
-                      <th scope="row">Security Assessment Priority</th>
-                      <td colspan="3">{{ object.vuln_assessment_priority|placeholder }}</td>
+                      <th scope="row">Pentest Priority</th>
+                      <td>{{ object.pentest_priority|placeholder }}</td>
+                      <th scope="row">Last Pentest</th>
+                      <td>{{ object.date_last_pentest|annotated_date }}</td>
                   </tr>
                   <tr>
                       <th scope="row">Website Operation Age</th>
                       <td colspan="3">{{ object.site_operation_age|annotated_date }}</td>
                   </tr>
+                  <tr>
+                    <th scope="row">Akamai?</th>
+                    <td>{% checkmark object.is_akamai %}</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th scope="row">WAF Protected?</th>
+                    <td>{% checkmark object.is_waf_protected %}</td>
+                    <th scope="row">Load Balanced?</th>
+                    <td>{% checkmark object.is_load_protected %}</td>
+                </tr>
                   <tr>
                     <th scope="row">Compliance Required?</th>
                     <td>{% checkmark object.is_compliance_required %}</td>
@@ -500,6 +467,52 @@
               </table>
           </div>
       </div>
+
+      {# Start : Scoping Info Card #}
+    <div class="card">
+        <h5 class="card-header">
+            Website Scoping
+        </h5>
+        <div class="card-body">
+            <table class="table table-hover attr-table">
+                <tr>
+                    <th scope="row">Feature: API?</th>
+                    <td>{% checkmark object.feature_api %}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Feature: Account Mgmt?</th>
+                    <td>{% checkmark object.feature_acct_mgmt %}</td>
+                </tr>
+                {% if object.feature_acct_mgmt %}
+                <tr>
+                    <th scope="row">Acct Mgmt Auth Method</th>
+                    <td>{{ object.get_feature_webauth_type_display }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Acct Mgmt Self Registration?</th>
+                    <td>{% checkmark object.feature_auth_self_registration %}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <th scope="row">Scoping Size</th>
+                    <td>{{ object.scoping_size }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Scoping Complexity</th>
+                    <td>{{ object.scoping_complexity }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Scoping Test Roles</th>
+                    <td>{{ object.scoping_roles }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Est. Pentest Effort</th>
+                    <td>{{ object.calc_loe }} days</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
     {% include 'inc/panels/image_attachments.html' %}
     {% plugin_right_page object %}
 	</div>

@@ -47,6 +47,8 @@ class FQDNSerializer(NetBoxModelSerializer):
     # -- Nested for FK Lookups --
     impacted_group_orig = NestedBusinessGroupSerializer(required=False, allow_null=True)
     impacted_division_orig = NestedBusinessDivisionSerializer(required=False, allow_null=True)
+    vendor_company_fk = NestedVendorSerializer(required=False, allow_null=True)
+    
     # -- Choices --
     status = ChoiceField(
         choices=FQDNStatusChoices,
@@ -73,6 +75,7 @@ class FQDNSerializer(NetBoxModelSerializer):
             'id', 'url', 'display', 'name', 'status',
             'fqdn_status', 'website_status',
             'impacted_group_orig', 'impacted_division_orig',
+            'vendor_company_fk',
             'tenant',
             'sitelocation_count',
         )

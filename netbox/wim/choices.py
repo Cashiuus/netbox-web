@@ -7,6 +7,24 @@ from utilities.choices import ChoiceSet
 # ========== netbox way of doing choices ============
 
 
+# NOTE: from the utilities/choices.py file, these are the possible button color choices:
+# DEFAULT = 'outline-dark'
+# BLUE = 'blue'
+# INDIGO = 'indigo'
+# PURPLE = 'purple'
+# PINK = 'pink'
+# RED = 'red'
+# ORANGE = 'orange'
+# YELLOW = 'yellow'
+# GREEN = 'green'
+# TEAL = 'teal'
+# CYAN = 'cyan'
+# GRAY = 'gray'
+# GREY = 'gray'  # Backward compatability for <3.2
+# BLACK = 'black'
+# WHITE = 'white'
+
+
 
 #
 # Primary Status Choices
@@ -28,7 +46,7 @@ class AssetConfidenceChoices(ChoiceSet):
     # NOTE: CHOICES must be a list type (not tuple) if you have a "key" var defined
     CHOICES = [
         (CONFIDENCE_CANDIDATE, "Candidate", "orange"),
-        (CONFIDENCE_CONFIRMED, "Confirmed", "blue"),
+        (CONFIDENCE_CONFIRMED, "Confirmed", "green"),
         (CONFIDENCE_DISMISSED, "Dismissed", "gray"),
     ]
 
@@ -108,8 +126,9 @@ class WebsiteOpsStatusChoices(ChoiceSet):
     WEBSITESTATUS_NONSITE = "3-Live Non-Website Server"
     WEBSITESTATUS_DEFAULT = "4-Live Default Webserver"
     WEBSITESTATUS_BROKEN = "4-Live Broken Website"
+    WEBSITESTATUS_CUSTOMSPLASH = "4-Live Custom Parked Website"     # A site with a custom splash/parked page still served from a server
     WEBSITESTATUS_GOOD = "5-Live Valid Website"
-    WEBSITESTATUS_NONPROD = "6-Live Nonprod Sister Website"
+    # WEBSITESTATUS_NONPROD = "6-Live Nonprod Sister Website"
     WEBSITESTATUS_DUPEDOMAIN = "6-Live Domain WWW Pointer"      # A domain website duplicate of its www FQDN
     WEBSITESTATUS_DECOMMISSIONED = "9-Decommissioned"
     WEBSITESTATUS_NA = "NA"
@@ -119,9 +138,10 @@ class WebsiteOpsStatusChoices(ChoiceSet):
         (WEBSITESTATUS_NONSITE, "3-Live Non-Website Server", "cyan"),
         (WEBSITESTATUS_DEFAULT, "4-Live Default Webserver", "red"),
         (WEBSITESTATUS_BROKEN, "4-Live Broken Website", "red"),
+        (WEBSITESTATUS_CUSTOMSPLASH, "4-Live Custom Parked Website", "red"),
         (WEBSITESTATUS_GOOD, "5-Live Valid Website", "green"),
         (WEBSITESTATUS_DUPEDOMAIN, "6-Live Domain WWW Pointer", "gray"),
-        (WEBSITESTATUS_NONPROD, "6-Live Nonprod Sister Website", "gray"),
+        # (WEBSITESTATUS_NONPROD, "6-Live Nonprod Sister Website", "gray"),
         (WEBSITESTATUS_DECOMMISSIONED, "9-Decommissioned", "purple"),
         (WEBSITESTATUS_NA, "NA", "gray"),
     )
@@ -278,20 +298,20 @@ class WebsiteRoleChoices(ChoiceSet):
 
 
 class TransportLayerSecurityVersionChoices(ChoiceSet):
-    TLS_10 = "tls 1.0"
-    TLS_11 = "tls 1.1"
-    TLS_12 = "tls 1.2"
-    TLS_13 = "tls 1.3"
-    TLS_SSL3 = "ssl 3.0"
-    TLS_SSL2 = "ssl 2.0"
+    TLS_10 = "TLS 1.0"
+    TLS_11 = "TLS 1.1"
+    TLS_12 = "TLS 1.2"
+    TLS_13 = "TLS 1.3"
+    TLS_SSL3 = "SSL 3.0"
+    TLS_SSL2 = "SSL 2.0"
 
     CHOICES = (
-        (TLS_10, "tls 1.0", "orange"),
-        (TLS_11, "tls 1.1", "orange"),
-        (TLS_12, "tls 1.2", "green"),
-        (TLS_13, "tls 1.3", "green"),
-        (TLS_SSL3, "ssl 3.0", "red"),
-        (TLS_SSL2, "ssl 2.0", "red"),
+        (TLS_10, "TLS 1.0", "orange"),
+        (TLS_11, "TLS 1.1", "orange"),
+        (TLS_12, "TLS 1.2", "green"),
+        (TLS_13, "TLS 1.3", "green"),
+        (TLS_SSL3, "SSL 3.0", "red"),
+        (TLS_SSL2, "SSL 2.0", "red"),
     )
 
 

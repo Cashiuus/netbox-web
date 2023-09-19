@@ -26,3 +26,5 @@ netbox.pid
 .idea
 .coverage
 .vscode
+log.txt
+*.sql.tgz

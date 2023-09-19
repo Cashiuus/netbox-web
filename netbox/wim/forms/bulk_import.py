@@ -31,18 +31,31 @@ class DomainImportForm(NetBoxModelImportForm):
     # -- Choices Fields --
     status = CSVChoiceField(
         choices=DomainStatusChoices,
-        help_text=_('Domain root operational status')
+        required=False,
+        help_text=_('Domain root operational status'),
     )
     asset_confidence = CSVChoiceField(
         choices=AssetConfidenceChoices,
         required=False,
-        help_text=_('Domain attribution confidence level')
+        help_text=_('Domain attribution confidence level'),
     )
     ownership_type = CSVChoiceField(
         choices=DomainOwnershipStatusChoices,
         required=False,
-        help_text=_('Ownership type for this domain')
+        help_text=_('Ownership type for this domain'),
     )
+
+    # -- Bools --
+    is_flagship = forms.BooleanField(
+        required=False,
+    )
+    is_internet_facing = forms.BooleanField(
+        required=False,
+    )
+    meets_standards = forms.BooleanField(
+        required=False,
+    )
+
     # -- FKs --
     tenant = CSVModelChoiceField(
         queryset=Tenant.objects.all(),
@@ -58,7 +71,6 @@ class DomainImportForm(NetBoxModelImportForm):
     #     # help_text=_('Regisrar company name')
     # )
 
-    
     # -- M2M Fields --
     # TODO: Unsure how to configure a ManyToMany field for bulk import
     registration_emails = CSVModelMultipleChoiceField(
@@ -67,7 +79,6 @@ class DomainImportForm(NetBoxModelImportForm):
         to_field_name='email_address',
         help_text='List of all email addresses in domain registration, comma-separated'
     )
-
 
     class Meta:
         model = Domain
@@ -89,8 +100,11 @@ class DomainImportForm(NetBoxModelImportForm):
         ]
 
 
-
+#
+#   FQDN
+#
 class FQDNImportForm(NetBoxModelImportForm):
+
     # -- Choices Fields --
     status = CSVChoiceField(
         choices=FQDNStatusChoices,
@@ -137,20 +151,35 @@ class FQDNImportForm(NetBoxModelImportForm):
         required=False,
         help_text=_('The hosted architecutral infrastructure model for this property (e.g. On-Premise, Cloud)')
     )
+    geo_region_choice = CSVChoiceField(
+        choices=GeoRegionChoices,
+        required=False,
+        help_text=_('Geographic region for this web property')
+    )
+    cloud_provider = CSVChoiceField(
+        choices=CloudProviderChoices,
+        required=False,
+        help_text=_('For cloud assets, the associated cloud provider')
+    )
     tls_protocol_version = CSVChoiceField(
         choices=TransportLayerSecurityVersionChoices,
         required=False,
-        help_text=_('The TLS/SSL protocol version running on this property, if applicable')
+        help_text=_('The TLS/SSL protocol version running on this property, if applicable'),
     )
     redirect_health = CSVChoiceField(
         choices=RedirectStatusChoices,
         required=False,
-        help_text=_('The health status of redirect config, if this property is setup as a redirect')
+        help_text=_('The health status of redirect config, if this property is setup as a redirect'),
     )
     feature_webauth_type = CSVChoiceField(
         choices=WebAuthChoices,
         required=False,
-        help_text=_('Type of auth method employed by the website, if applicable')
+        help_text=_('Type of auth method employed by the website, if applicable'),
+    )
+    compliance_programs_choice = CSVChoiceField(
+        choices=ComplianceProgramChoices,
+        required=False,
+        help_text=_('One or more compliance program requirements in-scope for this asset'),
     )
 
     # -- Numbers Fields --
@@ -158,7 +187,7 @@ class FQDNImportForm(NetBoxModelImportForm):
     #     min_value=1,
     #     max_value=100,
         required=False,
-        help_text=_('Asset criticality score for prioritization (1=low, 100=critical)')
+        help_text=_('Asset criticality score for prioritization (1=low, 100=critical)'),
     )
     scoping_size = forms.IntegerField(required=False)
     scoping_complexity = forms.IntegerField(required=False)
@@ -168,6 +197,65 @@ class FQDNImportForm(NetBoxModelImportForm):
     mark_triaging = forms.BooleanField(
         required=False,
         help_text=_('Is the asset marked for triaging focus currently'),
+    )
+    is_risky = forms.BooleanField(
+        required=False,
+        help_text=_('True if property has been determined to be insecure or risky'),
+    )
+    had_bugbounty = forms.BooleanField(
+        required=False,
+        help_text=_('True if property was associated with known bug bounty submissions'),
+    )
+    is_flagship = forms.BooleanField(
+        required=False,
+    )
+    is_in_cmdb = forms.BooleanField(
+        required=False,
+    )
+    is_nonprod_mirror = forms.BooleanField(
+        required=False,
+    )
+    is_cloud_hosted = forms.BooleanField(
+        required=False,
+    )
+    is_akamai = forms.BooleanField(
+        required=False,
+    )
+    is_load_protected = forms.BooleanField(
+        required=False,
+    )
+    is_waf_protected = forms.BooleanField(
+        required=False,
+    )
+    is_internet_facing = forms.BooleanField(
+        required=False,
+    )
+    is_vhost = forms.BooleanField(
+        required=False,
+    )
+    is_http2 = forms.BooleanField(
+        required=False,
+    )
+    is_vendor_managed = forms.BooleanField(
+        required=False,
+    )
+    is_vendor_hosted = forms.BooleanField(
+        required=False,
+    )
+    feature_acct_mgmt = forms.BooleanField(
+        required=False,
+    )
+    feature_auth_self_registration = forms.BooleanField(
+        required=False,
+    )
+    feature_api = forms.BooleanField(
+        required=False,
+    )
+    is_compliance_required = forms.BooleanField(
+        required=False,
+    )
+    tls_cert_is_wildcard = forms.BooleanField(
+        required=False,
     )
 
     # -- FK Fields --
@@ -199,7 +287,7 @@ class FQDNImportForm(NetBoxModelImportForm):
         queryset=SiteLocation.objects.all(),
         to_field_name="code",
         required=False,
-        help_text=_('Assigned site location code')
+        help_text=_('Assigned site location code'),
     )
     location = CSVModelChoiceField(
         queryset=Site.objects.all(),
@@ -207,20 +295,27 @@ class FQDNImportForm(NetBoxModelImportForm):
         # so that the acronym is in the "name" field...
         to_field_name="facility",
         required=False,
-        help_text=_('Assigned tenancy site code')
+        help_text=_('Assigned tenancy site code'),
     )
-    ipaddress_public_8 = CSVModelChoiceField(
-        queryset=IPAddress.objects.all(),
+    vendor_company_fk = CSVModelChoiceField(
+        queryset=Vendor.objects.all(),
+        to_field_name='name',
         required=False,
-        to_field_name='address',
-        help_text=_('Public IP address linked to IPAM')
+        help_text=_('Vendor hosting or managing this property (FK)'),
+
     )
-    ipaddress_private_8 = CSVModelChoiceField(
-        queryset=IPAddress.objects.all(),
-        required=False,
-        to_field_name='address',
-        help_text=_('Private IP address linked to IPAM')
-    )
+    # ipaddress_public_8 = CSVModelChoiceField(
+    #     queryset=IPAddress.objects.all(),
+    #     required=False,
+    #     to_field_name='address',
+    #     help_text=_('Public IP address linked to IPAM')
+    # )
+    # ipaddress_private_8 = CSVModelChoiceField(
+    #     queryset=IPAddress.objects.all(),
+    #     required=False,
+    #     to_field_name='address',
+    #     help_text=_('Private IP address linked to IPAM')
+    # )
     tenant = CSVModelChoiceField(
         queryset=Tenant.objects.all(),
         required=False,
@@ -229,16 +324,19 @@ class FQDNImportForm(NetBoxModelImportForm):
     )
 
     # -- M2M Fields --
-    # compliance_programs = 
+    # compliance_programs =
 
     class Meta:
         model = FQDN
         # exclude = ('id',)
-        # import_id_fields = ['name',]      # This doesn't exist. I'll have to build it.
+        # import_id_fields = ['name',]      # This doesn't exist. I'll have to build it
         fields = (
-            "name", "mark_triaging", "asset_confidence",
-            'status', 'status_reason', 
-            'fqdn_status', 'website_status', 'website_role',
+            "name", "id",
+            "mark_triaging", "asset_confidence",
+            'status', 'status_reason',
+            'fqdn_status', 'website_status',
+            'date_last_recon',
+            'criticality_score_1',
             'domain', 'asset_class',
             'env_model', 'architectural_model',
             'owners_orig',
@@ -248,47 +346,55 @@ class FQDNImportForm(NetBoxModelImportForm):
             'support_group_website_technical_orig',
             'support_group_website_approvals_orig',
             'is_in_cmdb', 'is_internet_facing', 'is_flagship',
-            'location_orig', 'geo_region_choice',
-            'location', 'geo_region',
-            'public_ip_1', 'ipaddress_public_8',
+            'is_nonprod_mirror',
+            'geo_region_choice', 'geo_region',
+            'location_orig', 'location',
+
+            'public_ip_1',
+            # 'ipaddress_public_8',
             'private_ip_1', 'private_ip_2',
             # 'ipaddress_private_8',
             'hostname_orig', 'os_char',
             # 'os_1', 'os_8',
-            'tech_webserver_orig', 'tech_addtl',
+            'tech_webserver_orig',
             # 'tech_webserver_1',
-            'criticality_score_1',
+            'tech_addtl',
+
+            'had_bugbounty', 'is_risky',
+            'vuln_scan_coverage', 'date_last_vulnscan',
+            'pentest_priority', 'date_last_pentest',
+            'site_operation_age',
+
             'cnames', 'dns_a_record_ips',
-            'tls_cert_info', 'tls_cert_expires', 'tls_cert_sha1',
-            'tls_cert_is_wildcard', 'tls_protocol_version',
-            'is_vhost', 'is_http2',
-            'response_code', 'content_length',
-            'redirect_health', 'redirect_url',
+            'tls_protocol_version', 'tls_cert_info', 'tls_cert_expires',
+            'tls_cert_is_wildcard', 'tls_cert_self_signed', 'tls_cert_sha1',
+
             # TODO: Clean this up later on
             # 'parked_status',
             'is_cloud_hosted', 'cloud_provider',
             'is_akamai', 'is_load_protected', 'is_waf_protected',
-            'had_bugbounty', 'is_risky', 'vuln_assessment_priority',
-            'last_vuln_assessment', 'vuln_scan_coverage', 'vuln_scan_last_date',
+
             'feature_acct_mgmt', 'feature_webauth_type',
             'feature_auth_self_registration', 'feature_api',
             'scoping_size', 'scoping_complexity', 'scoping_roles',
-            'is_compliance_required', 
-            # 'compliance_programs',
-            'is_vendor_managed', 'is_vendor_hosted', 
-            'vendor_company_orig', 'vendor_pocs_orig',
-            'vendor_url', 'vendor_notes',
+            'is_compliance_required',
+            'compliance_programs_choice',
+
+            'is_vendor_managed', 'is_vendor_hosted',
+            'vendor_company_orig', 'vendor_company_fk',
+            'vendor_pocs_orig', 'vendor_url', 'vendor_notes',
 
             'website_url', 'website_title', 'website_email_orig',
             'website_role',
-            'site_operation_age',
-
-            'website_homepage_image',
-            'notes',
+            'response_code', 'content_length',
+            'redirect_health', 'redirect_url',
+            'is_vhost', 'is_http2',
+            # 'website_homepage_image',
             'risk_analysis_notes',
+            'notes',
             'tags',
         )
-    
+
     # def __init__(self, data=None, *args, **kwargs):
     #     super().__init__(data, *args, **kwargs)
     #     pass
@@ -346,7 +452,7 @@ class BusinessDivisionImportForm(NetBoxModelImportForm):
         model = BusinessDivision
         fields = (
             'name', 'slug', 'acronym', 'group', 'description',
-            'principal_location_orig', 
+            'principal_location_orig',
         )
 
 
@@ -362,22 +468,37 @@ class OperatingSystemImportForm(NetBoxModelImportForm):
 
 
 class SiteLocationImportForm(NetBoxModelImportForm):
-    # Testing to import my original choices, which are done differently
-    # geo_region_orig = Field(attribute="get_geo_region_display")
-
+    # -- Choices --
     geo_region_choice = CSVChoiceField(
         choices=GeoRegionChoices,
-        help_text=_('Geographic Region from choices')
+        required=False,
+        help_text=_('Geographic Region from choices'),
+    )
+    # -- FKs --
+    impacted_group_orig = CSVModelChoiceField(
+        queryset=BusinessGroup.objects.all(),
+        to_field_name="acronym",
+        required=False,
+        help_text=_('The principal impacted business group for this location')
+    )
+    impacted_division_orig = CSVModelChoiceField(
+        queryset=BusinessDivision.objects.all(),
+        to_field_name="acronym",
+        required=False,
+        help_text=_('The principal impacted business division for this location')
     )
 
     class Meta:
         model = SiteLocation
         fields = (
-            'name', 'slug', 'code', 'geo_region_choice',
-            # 'impacted_group_orig', 'impacted_division_orig',
-            'priority', 'street', 'city', 'state', 'country_1', 
-            'timezone_1', 'timezone', 'it_infra_contact', 'ranges_tmp1', 
-            'notes'
+            'name', 'slug', 'code',
+            'active', 'priority',
+            'geo_region_choice',
+            'impacted_group_orig', 'impacted_division_orig',
+            'timezone_1', 'timezone',
+            'street', 'city', 'state', 'country_1',
+            'it_infra_contact', 'ranges_tmp1',
+            'notes',
         )
 
 
@@ -385,7 +506,13 @@ class VendorImportForm(NetBoxModelImportForm):
 
     class Meta:
         model = Vendor
-        fields = ('name',)
+        fields = (
+            'name', 'slug',
+            'description',
+            'url',
+            'vendor_pocs_orig', 'notes',
+        )
+
 
 
 class WebserverFrameworkImportForm(NetBoxModelImportForm):

@@ -25,8 +25,8 @@ class FQDN(PrimaryModel):
     varying level of active status or usage.
     """
     name = models.CharField(
-        _('FQDN'), 
-        max_length=255, 
+        _('FQDN'),
+        max_length=255,
         unique=True,
         validators=[DNSValidator],
         help_text='A fqdn or subdomain of a domain root'
@@ -99,7 +99,7 @@ class FQDN(PrimaryModel):
     )
 
     domain = models.ForeignKey(
-        'Domain', 
+        'Domain',
         on_delete=models.CASCADE,
         blank=True, null=True,
         related_name='fqdns',
@@ -119,10 +119,21 @@ class FQDN(PrimaryModel):
         blank=True,
         help_text=_('Primary role of the web property, if applicable')
     )
+    is_in_cmdb = models.BooleanField(
+        _('In CMDB'),
+        null=True,
+        default=False,
+        help_text='The asset is in official CMDB',
+    )
+    is_nonprod_mirror = models.BooleanField(
+        _('Is Nonprod Mirror'),
+        default=False,
+        help_text=_('Property is a nonprod mirrored instance of its production sister site'),
+    )
     # prev names: public_ip_1 and private_ip_1
     public_ip_1 = models.GenericIPAddressField(
-        _('Public IP (Orig)'), 
-        blank=True, null=True, 
+        _('Public IP (Orig)'),
+        blank=True, null=True,
         protocol='IPv4',
         help_text='Public IP Address assigned for this web asset'
     )
@@ -134,7 +145,7 @@ class FQDN(PrimaryModel):
         verbose_name='Public IP FK'
     )
     # private_ip_1 = models.GenericIPAddressField(
-    #     _('Private IP (orig)'), 
+    #     _('Private IP (orig)'),
     #     blank=True, null=True, protocol='IPv4',
     #     help_text='Primary internal IP of web server'
     # )
@@ -144,27 +155,44 @@ class FQDN(PrimaryModel):
     #     protocol='IPv4',
     #     help_text='Secondary internal IP, e.g. VIP, NAT, or VLAN IPs'
     # )
-    private_ip_1 = models.CharField(_('Private IP 1'), max_length=200, blank=True)
-    private_ip_2 = models.CharField(_('Private IP 2'), max_length=200, blank=True)
+    private_ip_1 = models.CharField(
+        _('Private IP 1'),
+        max_length=200,
+        blank=True,
+        help_text="Primary private IP address"
+    )
+    private_ip_2 = models.CharField(
+        _('Private IP 2'),
+        max_length=200,
+        blank=True,
+        help_text="Secondary or VIP type private IP address that is not the actual server IP"
+    )
     ipaddress_private_8 = models.ForeignKey(
         to='ipam.IPAddress',
         on_delete=models.SET_NULL,
         related_name='fqdns_private',
         blank=True, null=True,
-        verbose_name='Private IP FK'
+        verbose_name='Private IP FK',
     )
 
     # Turn this into a ForeignKey
     # NOTE: Netbox appears to save hostname as "dns_name" field under IPAddress table, not separately
     # Original field name: hostname
-    hostname_orig = models.CharField(_('Hostname orig'), max_length=100, blank=True, default='')
+    hostname_orig = models.CharField(
+        _('Hostname orig'),
+        max_length=100,
+        blank=True,
+        default='',
+        help_text="server hostname operating this asset as a normal string",
+    )
 
     # Turn this into a ForeignKey
     os_char = models.CharField(
-        _('OS'), 
-        max_length=100, 
-        blank=True, default='', 
-        help_text='OS (char field)'
+        _('OS'),
+        max_length=100,
+        blank=True,
+        default='',
+        help_text='OS (original) text field for the Operating System',
     )
     os_1 = models.ForeignKey(
         to='OperatingSystem',
@@ -172,7 +200,8 @@ class FQDN(PrimaryModel):
         related_name='+',
         blank=True,
         null=True,
-        verbose_name="OS My FK"
+        verbose_name="OS My FK",
+        help_text="Local WIM application FK field for the OS",
     )
     os_8 = models.ForeignKey(
         to='dcim.Platform',
@@ -180,7 +209,8 @@ class FQDN(PrimaryModel):
         related_name='+',
         blank=True,
         null=True,
-        verbose_name='OS Platform'
+        verbose_name='OS Platform',
+        help_text="Netbox OS FK that points to dcim - Platform table",
     )
     # Test - this is how Netbox ties contacts
     tenant = models.ForeignKey(
@@ -188,10 +218,15 @@ class FQDN(PrimaryModel):
         on_delete=models.PROTECT,
         related_name='fqdns',
         blank=True,
-        null=True
+        null=True,
+        help_text="Owning tenant of this property",
     )
     # prev name: owners (and this used to be a TextField)
-    owners_orig = models.TextField(_('Owners orig'), blank=True)
+    owners_orig = models.TextField(
+        _('Owners orig'),
+        blank=True,
+        help_text="Owners text field to list all owners comma-separated",
+    )
     owners_nb = GenericRelation(
         to='tenancy.ContactAssignment'
     )
@@ -209,7 +244,8 @@ class FQDN(PrimaryModel):
         on_delete=models.SET_NULL,
         related_name='fqdns',
         blank=True, null=True,
-        verbose_name='Group orig'
+        verbose_name='Group orig',
+        help_text="Business Group local FK relationship which owns this property",
     )
     impacted_division_orig = models.ForeignKey(
         'BusinessDivision',
@@ -217,23 +253,17 @@ class FQDN(PrimaryModel):
         related_name='fqdns',
         blank=True, null=True,
         verbose_name='Division orig',
+        help_text="Business Division local FK relationship which owns this property",
     )
-    
-    is_in_cmdb = models.BooleanField(
-        _('In CMDB'), 
-        null=True, 
-        default=False,
-        help_text='The asset is in official CMDB'
-    )
-    
+
     location_orig = models.ForeignKey(
         'SiteLocation',
-        on_delete=models.SET_NULL, 
+        on_delete=models.SET_NULL,
         blank=True, null=True,
         related_name='fqdns',
         verbose_name='Location orig'
     )
-    
+
     location = models.ForeignKey(
         to='dcim.Site',
         blank=True, null=True,
@@ -251,6 +281,7 @@ class FQDN(PrimaryModel):
         max_length=50,
         choices=GeoRegionChoices,
         blank=True,
+        help_text="Geographic region of the asset, from list of choices",
     )
 
     geo_region = models.ForeignKey(
@@ -260,6 +291,7 @@ class FQDN(PrimaryModel):
         blank=True,
         null=True,
         verbose_name='Region NB',
+        help_text="Geographic region of the asset, FK from NB dcim - Region table",
     )
 
     # prev name: criticality_tmp1
@@ -303,25 +335,33 @@ class FQDN(PrimaryModel):
         blank=True,
         help_text='Primary webserver framework operating on the asset property'
     )
-    tech_webserver_1 = models.ForeignKey('WebserverFramework',
-                                         on_delete=models.SET_NULL,
-                                         blank=True, null=True,
-                                         verbose_name='Webserver Tech-FK')
+    tech_webserver_1 = models.ForeignKey(
+        'WebserverFramework',
+        on_delete=models.SET_NULL,
+        blank=True, null=True,
+        verbose_name='Webserver Tech-FK',
+        help_text="FK to local webserver framework table for primary technology of the web property",
+    )
 
-    tech_addtl = models.TextField(_('Addtl Tech'), blank=True, default='',
-                                  help_text='Additional tech powering the site')
-    
+    tech_addtl = models.TextField(
+        _('Addtl Tech'),
+        blank=True, default='',
+        help_text='Additional tech powering the site'
+    )
+
     # DNS Type Fields
-    cnames = models.CharField(_('CNAMEs'), max_length=500, blank=True, default='')
+    cnames = models.CharField(_('CNAMEs'), max_length=500, blank=True, default='',
+                              help_text="One or more cnames configured in DNS for this asset")
     dns_a_record_ips = models.TextField(_("A-Records"), blank=True, default='')
 
     # TLS Details
-    tls_cert_info = models.TextField(_('TLS Cert'), blank=True, default='',
+    tls_cert_info = models.TextField(_('TLS Cert Info'), blank=True, default='',
                                      help_text='TLS Certificate info')
     tls_cert_expires = models.DateField(_('TLS Cert Expires'), blank=True, null=True,
                                         help_text='TLS Cert expiration date')
     tls_cert_sha1 = models.CharField(_('TLS Cert SHA1'), max_length=50, blank=True, default='')
-    tls_cert_is_wildcard = models.BooleanField(_('Wildcard Cert'), null=True, default=None) # Default None makes these start as "Unknown"
+    tls_cert_is_wildcard = models.BooleanField(_('Cert Is Wildcard'), null=True, default=None) # Default None makes these start as "Unknown"
+    tls_cert_self_signed = models.BooleanField(_('Cert Self-Signed'), null=True, default=None)
     tls_version_int = models.IntegerField(
         _("TLS Version"), blank=True, null=True,
         choices=LAYER_SECURITY_CHOICES,
@@ -340,7 +380,7 @@ class FQDN(PrimaryModel):
     is_http2 = models.BooleanField(_('HTTP2'), null=True, default=False)
 
     # prev name: status_code
-    response_code = models.PositiveSmallIntegerField(_('Status Code'), blank=True, null=True,
+    response_code = models.PositiveSmallIntegerField(_('Response Code'), blank=True, null=True,
                                                    help_text='Website response code')
     content_length = models.PositiveIntegerField(_('Content Length'), blank=True, null=True,
                                                  help_text='Website recon response content length size')
@@ -357,8 +397,8 @@ class FQDN(PrimaryModel):
         help_text='Website redirect health status, if applicable'
     )
     redirect_url = models.CharField(
-        _('Redirect URL'), 
-        max_length=1500, 
+        _('Redirect URL'),
+        max_length=1500,
         blank=True, null=True,
         help_text=_('If applicable, the destination Redirect URL for this property')
     )
@@ -386,9 +426,9 @@ class FQDN(PrimaryModel):
 
     # orig name: vendor_company_1
     vendor_company_orig = models.CharField(
-        _('Vendor Name'), 
-        max_length=150, 
-        blank=True, 
+        _('Vendor Name'),
+        max_length=150,
+        blank=True,
     )
     # TODO: Not using yet
     vendor_company_fk = models.ForeignKey(
@@ -400,17 +440,18 @@ class FQDN(PrimaryModel):
         help_text='Linked vendor company that is managing and/or hosting this property'
     )
     vendor_pocs_orig = models.CharField(
-        _('Vendor POCs'), 
-        max_length=500, 
-        blank=True, 
+        _('Vendor POCs'),
+        max_length=500,
+        blank=True,
         help_text='One or more vendor POCs that support this web property'
     )
-    
+
     vendor_url = models.URLField(_('Vendor URL'), blank=True, null=True)
     vendor_notes = models.TextField(_('Vendor Notes'), blank=True, default='')
-
-    website_url = models.URLField(_('Website URL'), max_length=400, blank=True, null=True)
-    website_title = models.CharField(_('Website Title'), max_length=150, blank=True, default='')
+    # NOTE: Changed this from 400 to 900 to accomodate a few outliers
+    website_url = models.URLField(_('Website URL'), max_length=900, blank=True, null=True)
+    # NOTE: Changed this from 150 to 250 to accomodate a few outliers
+    website_title = models.CharField(_('Website Title'), max_length=250, blank=True, default='')
     website_email_orig = models.EmailField(_('Site Email'), blank=True, default='')
     # website_screenshot = models.ImageField(upload_to=set_files_path, blank=True, null=True)
     # Device model uses this method for images
@@ -424,39 +465,48 @@ class FQDN(PrimaryModel):
 
     # -- Security
     # prev name: has_bb
-    had_bugbounty = models.BooleanField(_('Had BB'), null=True, default=False,
-                                        help_text="Property has had bug bounty submissions")
+    had_bugbounty = models.BooleanField(
+        _('Had BB'),
+        null=True, default=False,
+        help_text="Property has had bug bounty submissions"
+    )
     # TODO: my guidance says don't do this, use NullBooleanField instead
-    is_risky = models.BooleanField(_('Risky Site'), null=True, default=False,
-                                   help_text='Is the website risky or known to have issues')
+    is_risky = models.BooleanField(
+        _('Risky Site'),
+        null=True, default=False,
+        help_text='Is the website risky or known to have issues'
+    )
 
     site_operation_age = models.DateField(
-        _('Operation Age'), 
+        _('Operation Age'),
         default=datetime.date.today,
         blank=True, null=True,
         help_text='Approx. year age of when site first came online (e.g. 2009-01-01)'
     )
-    last_vuln_assessment = models.DateField(_('Last Vuln Assessment'), blank=True, null=True)
+
+    date_last_recon = models.DateField(_("Date Last Recon"), blank=True, null=True)
     vuln_scan_coverage = models.BooleanField(_('Vuln Scan Coverage'), null=True, default=False,
                                              help_text='Asset included in normal web vuln scanner coverage?')
-    vuln_scan_last_date = models.DateField(_('Last Web Vuln Scan'), blank=True, null=True)
-    vuln_assessment_priority = models.PositiveSmallIntegerField(
+    date_last_vulnscan = models.DateField(_('Last Web Vuln Scan'), blank=True, null=True)
+    date_last_pentest = models.DateField(_('Date Last Pentest'), blank=True, null=True)
+    pentest_priority = models.PositiveSmallIntegerField(
         _('Assessment Priority'),
         blank=True, null=True,
         help_text='Priority to test for vulnerabilities (1=Critical)'
     )
 
-    risk_analysis_notes = models.TextField(_('Risk Notes'), blank=True, default='',
+    risk_analysis_notes = models.TextField(_('Risk Notes'),
+                                           blank=True, default='',
                                            help_text='Notes on why asset is broken or risky')
     # -- Feature tracking
     feature_acct_mgmt = models.BooleanField(
-        _('Account Mgmt'), 
+        _('Account Mgmt'),
         null=True, default=False,
         help_text='Asset uses account management for access control'
     )
-    
+
     # feature_auth_type = models.ForeignKey(
-    #     'WebsiteAuthType', 
+    #     'WebsiteAuthType',
     #     on_delete=models.SET_NULL,
     #     blank=True, null=True
     # )
@@ -478,14 +528,14 @@ class FQDN(PrimaryModel):
                                                           help_text='Complexity of site (1-simple to 3-complex')
     scoping_roles = models.PositiveSmallIntegerField(_('Test Roles'), default=0,
                                                      help_text='Number of roles with which to conduct security testing')
-    
+
     @property
     def calc_loe(self):
         # Formula here
         if self.scoping_size:
             result = (self.scoping_size * 1.3) + (self.scoping_complexity * 1.4) + (self.scoping_roles * 1.4)
             return '{0:.1f}'.format(result)
-    
+
 
     # Specific CMDB Type Fields We Also Need to Have
     # I made orig fields to temp store my orig values that were FK's before.
@@ -494,7 +544,7 @@ class FQDN(PrimaryModel):
         _('Support Group Technical'),
         max_length=100,
         blank=True,
-        help_text='Technical support group that can administer the webserver'
+        help_text='Technical support group that can administer the webserver',
     )
     # support_group_website_technical = models.ForeignKey(
     #     'SupportGroup',
@@ -508,7 +558,7 @@ class FQDN(PrimaryModel):
         _('Support Group Business'),
         max_length=100,
         blank=True,
-        help_text="Business owners responsible for decision making for the web property"
+        help_text="Business owners responsible for decision making for the web property",
     )
 
     # support_group_website_approvals = models.ForeignKey(
@@ -522,7 +572,7 @@ class FQDN(PrimaryModel):
     is_compliance_required = models.BooleanField(_('Compliance Required'), null=True, default=False)
 
     # compliance_programs = models.ManyToManyField(
-    #     'ComplianceProgram', 
+    #     'ComplianceProgram',
     #     blank=True, default='',
     #     related_name='fqdns'
     # )
@@ -533,7 +583,7 @@ class FQDN(PrimaryModel):
         blank=True,
         help_text='If asset is beholden to one or more cybersecurity regulatory compliance programs',
     )
-    
+
     scan_fingerprint_json = models.JSONField(
         _('Scan Fingerprint Data'),
         blank=True,
@@ -543,20 +593,20 @@ class FQDN(PrimaryModel):
 
     # data_source_m2m = models.ManyToManyField('DataSource', blank=True,
     #                                          related_name='assets_m2m')
-    # data_source = models.ForeignKey('DataSource', 
-    #                                 blank=True, 
+    # data_source = models.ForeignKey('DataSource',
+    #                                 blank=True,
     #                                 null=True,
     #                                 on_delete=models.SET_NULL,
     #                                 verbose_name='Data Source')
-    
+
     # TOOD: Renaming this to comments to match netbox?
     notes = models.TextField(_('Notes'), blank=True, default='')
 
-    date_created = models.DateTimeField(_('Date Created'), 
-                                        auto_now_add=True, 
+    date_created = models.DateTimeField(_('Date Created'),
+                                        auto_now_add=True,
                                         help_text='system field for creation date')
-    date_modified = models.DateTimeField(_('Date Modified'), 
-                                         auto_now=True, 
+    date_modified = models.DateTimeField(_('Date Modified'),
+                                         auto_now=True,
                                          help_text='system field for modified date')
 
     # def display_data_source_m2m(self):
@@ -590,13 +640,13 @@ class FQDN(PrimaryModel):
         # indexes = [
         #     models.Index(fields=['name']),
         # ]
-    
+
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
         return reverse('wim:fqdn', args=[self.pk])
-    
+
     ACTIVE_STATUS_LIST = (
         FQDNStatusChoices.STATUS_NEW,
         FQDNStatusChoices.STATUS_ACTIVE,
@@ -607,16 +657,17 @@ class FQDN(PrimaryModel):
         WebsiteOpsStatusChoices.WEBSITESTATUS_GOOD,
         WebsiteOpsStatusChoices.WEBSITESTATUS_BROKEN,
         WebsiteOpsStatusChoices.WEBSITESTATUS_DEFAULT,
-        WebsiteOpsStatusChoices.WEBSITESTATUS_NONPROD,
+        # WebsiteOpsStatusChoices.WEBSITESTATUS_NONPROD,
     )
 
     @property
     def is_active(self):
         return self.status in FQDN.ACTIVE_STATUS_LIST
 
+    @property
     def is_live_website(self):
         return self.website_status in FQDN.ACTIVE_WEBSITE_LIST
-    
+
     # def record_count(self):
     #     return FQDN.objects.all().count()
 
@@ -630,29 +681,29 @@ class FQDN(PrimaryModel):
     #       in the table "ListView" view
     def get_status_color(self):
         return FQDNStatusChoices.colors.get(self.status)
-    
+
     def get_fqdn_status_color(self):
         return FQDNOpsStatusChoices.colors.get(self.fqdn_status)
-    
+
     def get_website_status_color(self):
         return WebsiteOpsStatusChoices.colors.get(self.website_status)
-    
+
     def get_asset_confidence_color(self):
         return AssetConfidenceChoices.colors.get(self.asset_confidence)
-    
+
     def get_asset_class_color(self):
         return AssetClassChoices.colors.get(self.asset_class)
-    
+
     def get_role_color(self):
         return WebsiteRoleChoices.colors.get(self.website_role)
-    
+
     # def save(self, *args, **kwargs):
     #     self.full_clean()
 
     #     new_entry = self.pk is None
     #     if not new_entry:
     #         existing = FQDN.objects.get(pk=self.pk)
-        
+
     #     super().save(*args, **kwargs)
 
 

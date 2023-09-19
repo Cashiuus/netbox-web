@@ -4,7 +4,6 @@ from .cpe import *
 from .fqdn import *
 from .domain import *
 from .email import *
-# from .ip import *
 from .vendor import *
 
 

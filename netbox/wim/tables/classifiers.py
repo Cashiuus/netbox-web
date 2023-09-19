@@ -13,6 +13,7 @@ __all__ = (
     'OperatingSystemTable',
     'SiteLocationTable',
     'VendorTable',
+    'WebEmailTable',
     'WebserverFrameworkTable',
 )
 
@@ -22,75 +23,69 @@ class BusinessGroupTable(NetBoxTable):
     acronym = tables.Column(
         linkify=True
     )
-
-    # TODO: This isn't working, only getting 0 counts for all rows
+    fqdn_count = columns.LinkedCountColumn(
+        viewname='wim:fqdn_list',
+        url_params={'businessgroup_id': 'pk'},
+        verbose_name="FQDNs"
+    )
     division_count = columns.LinkedCountColumn(
         viewname='wim:businessdivision_list',
-        url_params={'id', 'pk'},
-        verbose_name="Divisions"
+        url_params={'businessgroup_id', 'pk'},
+        verbose_name="Divisions",
     )
-
-    # notes = columns.MarkdownColumn()
-    # tags = columns.TagColumn(
-    #     url_name='wim:BusinessGroup_list'
-    # )
 
     class Meta(NetBoxTable.Meta):
         model = BusinessGroup
-        exclude = ('id',)
+        # exclude = ('id',)
         fields = (
+            'pk', 'id',
             'acronym', 'name',
+            'fqdn_count',
+            'division_count',
         )
-        default_columns = ('acronym', 'name')
+        default_columns = ('acronym', 'name', 'fqdn_count')
 
 
 class BusinessDivisionTable(NetBoxTable):
     acronym = tables.Column(
-        linkify=True
+        linkify=True,
     )
 
     group = tables.Column(
         accessor=Accessor('group__acronym'),
         linkify=True,
     )
-    # TODO: Did these counts based on Devices tables, but it's not working
+
     fqdn_count = columns.LinkedCountColumn(
         viewname='wim:fqdn_list',
-        url_params={'fqdn_id': 'pk'},
-        verbose_name="FQDNs"
+        url_params={'businessdivision_id': 'pk'},
+        verbose_name="FQDNs",
     )
-
-    # notes = columns.MarkdownColumn()
-    # tags = columns.TagColumn(
-    #     url_name='wim:BusinessDivision_list'
-    # )
 
     class Meta(NetBoxTable.Meta):
         model = BusinessDivision
-        exclude = ('id',)
+        # exclude = ('id',)
         fields = (
+            'pk', 'id',
             'acronym', 'name', 'group', 'fqdn_count',
         )
-        default_columns = ('acronym', 'name', 'group')
-
+        default_columns = ('acronym', 'name', 'group', 'fqdn_count')
 
 
 # class OperatingSystemTable(TenancyColumnsMixin, NetBoxTable):
 class OperatingSystemTable(NetBoxTable):
     # TODO: Fix this so we have a full OS string that is the first column and is linked
     vendor = tables.Column(
-        linkify=True
+        linkify=True,
     )
 
     # TODO: Check this and add it to fields list once it's working
     fqdn_count = columns.LinkedCountColumn(
         viewname='wim:fqdn_list',
         url_params={'os_1_id': 'pk'},
-        verbose_name="FQDNs"
+        verbose_name="FQDNs",
     )
     # status = columns.ChoiceFieldColumn()
-
-    # is_ = columns.BooleanColumn(verbose_name="")
 
     # m2m_field = tables.ManyToManyColumn(
     #     linkify_item=False,
@@ -109,10 +104,12 @@ class OperatingSystemTable(NetBoxTable):
         model = OperatingSystem
         # exclude = ('id',)
         fields = (
+            'pk', 'id',
             'vendor', 'product', 'update',
             'platform_family', 'platform_type',
             'build_number', 'cpe', 'color',
             'fqdn_count',
+            'tags',
         )
         default_columns = (
             'vendor', 'product', 'update', 'fqdn_count', 'platform_type', 'color'
@@ -124,20 +121,12 @@ class SiteLocationTable(TenancyColumnsMixin, NetBoxTable):
 
     # geo_region_choice = columns.ChoiceFieldColumn(verbose_name="Geo Region")
 
-    # TODO: This is how we'll link to the NetBox way of doing geo regions
-    # However, this links through the "site" object, so may not be able to do that in here
-    # May just need to do that straight from assets that are assigned once I do the NetBox way of 'sites'
+    # active = columns.BooleanColumn()
 
-    # geo_region = tables.Column(
-    #     accessor=Accessor('site__region'),
-    #     linkify=True,
-    # )
-
-    # TODO: Doesn't work
     fqdn_count = columns.LinkedCountColumn(
         viewname='wim:fqdn_list',
         url_params={'location_orig_id': 'pk'},
-        verbose_name="FQDNs"
+        verbose_name="FQDNs",
     )
 
     notes = columns.MarkdownColumn()
@@ -147,36 +136,72 @@ class SiteLocationTable(TenancyColumnsMixin, NetBoxTable):
         model = SiteLocation
         # exclude = ('id',)
         fields = (
-            'pk', 'id', 'code', 'name', 'priority',
+            'pk', 'id', 'code', 'name', 'active', 'priority',
             'impacted_group_orig', 'impacted_division_orig',
             'geo_region_choice', 'geo_region', 'tenant',
             'fqdn_count', 'notes', 'tags',
         )
         default_columns = (
             'pk', 'id', 'code', 'name', 'fqdn_count',
-            'priority', 'geo_region_choice',
+            'active', 'priority', 'geo_region_choice',
         )
 
 
 class VendorTable(NetBoxTable):
     name = tables.Column(linkify=True)
 
+    fqdn_count = columns.LinkedCountColumn(
+        viewname='wim:fqdn_list',
+        url_params={'vendor_id': 'pk'},
+        verbose_name=_('FQDNs'),
+    )
+
+    tags = columns.TagColumn(
+        url_name='wim:vendor_list'
+    )
+
     class Meta(NetBoxTable.Meta):
         model = Vendor
-        exclude = ('id',)
+        # exclude = ('id',)
         fields = (
-            'name',
+            'pk', 'id', 'name', 'fqdn_count', 'description',
+            'vendor_url', 'vendor_pocs_orig', 'notes',
+            'slug', 'tags',
         )
-        default_columns = ('name',)
+        default_columns = ('name', 'fqdn_count', 'vendor_pocs_orig')
+
+
+class WebEmailTable(NetBoxTable):
+    email_address = tables.Column(linkify=True)
+
+    # domain_count = columns.LinkedCountColumn(
+    #     viewname='wim:domain_list',
+    #     url_params={'webemail_id': 'pk'},
+    #     verbose_name=_('Domains'),
+    # )
+
+    class Meta(NetBoxTable.Meta):
+        model = WebEmail
+        # exclude = ('id',)
+        fields = (
+            'email_address',
+        )
+        default_columns = ('email_address',)
 
 
 class WebserverFrameworkTable(NetBoxTable):
     name = tables.Column(linkify=True)
 
+    fqdn_count = columns.LinkedCountColumn(
+        viewname='wim:fqdn_list',
+        url_params={'webserverframework_id': 'pk'},
+        verbose_name=_('FQDNs'),
+    )
+
     class Meta(NetBoxTable.Meta):
         model = WebserverFramework
         exclude = ('id',)
         fields = (
-            'name', 'product', 'version', 'raw_banner', 'cpe',
+            'name', 'product', 'version', 'raw_banner', 'cpe', 'fqdn_count',
         )
-        default_columns = ('name', 'raw_banner', 'cpe', 'product', 'version')
+        default_columns = ('name', 'raw_banner', 'cpe', 'product', 'version', 'fqdn_count')

@@ -14,13 +14,17 @@ class DomainTable(TenancyColumnsMixin, NetBoxTable):
     name = tables.Column(
         linkify=True
     )
-    status = columns.ChoiceFieldColumn()
-
     fqdn_count = columns.LinkedCountColumn(
         viewname='wim:fqdn_list',
         url_params={'domain_id': 'pk'},
         verbose_name=_('FQDN Count')
     )
+
+    # -- Choices --
+    status = columns.ChoiceFieldColumn()
+    # ownership_type = columns.ChoiceFieldColumn()
+
+    # -- Bools --
     meets_standards = columns.BooleanColumn()
 
     tenant = TenantColumn()
@@ -33,7 +37,7 @@ class DomainTable(TenancyColumnsMixin, NetBoxTable):
         model = Domain
         # exclude = ('id',)
         fields = (
-            'name', 'fqdn_count', 'status', 
+            'name', 'id', 'fqdn_count', 'status', 
             'asset_confidence', 'ownership_type',
             'date_first_registered', 'date_registrar_expiry',
             'date_last_recon_scanned',
@@ -45,7 +49,7 @@ class DomainTable(TenancyColumnsMixin, NetBoxTable):
             'tags', 'created', 'last_updated', 'date_created', 'date_modified',
         )
         default_columns = (
-            'name', 'fqdn_count', 'status',
+            'name', 'id', 'status', 'fqdn_count',
             'asset_confidence', 'ownership_type',
             'date_first_registered', 'date_registrar_expiry', 
             'date_last_recon_scanned',

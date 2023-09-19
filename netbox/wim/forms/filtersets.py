@@ -24,6 +24,7 @@ __all__ = (
     'OperatingSystemFilterForm',
     'SiteLocationFilterForm',
     'VendorFilterForm',
+    'WebEmailFilterForm',
     'WebserverFrameworkFilterForm',
 )
 
@@ -91,15 +92,17 @@ class FQDNFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
     )
     fqdn_status = forms.MultipleChoiceField(
         choices=FQDNOpsStatusChoices,
-        required=False
+        required=False,
+        label=_('FQDN Technical Status'),
     )
     website_status = forms.MultipleChoiceField(
         choices=WebsiteOpsStatusChoices,
-        required=False
+        required=False,
+        label=_('Website Technical Status'),
     )
     asset_confidence = forms.MultipleChoiceField(
         choices=AssetConfidenceChoices,
-        required=False
+        required=False,
     )
     asset_class = forms.MultipleChoiceField(
         choices=AssetClassChoices,
@@ -108,12 +111,34 @@ class FQDNFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
     compliance_programs_choice = forms.MultipleChoiceField(
         choices=ComplianceProgramChoices,
         required=False,
+        label=_('Compliance Programs'),
     )
 
-    # -- Bools --
+    # -- Booleans --
     mark_triaging = forms.BooleanField(
         required=False,
-        label=_('Triaging'),
+        label=_('Marked Triaging'),
+        widget=forms.RadioSelect(
+            choices=((True, "Yes"), (False, "No"))
+        ),
+    )
+    is_in_cmdb = forms.BooleanField(
+        required=False,
+        label=_('Is In CMDB'),
+        widget=forms.RadioSelect(
+            choices=((True, "Yes"), (False, "No"))
+        ),
+    )
+    is_flagship = forms.BooleanField(
+        required=False,
+        label=_('Flagship'),
+        widget=forms.RadioSelect(
+            choices=((True, "Yes"), (False, "No"))
+        ),
+    )
+    is_nonprod_mirror = forms.BooleanField(
+        required=False,
+        label=_('Is Nonprod Mirror'),
         widget=forms.RadioSelect(
             choices=((True, "Yes"), (False, "No"))
         ),
@@ -123,12 +148,22 @@ class FQDNFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
     impacted_group_orig = DynamicModelMultipleChoiceField(
         queryset=BusinessGroup.objects.all(),
         required=False,
-        label=_('Impacted Group')
+        label=_('Impacted BU Group')
     )
     impacted_division_orig = DynamicModelMultipleChoiceField(
         queryset=BusinessDivision.objects.all(),
         required=False,
-        label=_('Impacted Division')
+        label=_('Impacted BU Division')
+    )
+    location_orig = DynamicModelMultipleChoiceField(
+        queryset=SiteLocation.objects.all(),
+        required=False,
+        label=_('Location (Orig)'),
+    )
+    location = DynamicModelMultipleChoiceField(
+        queryset=Site.objects.all(),
+        required=False,
+        label=_('Location (NB)'),
     )
 
     # -- User model --
@@ -141,16 +176,50 @@ class FQDNFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
 
     tag = TagFilterField(model)
 
+    # -- Related Objects Handlers/Filters --
+    domain_id = DynamicModelMultipleChoiceField(
+        queryset=Domain.objects.all(),
+        required=False,
+        label=_('Domain'),
+    )
+    businessgroup_id = DynamicModelMultipleChoiceField(
+        queryset=BusinessGroup.objects.all(),
+        required=False,
+        label=_('Org Group'),
+    )
+    businessdivision_id = DynamicModelMultipleChoiceField(
+        queryset=BusinessDivision.objects.all(),
+        required=False,
+        label=_('Org Division'),
+    )
+    vendor_id = DynamicModelMultipleChoiceField(
+        queryset=Vendor.objects.all(),
+        required=False,
+        label=_('Vendor'),
+    )
+    webserverframework_id = DynamicModelMultipleChoiceField(
+        queryset=WebserverFramework.objects.all(),
+        required=False,
+        label=_('Web Framework'),
+    )
+
     fieldsets = (
         (None, ('q', 'filter_id', 'tag')),
-        ("Status", (
-            'mark_triaging', 'status',
+        ("Filters", (
+            'mark_triaging', 
+            'domain_id',
+            'status',
             'asset_confidence', 'asset_class',
             'fqdn_status', 'website_status',
+            'is_in_cmdb', 'is_flagship',
+            'is_nonprod_mirror',
         )),
         ('Filter by Business', (
-            'impacted_group_orig', 'impacted_division_orig',
+            # 'impacted_group_orig', 'impacted_division_orig',
+            'businessgroup_id', 'businessdivision_id',
+            'location_orig', 'location',
             'tenant_group_id', 'tenant_id',
+            'vendor_id',
         )),
         ('Filter by Security Criteria', (
             'compliance_programs_choice',
@@ -196,6 +265,19 @@ class SiteLocationFilterForm(NetBoxModelFilterSetForm):
 
 class VendorFilterForm(NetBoxModelFilterSetForm):
     model = Vendor
+
+    name = forms.CharField()
+
+    fieldsets = (
+        (None, ('q', 'filter_id')),
+        ("Filter by", (
+            'name',
+        )),
+    )
+
+
+class WebEmailFilterForm(NetBoxModelFilterSetForm):
+    model = WebEmail
 
 
 class WebserverFrameworkFilterForm(NetBoxModelFilterSetForm):

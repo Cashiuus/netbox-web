@@ -63,6 +63,14 @@ urlpatterns = [
     path('vendors/delete/', views.VendorBulkDeleteView.as_view(), name='vendor_bulk_delete'),
     path('vendors/<int:pk>/', include(get_model_urls('wim', 'vendor'))),
 
+    # Web Emails
+    path('web-emails/', views.WebEmailListView.as_view(), name='webemail_list'),
+    # path('web-emails/add/', views.WebEmailEditView.as_view(), name='webemail_add'),
+    # path('web-emails/import/', views.WebEmailBulkImportView.as_view(), name='webemail_import'),
+    # path('web-emails/edit/', views.WebEmailBulkEditView.as_view(), name='webemail_bulk_edit'),
+    # path('web-emails/delete/', views.WebEmailBulkDeleteView.as_view(), name='webemail_bulk_delete'),
+    # path('web-emails/<int:pk>/', include(get_model_urls('wim', 'webemail'))),
+
     # Webserver Frameworks
     path('web-frameworks/', views.WebserverFrameworkListView.as_view(), name='webserverframework_list'),
     path('web-frameworks/add/', views.WebserverFrameworkEditView.as_view(), name='webserverframework_add'),

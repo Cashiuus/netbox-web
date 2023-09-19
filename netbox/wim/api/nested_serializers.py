@@ -6,6 +6,21 @@ from netbox.api.serializers import WritableNestedSerializer
 from wim import models
 
 
+class NestedDomainSerializer(WritableNestedSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='wim-api:domain-detail')
+
+    class Meta:
+        model = models.Domain
+        fields = ['id', 'url', 'display', 'name']
+
+
+class NestedFQDNSerializer(WritableNestedSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='wim-api:fqdn-detail')
+
+    class Meta:
+        model = models.FQDN
+        fields = ['id', 'url', 'display', 'name']
+
 
 class NestedBusinessGroupSerializer(WritableNestedSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='wim-api:businessgroup-detail')
@@ -21,3 +36,15 @@ class NestedBusinessDivisionSerializer(WritableNestedSerializer):
     class Meta:
         model = models.BusinessDivision
         fields = ('id', 'url', 'display', 'name', 'slug', 'acronym')
+
+
+@extend_schema_serializer(
+    exclude_fields=('fqdn_count',)
+)
+class NestedVendorSerializer(WritableNestedSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='wim-api:vendor-detail')
+    fqdn_count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = models.Vendor
+        fields = ('id', 'url', 'display', 'name', 'slug', 'fqdn_count')

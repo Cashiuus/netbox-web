@@ -20,14 +20,25 @@ class Vendor(OrganizationalModel):
     infrastructure or services that directly support a web property.
     TODO: I wonder if this can be lifted over to "Provider" in the circuits app.
     """
+    # NOTE: Remember, the org model parent class comes w/ default ields already
+    #   - name, description, slug, objects
+
+    url = models.URLField(_('Vendor URL'), blank=True, null=True)
     # This is built based on how Netbox did: dcim:manufacturer
     contacts = GenericRelation(
         to='tenancy.ContactAssignment'
     )
 
+    vendor_pocs_orig = models.CharField(
+        _('Vendor POCs'), 
+        max_length=500, 
+        blank=True, 
+        help_text='One or more vendor POCs that support this web property'
+    )
+    notes = models.TextField(_('Vendor Notes'), blank=True, default='')
+    
     def get_absolute_url(self):
         return reverse('wim:vendor', args=[self.pk])
-
 
 
 

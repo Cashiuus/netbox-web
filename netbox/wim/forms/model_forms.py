@@ -8,7 +8,7 @@ from tenancy.forms import TenancyForm
 from utilities.exceptions import PermissionsViolation
 from utilities.forms import BootstrapMixin, add_blank_choice
 from utilities.forms.fields import (
-    CommentField, ContentTypeChoiceField, 
+    CommentField, ContentTypeChoiceField,
     DynamicModelChoiceField, DynamicModelMultipleChoiceField,
     JSONField,
     NumericArrayField,
@@ -34,11 +34,13 @@ __all__ = (
     'OperatingSystemForm',
     'SiteLocationForm',
     'VendorForm',
+    'WebEmailForm',
     'WebserverFrameworkForm',
 )
 
 
 class DomainForm(TenancyForm, NetBoxModelForm):
+
     # -- Choices --
     status = forms.ChoiceField(
         choices=DomainStatusChoices,
@@ -53,6 +55,11 @@ class DomainForm(TenancyForm, NetBoxModelForm):
         choices=DomainOwnershipStatusChoices,
         required=False,
     )
+
+    # -- Bools --
+    is_internet_facing = forms.BooleanField(required=False)
+    is_flagship = forms.BooleanField(required=False)
+    # meets_standards = forms.BooleanField(required=False)
 
     # -- FKs --
     # registrar_company = DynamicModelChoiceField(
@@ -72,13 +79,13 @@ class DomainForm(TenancyForm, NetBoxModelForm):
 
     # fieldsets = (
     # )
-    
+
     class Meta:
         model = Domain
         fields = [
-            'name', 'status', 'asset_confidence', 
+            'name', 'status', 'asset_confidence',
             'tenant', 'ownership_type',
-            'is_internet_facing', 'is_flagship',
+            'is_flagship', 'is_internet_facing',
             'meets_standards',
             'date_registrar_expiry', 'date_first_registered',
             'date_last_recon_scanned',
@@ -96,26 +103,34 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
     # -- Choices --
     status = forms.ChoiceField(
         choices=FQDNStatusChoices,
+        required=False,
     )
-    # TODO: forms.RadioSelect doesn't seem to work, doesn't 
+    # TODO: forms.RadioSelect doesn't seem to work, doesn't
     #       show up on website form
-    # asset_confidence = forms.RadioSelect(
+    # asset_confidence = forms.ChoiceField(
     #     choices=AssetConfidenceChoices,
     # )
+    asset_class = forms.ChoiceField(
+        choices=AssetClassChoices,
+        required=False,
+        widget=forms.RadioSelect,
+        label=_('Asset Class'),
+    )
     asset_confidence = forms.ChoiceField(
         choices=AssetConfidenceChoices,
         required=False,
         label=_('Asset Confidence'),
     )
-    
     fqdn_status = forms.ChoiceField(
         choices=FQDNOpsStatusChoices,
+        required=False,
         label=_('FQDN Tech Status')
     )
-    # website_status = forms.ChoiceField(
-    #     choices=WebsiteOpsStatusChoices,
-    # )
-    
+    website_status = forms.ChoiceField(
+        choices=WebsiteOpsStatusChoices,
+        required=False,
+        label=_('Website Status'),
+    )
     # website_role = forms.ChoiceField(
     #     choices=add_blank_choice(WebsiteRoleChoices),
     #     required=False,
@@ -129,7 +144,7 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
         required=False,
     )
     cloud_provider = forms.ChoiceField(
-        choices=CloudProviderChoices,
+        choices=add_blank_choice(CloudProviderChoices),
         required=False,
         label=_('Cloud Provider'),
     )
@@ -147,25 +162,22 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
         label=_('Criticality Score'),
         help_text=_('Asset criticality score for prioritization (1=low, 100=critical)')
     )
-    
-    # -- Bools --
-    mark_triaging = forms.BooleanField(
+    scoping_size = forms.IntegerField(
         required=False,
-        label=_('Triaging'),
     )
-    # TODO: I'd really like to have whatever value is current and then
-    # just don't change it if i don't modify. For that, think it must be a drop-down
-    # or maybe a radio select widget
-    is_internet_facing = forms.BooleanField(
+    scoping_complexity = forms.IntegerField(
         required=False,
-        initial=True,
+    )
+    scoping_roles = forms.IntegerField(
+        required=False,
     )
 
     # -- FKs --
     domain = DynamicModelChoiceField(
         queryset=Domain.objects.all(),
-        required=True,
+        required=False,
         selector=True,
+        label=_('Parent Domain'),
     )
     ipaddress_public_8 = DynamicModelChoiceField(
         queryset=IPAddress.objects.all(),
@@ -180,7 +192,7 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
         label=_('Private IP (NB)'),
     )
 
-    # TODO: Improve upon this, it just looks like a box to type in, 
+    # TODO: Improve upon this, it just looks like a box to type in,
     # doesn't connect to the IPAddress FK
     # ipaddress_public_8 = IPNetworkFormField(required=False)
     # ipaddress_private_8 = IPNetworkFormField(required=False)
@@ -198,7 +210,6 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
         selector=True,
         label=_('OS (NB)')
     )
-
     impacted_group_orig = DynamicModelChoiceField(
         queryset=BusinessGroup.objects.all(),
         required=False,
@@ -225,13 +236,12 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
         # to_field_name="facility",
         label=_('Site Location (NB)'),
     )
-
     geo_region = DynamicModelChoiceField(
         queryset=Region.objects.all(),
         required=False,
         label=_('Geo Region (NB)'),
         # initial_params={
-        #     "sites": 
+        #     "sites":
         # }
     )
     tech_webserver_1 = DynamicModelChoiceField(
@@ -239,14 +249,21 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
         required=False,
         label=_('Webserver Framework (FK)'),
     )
-
-    # vendor_company_1 = DynamicModelChoiceField(
-    #     queryset=Vendor.objects.all(),
-    #     required=False,
-    #     label=_('Vendor Company (FK)'),
-    # )
+    vendor_company_fk = DynamicModelChoiceField(
+        queryset=Vendor.objects.all(),
+        required=False,
+        label=_('Vendor Company (FK)'),
+    )
 
     # -- Booleans --
+    mark_triaging = forms.BooleanField(
+        required=False,
+        label=_('Triaging'),
+    )
+    # TODO: I'd really like to have whatever value is current and then
+    # just don't change it if i don't modify. For that, I think it must
+    # be a drop-down or maybe a radio select widget
+    is_internet_facing = forms.BooleanField(required=False, initial=True)
     had_bugbounty = forms.BooleanField(required=False)
     is_risky = forms.BooleanField(required=False)
     is_in_cmdb = forms.BooleanField(required=False, label=_('In CMDB'))
@@ -256,6 +273,7 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
     )
     is_internet_facing = forms.BooleanField(required=False)
     is_flagship = forms.BooleanField(required=False)
+    is_nonprod_mirror = forms.BooleanField(required=False)
     is_cloud_hosted = forms.BooleanField(required=False)
     # is_vendor_managed = forms.BooleanField(required=False)
     # is_vendor_hosted = forms.BooleanField(required=False)
@@ -272,29 +290,29 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
 
     fieldsets = (
         ("FQDN", (
-            "name", "mark_triaging", "asset_confidence",
+            "name", "mark_triaging",
             "status", "status_reason",
+            "asset_confidence",
             "fqdn_status", "website_status",
+            "date_last_recon",
             "asset_class", "domain",
             'env_model', 'architectural_model',
-            "geo_region_choice",
-            "geo_region",
+            "geo_region_choice", "geo_region",
             "location_orig", "location",
-            "is_in_cmdb", 'is_flagship',
-
+            'is_internet_facing', 'is_nonprod_mirror',
+            'is_flagship', "is_in_cmdb",
+            'is_cloud_hosted', 'cloud_provider',
         )),
         ("Tenancy", (
             "impacted_group_orig", "impacted_division_orig",
-            "owners_orig", "tenant",
+            "tenant",
+            "owners_orig",
             'support_group_website_technical_orig', 'support_group_website_approvals_orig',
         )),
         ("Technical Details", (
             "public_ip_1", "ipaddress_public_8",
-            'is_internet_facing',
-            'is_cloud_hosted', 'cloud_provider',
-            'tech_webserver_orig', 'tech_webserver_1', 'tech_addtl',
             'private_ip_1', 'private_ip_2',
-            # 'ipaddress_private_8', 
+            # 'ipaddress_private_8',
             'hostname_orig',
             'os_char',
             'os_1', 'os_8',
@@ -302,6 +320,8 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
             'website_role',
             'site_operation_age',
             'redirect_health', 'redirect_url',
+            'tech_webserver_orig', 'tech_webserver_1', 'tech_addtl',
+            "cnames", "dns_a_record_ips",
         )),
         ("Security", (
             'criticality_score_1',
@@ -310,7 +330,7 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
             # 'is_compliance_required', 'compliance_programs',
             'is_akamai', 'is_load_protected', 'is_waf_protected',
             'vuln_scan_coverage', 'vuln_scan_last_date',
-            'last_vuln_assessment',
+            # 'last_vuln_assessment',
             'risk_analysis_notes',
             'scan_fingerprint_json',
         )),
@@ -321,11 +341,14 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
         )),
         ("Vendor", (
             'is_vendor_managed', 'is_vendor_hosted',
-            'vendor_company_orig', 'vendor_pocs_orig', 'vendor_notes',
+            'vendor_company_fk',
+            'vendor_company_orig', 'vendor_pocs_orig',
+            'vendor_url', 'vendor_notes',
         )),
         ("TLS", (
             'tls_protocol_version', 'tls_cert_expires',
             'tls_cert_info', 'tls_cert_sha1', 'tls_cert_is_wildcard',
+            #'tls_cert_self_signed',
         )),
         (None, (
             "notes", "tags",
@@ -340,48 +363,54 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
             })
         }
         fields = [
-            "name", "mark_triaging", "asset_confidence",
+            "name", "mark_triaging",
+            "asset_confidence",
             "status", "status_reason",
             'fqdn_status', 'website_status',
+            "date_last_recon",
             'asset_class', 'domain',
             'impacted_group_orig', 'impacted_division_orig',
             'location_orig', 'location',
             'geo_region_choice', 'geo_region',
             'env_model', 'architectural_model',
             'public_ip_1', 'ipaddress_public_8',
-            'tech_webserver_orig', 'tech_webserver_1', 'tech_addtl',
-            'is_in_cmdb', 'is_flagship',
-            'is_internet_facing',
+            'is_internet_facing', 'is_nonprod_mirror',
+            'is_flagship', "is_in_cmdb",
             'is_akamai', 'is_load_protected', 'is_waf_protected',
             'tenant', 'owners_orig',
             'support_group_website_technical_orig', 'support_group_website_approvals_orig',
             'private_ip_1', 'private_ip_2',
-            # 'ipaddress_private_8', 
+            # 'ipaddress_private_8',
             'hostname_orig',
-            'os_char', 
+            'os_char',
             'os_1', 'os_8',
             'criticality_score_1',
-            'tls_protocol_version', 'tls_cert_expires',
-            'tls_cert_info', 'tls_cert_sha1', 'tls_cert_is_wildcard',
+
             'website_url', 'website_title', 'website_email_orig',
             'site_operation_age',
             'redirect_health', 'redirect_url',
+            'tech_webserver_orig', 'tech_webserver_1', 'tech_addtl',
+            "cnames", "dns_a_record_ips",
             'had_bugbounty', 'is_risky',
-            'vuln_scan_coverage', 'vuln_scan_last_date',
-            'last_vuln_assessment', 'vuln_assessment_priority',
+            'vuln_scan_coverage', 'date_last_vulnscan',
+            'date_last_pentest', 'pentest_priority',
             'risk_analysis_notes', 'scan_fingerprint_json',
-            
+
             'is_cloud_hosted', 'cloud_provider',
             'is_vendor_managed', 'is_vendor_hosted',
-            'vendor_company_orig', 
+            'vendor_company_fk', 'vendor_company_orig',
             'vendor_pocs_orig',
             'vendor_notes',
-            
+
             'feature_api',
             'feature_acct_mgmt', 'feature_webauth_type', 'feature_auth_self_registration',
             # Scoping --
             'scoping_size', 'scoping_complexity', 'scoping_roles',
             'is_compliance_required', 'compliance_programs_choice',
+
+            'tls_protocol_version', 'tls_cert_expires',
+            'tls_cert_info', 'tls_cert_sha1', 'tls_cert_is_wildcard',
+            'tls_cert_self_signed',
             'notes',
             'tags',
         ]
@@ -389,24 +418,30 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
 
 class BusinessGroupForm(NetBoxModelForm):
 
+    slug = SlugField()
+
     class Meta:
         model = BusinessGroup
-        fields = ['name', 'acronym']
+        fields = ['name', 'acronym', 'slug']
 
 
 class BusinessDivisionForm(NetBoxModelForm):
 
+    slug = SlugField()
+
     class Meta:
         model = BusinessDivision
-        fields = ['name', 'acronym', 'group']
+        fields = ['name', 'acronym', 'slug', 'group']
 
 
 class OperatingSystemForm(NetBoxModelForm):
 
+    slug = SlugField()
+
     class Meta:
         model = OperatingSystem
         fields = (
-            'vendor', 'product', 'update',
+            'vendor', 'slug', 'product', 'update',
             'platform_family', 'platform_type',
             'build_number', 'cpe', 'color',
         )
@@ -414,10 +449,12 @@ class OperatingSystemForm(NetBoxModelForm):
 
 class SiteLocationForm(NetBoxModelForm):
 
+    slug = SlugField()
+
     class Meta:
         model = SiteLocation
         fields = [
-            'name', 'code', 
+            'name', 'code', 'slug', 'active',
             'impacted_group_orig', 'impacted_division_orig',
             'geo_region_choice',
             'geo_region', 'tenant',
@@ -426,10 +463,25 @@ class SiteLocationForm(NetBoxModelForm):
 
 class VendorForm(NetBoxModelForm):
 
+    slug = SlugField()
+
     class Meta:
         model = Vendor
         fields = (
-            'name',
+            'name', 'slug',
+            'description',
+            'url',
+            # Cannot include 'contacts' here because it is a read-only field
+            'vendor_pocs_orig', 'notes',
+        )
+
+
+class WebEmailForm(NetBoxModelForm):
+
+    class Meta:
+        model = WebEmail
+        fields = (
+            'email_address',
         )
 
 
@@ -439,7 +491,7 @@ class WebserverFrameworkForm(NetBoxModelForm):
     class Meta:
         model = WebserverFramework
         fields = (
-            'name', 'slug', 'product', 'version', 
+            'name', 'slug', 'product', 'version',
             'raw_banner', 'cpe',
             'order',
         )

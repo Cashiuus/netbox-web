@@ -30,14 +30,32 @@ __all__ = (
 
 
 class DomainBulkEditForm(NetBoxModelBulkEditForm):
-    model = Domain
+    
+    # -- Choices --
+    status = forms.ChoiceField(
+        choices=DomainStatusChoices,
+        required=False,
+    )
+    asset_confidence = forms.ChoiceField(
+        choices=AssetConfidenceChoices,
+        required=False,
+    )
+    ownership_type = forms.ChoiceField(
+        choices=DomainOwnershipStatusChoices,
+        required=False,
+    )
 
-    status = forms.ChoiceField(choices=DomainStatusChoices)
+    # -- Bools --
+    meets_standards = forms.NullBooleanField(
+        required=False,
+        widget=BulkEditNullBooleanSelect(),
+    )
 
-    date_last_recon_scanned = forms.DateField()
+    # -- Dates --
+    date_last_recon_scanned = forms.DateField(required=False)
 
     # comments = CommentField(label='Comments')
-
+    model = Domain
     fieldsets = (
         (None, (
             'status', 'asset_confidence', 'ownership_type',
@@ -49,14 +67,47 @@ class DomainBulkEditForm(NetBoxModelBulkEditForm):
 
 
 class FQDNBulkEditForm(NetBoxModelBulkEditForm):
-    model = FQDN
 
+    mark_triaging = forms.NullBooleanField(
+        required=False,
+        widget=BulkEditNullBooleanSelect(),
+        label=_('Triaging'),
+    )
+    
+    # -- NetBox Built-In Fields --
+    description = forms.CharField(
+        max_length=200,
+        required=False,
+    )
+    # comments field gets defined here, don't include in fieldsets below, or 
+    # it'll show up twice on form
+    comments = CommentField()
+
+    model = FQDN
+    fieldsets = (
+        (None, (
+            # 'status', 'asset_confidence',
+            # 'impacted_group_orig', 'impacted_division_orig',
+            # 'owners_orig',
+            # 'tenant',
+            "mark_triaging",
+            'description',
+        )),
+    )
+    nullable_fields = ('description', 'comments')
+
+
+# -- Commented out FQDN stuff while I troubleshoot
     # -- Choices --
     # status = forms.ChoiceField(
     #   choices=add_blank_choice(FQDNStatusChoices),
     #   required=False,
     # )
-    # asset_confidence = forms.ChoiceField(choices=AssetConfidenceChoices)
+    # asset_confidence = forms.ChoiceField(
+    #     choices=AssetConfidenceChoices,
+    #     required=False,
+    #     label=_('Asset Confidence'),
+    # )
     # fqdn_status = forms.ChoiceField(choices=FQDNOpsStatusChoices)
     # website_status = forms.ChoiceField(choices=WebsiteOpsStatusChoices)
 
@@ -64,23 +115,18 @@ class FQDNBulkEditForm(NetBoxModelBulkEditForm):
     # NOTE: NetBox approach is this:
     #       - the model def is a "BooleanField" with default=False
     #       - then, forms use this "NullBooleanField"
-    mark_triaging = forms.NullBooleanField(
-        required=False,
-        widget=BulkEditNullBooleanSelect(),
-        label=_('Triaging'),
-    )
 
     # -- FKs --
-    impacted_group_orig = DynamicModelChoiceField(
-        queryset=BusinessGroup.objects.all(),
-        required=False,
-        label=_('Group'),
-    )
-    impacted_division_orig = DynamicModelChoiceField(
-        queryset=BusinessDivision.objects.all(),
-        required=False,
-        label=_('Division'),
-    )
+    # impacted_group_orig = DynamicModelChoiceField(
+    #     queryset=BusinessGroup.objects.all(),
+    #     required=False,
+    #     label=_('Group'),
+    # )
+    # impacted_division_orig = DynamicModelChoiceField(
+    #     queryset=BusinessDivision.objects.all(),
+    #     required=False,
+    #     label=_('Division'),
+    # )
     # location_orig = DynamicModelChoiceField(
     #     queryset=SiteLocation.objects.all(),
     # )
@@ -88,36 +134,16 @@ class FQDNBulkEditForm(NetBoxModelBulkEditForm):
     #     queryset=Site.objects.all(),
     # )
 
-    owners_orig = forms.CharField(
-        required=False,
-        label=_('Owners (Orig)'),
-    )
+    # owners_orig = forms.CharField(
+    #     required=False,
+    #     label=_('Owners (Orig)'),
+    # )
 
     # tenant = DynamicModelChoiceField(
     #     queryset=Tenant.objects.all(),
     #     required=False
     # )
-    
-    # -- NetBox Built-In Fields --
-    description = forms.CharField(
-        max_length=255,
-        required=False,
-    )
-    comments = CommentField()
 
-    fieldsets = (
-        ("Edit Ownership", (
-            # 'status', 'asset_confidence',
-            # 'impacted_group_orig', 'impacted_division_orig',
-            # 'owners_orig',
-            # 'tenant',
-            "mark_triaging",
-        )),
-        # (None, (
-        #     "mark_triaging",
-        # )),
-    )
-    nullable_fields = ('description', 'comments')
 
 
 class BusinessGroupBulkEditForm(NetBoxModelBulkEditForm):

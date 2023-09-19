@@ -64,69 +64,6 @@ VRF_LINK = """
 
 
 #
-# RIRs
-#
-
-class RIRTable(NetBoxTable):
-    name = tables.Column(
-        linkify=True
-    )
-    is_private = columns.BooleanColumn(
-        verbose_name='Private'
-    )
-    aggregate_count = columns.LinkedCountColumn(
-        viewname='ipam:aggregate_list',
-        url_params={'rir_id': 'pk'},
-        verbose_name='Aggregates'
-    )
-    tags = columns.TagColumn(
-        url_name='ipam:rir_list'
-    )
-
-    class Meta(NetBoxTable.Meta):
-        model = RIR
-        fields = (
-            'pk', 'id', 'name', 'slug', 'is_private', 'aggregate_count', 'description', 'tags', 'created',
-            'last_updated', 'actions',
-        )
-        default_columns = ('pk', 'name', 'is_private', 'aggregate_count', 'description')
-
-
-#
-# Aggregates
-#
-
-class AggregateTable(TenancyColumnsMixin, NetBoxTable):
-    prefix = tables.Column(
-        linkify=True,
-        verbose_name='Aggregate'
-    )
-    date_added = tables.DateColumn(
-        format="Y-m-d",
-        verbose_name='Added'
-    )
-    child_count = tables.Column(
-        verbose_name='Prefixes'
-    )
-    utilization = columns.UtilizationColumn(
-        accessor='get_utilization',
-        orderable=False
-    )
-    comments = columns.MarkdownColumn()
-    tags = columns.TagColumn(
-        url_name='ipam:aggregate_list'
-    )
-
-    class Meta(NetBoxTable.Meta):
-        model = Aggregate
-        fields = (
-            'pk', 'id', 'prefix', 'rir', 'tenant', 'tenant_group', 'child_count', 'utilization', 'date_added',
-            'description', 'comments', 'tags', 'created', 'last_updated',
-        )
-        default_columns = ('pk', 'prefix', 'rir', 'tenant', 'child_count', 'utilization', 'date_added', 'description')
-
-
-#
 # Roles
 #
 

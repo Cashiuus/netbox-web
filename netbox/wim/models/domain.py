@@ -48,7 +48,7 @@ class Domain(PrimaryModel):
         max_length=50,
         choices=DomainStatusChoices,
         default=DomainStatusChoices.STATUS_NEW,
-        help_text='Operational status of this Domain'
+        help_text='Operational status of this Domain',
     )
     
     slug = models.SlugField(max_length=100)
@@ -66,7 +66,7 @@ class Domain(PrimaryModel):
         max_length=100,
         choices=DomainOwnershipStatusChoices,
         default=DomainOwnershipStatusChoices.OWNEDSTATUS_UNKNOWN,
-        help_text="Primary ownership of this domain (e.g. who owns it)"
+        help_text="Primary ownership of this domain (e.g. who owns it)",
     )
 
     # prev name: registrar_expiry_date
@@ -97,26 +97,27 @@ class Domain(PrimaryModel):
 
     # prev name: internet_facing
     is_internet_facing = models.BooleanField(
-        _('Internet Facing'), 
+        _('Internet Facing'),
         null=True, default=True,
-        help_text='Most domains are internet-facing unless used for internal network only'
+        help_text='Most domains are internet-facing unless used for internal network only',
     )
     # prev name: flagship
     is_flagship = models.BooleanField(_('Flagship'), null=True, default=False)
 
+    # TODO: Other netbox models don't usee "null=True" in here, maybe this is causing issues
     # prev name: reg_matches_standards
     meets_standards = models.BooleanField(
-        _('Meets Standards'), 
+        _('Meets Standards'),
         null=True, default=True,
-        help_text='Domain registration meets company technical standards'
+        help_text='Domain registration meets company technical standards',
     )
 
     # internal_ad_domain = models.BooleanField(_('AD Domain'), null=True, default=False)
     registrar_iana_id_orig = models.IntegerField(_('Registrar IANA ID (orig)'), blank=True, null=True)
     registrar_company_orig = models.CharField(
-        _('Registrar Name (orig)'), 
-        max_length=255, 
-        blank=True
+        _('Registrar Name (orig)'),
+        max_length=255,
+        blank=True,
     )
     # TODO: If i do a Registrar table, it could be done just like the RIR table
     # registrar_company = models.ForeignKey(
@@ -135,9 +136,9 @@ class Domain(PrimaryModel):
     )
     # registrant_email = models.CharField(_('Registrant Email'), max_length=255, blank=True, default='')
     registration_emails_orig = models.TextField(
-        _('Email Addresses (orig)'), 
+        _('Email Addresses (orig)'),
         blank=True,
-        help_text='List of email addresses tied to a whois registration for this domain'
+        help_text='List of email addresses tied to a whois registration for this domain',
     )
     registration_emails = models.ManyToManyField(
         to='wim.WebEmail',
@@ -148,12 +149,12 @@ class Domain(PrimaryModel):
     registrar_domain_statuses = models.TextField(
         _('Domain Statuses'), 
         blank=True, default='',
-        help_text='Domain statuses, such as ClientTransferProhibited'
+        help_text='Domain statuses, such as ClientTransferProhibited',
     )
     nameservers = models.TextField(
         _('Nameservers'), 
         blank=True,
-        help_text='Comma-separated list of authoritative namservers for this domain'
+        help_text='Comma-separated list of authoritative namservers for this domain',
     )
     mail_servers = models.CharField(_('Mail Servers'), max_length=255, blank=True, default='')
     whois_servers = models.CharField(_('Whois Servers'), max_length=255, blank=True, default='')
@@ -161,9 +162,16 @@ class Domain(PrimaryModel):
     soa_email = models.EmailField(_('SOA Email'), max_length=255, blank=True, default='')
     #alexa_ranked = models.BooleanField(_('Alexa Ranked'), null=True, default=False)
     
-    date_created = models.DateTimeField(_('Date Created'), auto_now_add=True,
-                                        help_text='system field for creation date')
-    date_modified = models.DateTimeField(_('Date Modified'), auto_now=True, help_text='system field for modified date')
+    date_created = models.DateTimeField(
+        _('Date Created'),
+        auto_now_add=True,
+        help_text='system field for creation date',
+    )
+    date_modified = models.DateTimeField(
+        _('Date Modified'),
+        auto_now=True,
+        help_text='system field for modified date',
+    )
     
     notes = models.TextField(_('Notes'), blank=True, default='')
 

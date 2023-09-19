@@ -24,11 +24,13 @@ class FQDNTable(TenancyColumnsMixin, NetBoxTable):
     website_role = columns.ChoiceFieldColumn()
     redirect_health = columns.ChoiceFieldColumn()
     # compliance_programs_choice = columns.ChoiceFieldColumn()
+
     # -- Bools --
     mark_triaging = columns.BooleanColumn(verbose_name="Triaging")
     is_in_cmdb = columns.BooleanColumn(verbose_name="In CMDB")
     is_internet_facing = columns.BooleanColumn(verbose_name="Internet Facing")
     is_flagship = columns.BooleanColumn(verbose_name="Flagship")
+    is_nonprod_mirror = columns.BooleanColumn(verbose_name="Is Nonprod Mirror")
     is_cloud_hosted = columns.BooleanColumn(verbose_name="Cloud Hosted")
     is_vendor_managed = columns.BooleanColumn(verbose_name="Vendor Managed")
     is_vendor_hosted = columns.BooleanColumn(verbose_name="Vendor Hosted")
@@ -55,49 +57,58 @@ class FQDNTable(TenancyColumnsMixin, NetBoxTable):
         model = FQDN
         # exclude = ('id',)
         fields = (
-            "name", "id", "mark_triaging", "asset_confidence",
+            "name", "id", 
+            "mark_triaging", "asset_confidence",
             "status", "status_reason",
+            'date_last_recon',
             'fqdn_status', 'website_status',
             'asset_class', 'domain',
             'owners_orig', 'impacted_group_orig', 'impacted_division_orig',
             # 'owners_nb',
-            'support_group_website_technical_orig', 'support_group_website_approvals_orig',
-            # support_group FK's go here
             'geo_region_choice', 'geo_region',
             'location_orig', 'location',
             'env_model', 'architectural_model',
-            'had_bugbounty', 'is_risky', 'is_in_cmdb',
+            'is_flagship', 'is_in_cmdb',
+            'is_nonprod_mirror',
+            'had_bugbounty', 'is_risky',
             'public_ip_1', 'ipaddress_public_8',
             'private_ip_1', 'private_ip_2',
             'ipaddress_private_8',
             'hostname_orig',
             'os_char',
             'os_1', 'os_8',
-            'vuln_scan_coverage', 'vuln_scan_last_date', 'last_vuln_assessment',
-            'vuln_assessment_priority', 'risk_analysis_notes',
             'criticality_score_1',
+            'vuln_scan_coverage', 'date_last_vulnscan',
+            'date_last_pentest', 'pentest_priority',
+            'risk_analysis_notes',
             'is_compliance_required', 'compliance_programs_choice',
             'tech_webserver_orig',
             'tech_webserver_1',
             'tech_addtl',
-            'is_flagship', 'is_cloud_hosted', 'cloud_provider',
+            'is_cloud_hosted', 'cloud_provider',
             'is_akamai', 'is_load_protected', 'is_waf_protected',
             'website_role',
             'website_url', 'website_title', 'website_email_orig',
             'site_operation_age',
             'redirect_health', 'redirect_url',
-            'is_vendor_hosted', 'is_vendor_managed',
+            'is_vendor_managed', 'is_vendor_hosted', 
             'vendor_company_orig', 'vendor_company_fk', 'vendor_pocs_orig',
             'vendor_url', 'vendor_notes',
             'feature_acct_mgmt', 'feature_webauth_type', 'feature_auth_self_registration',
             'feature_api',
-            'scoping_size', 'scoping_complexity', 'scoping_roles',
+            'scoping_size', 'scoping_complexity', 'scoping_roles', 'calc_loe',
             'cnames', 'dns_a_record_ips',
-            'tls_protocol_version', 'tls_cert_info', 'tls_cert_expires', 
-            'tls_cert_sha1', 'tls_cert_is_wildcard',
+            'tls_protocol_version', 'tls_cert_info', 'tls_cert_expires',
+            'tls_cert_is_wildcard', 'tls_cert_self_signed', 'tls_cert_sha1',
+            'is_vhost', 'is_http2',
+            'response_code', 'content_length',
+            'is_internet_facing',
             'tenant',
+            'support_group_website_technical_orig', 'support_group_website_approvals_orig',
+            # support_group FK's go here
             'notes',
             'tags', 'created', 'last_updated', 'date_created', 'date_modified',
+            # 'slug',
         )
         default_columns = (
             'name', 'id', 'status', 'asset_confidence', 'fqdn_status', 'website_status', 

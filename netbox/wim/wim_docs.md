@@ -230,3 +230,30 @@ According to the docs, you just have to subclass SearchIndex, but when I did tha
 - https://docs.netbox.dev/en/stable/development/adding-models/
 
 
+
+
+#### Dashboard Widgets
+
+- Doc: https://docs.netbox.dev/en/stable/plugins/development/dashboard-widgets/
+
+I'd suggest this page include some information on how to generate or use the "filters" form field when creating widgets in order to filter down the object lists or counts. It requires json, but not sure the exact syntax it must be.
+
+
+
+
+
+#### For prefixes or ranges, add a link to arin whois lookup
+
+This could be added as a <a>  link to the .html pages
+
+```
+"https://search.arin.net/rdap/?query={{ ip_range_here }}"
+
+```
+
+
+
+
+
+
+

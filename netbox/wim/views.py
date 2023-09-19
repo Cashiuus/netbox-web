@@ -29,11 +29,7 @@ from .models import *
 
 class FQDNListView(generic.ObjectListView):
     queryset = FQDN.objects.all()
-    # queryset = FQDN.objects.prefetch_related('impacted_group_orig', 'impacted_division_orig')
-    # queryset = FQDN.objects.annotate(
-        # site_count=count_related(Site, 'asns'),
-        # provider_count=count_related(Provider, 'asns')
-    # )
+
     filterset = filtersets.FQDNFilterSet
     filterset_form = forms.FQDNFilterForm
     table = tables.FQDNTable
@@ -42,15 +38,6 @@ class FQDNListView(generic.ObjectListView):
 @register_model_view(FQDN)
 class FQDNView(generic.ObjectView):
     queryset = FQDN.objects.all()
-
-    # def get_extra_context(self, request, instance):
-    #     related_models = (
-    #         (Site.objects.restrict(request.user, 'view').filter(fqdn__in=[instance]), 'name'),
-    #         # (Provider.objects.restrict(request.user, 'view').filter(asns__in=[instance]), 'id'),
-    #     )
-    #     return {
-    #         'related_models': related_models,
-    #     }
 
 
 @register_model_view(FQDN, 'edit')
@@ -71,9 +58,6 @@ class FQDNBulkImportView(generic.BulkImportView):
 
 class FQDNBulkEditView(generic.BulkEditView):
     queryset = FQDN.objects.all()
-    # queryset = FQDN.objects.annotate(
-    #     site_count=count_related(Site, 'fqdns')
-    # )
     filterset = filtersets.FQDNFilterSet
     table = tables.FQDNTable
     form = forms.FQDNBulkEditForm
@@ -176,7 +160,10 @@ class DomainBulkDeleteView(generic.BulkDeleteView):
 # --
 
 class BusinessGroupListView(generic.ObjectListView):
-    queryset = BusinessGroup.objects.all()
+    # queryset = BusinessGroup.objects.all()
+    queryset = BusinessGroup.objects.annotate(
+        fqdn_count=count_related(FQDN, 'impacted_group_orig'),
+    )
     filterset = filtersets.BusinessGroupFilterSet
     filterset_form = forms.BusinessGroupFilterForm
     table = tables.BusinessGroupTable
@@ -230,7 +217,10 @@ class BusinessGroupBulkDeleteView(generic.BulkDeleteView):
 # --
 
 class BusinessDivisionListView(generic.ObjectListView):
-    queryset = BusinessDivision.objects.all()
+    # queryset = BusinessDivision.objects.all()
+    queryset = BusinessDivision.objects.annotate(
+        fqdn_count=count_related(FQDN, 'impacted_division_orig'),
+    )
     filterset = filtersets.BusinessDivisionFilterSet
     filterset_form = forms.BusinessDivisionFilterForm
     table = tables.BusinessDivisionTable
@@ -242,10 +232,10 @@ class BusinessDivisionView(generic.ObjectView):
 
     def get_extra_context(self, request, instance):
         related_models = (
-            (FQDN.objects.restrict(request.user, 'view').filter(impacted_division_orig=instance), 'impacted_division_orig_id'),
+            (FQDN.objects.restrict(request.user, 'view').filter(impacted_division_orig=instance), 'businessdivision_id'),
         )
         return {'related_models': related_models}
-    
+
 
 @register_model_view(BusinessDivision, 'edit')
 class BusinessDivisionEditView(generic.ObjectEditView):
@@ -300,7 +290,7 @@ class OperatingSystemView(generic.ObjectView):
             (FQDN.objects.restrict(request.user, 'view').filter(os_1=instance), 'os_1_id'),
         )
         return {'related_models': related_models}
-    
+
 
 @register_model_view(OperatingSystem, 'edit')
 class OperatingSystemEditView(generic.ObjectEditView):
@@ -355,7 +345,7 @@ class SiteLocationView(generic.ObjectView):
             (FQDN.objects.restrict(request.user, 'view').filter(location_orig=instance), 'location_orig_id'),
         )
         return {'related_models': related_models}
-    
+
 
 @register_model_view(SiteLocation, 'edit')
 class SiteLocationEditView(generic.ObjectEditView):
@@ -393,7 +383,10 @@ class SiteLocationBulkDeleteView(generic.BulkDeleteView):
 # --
 
 class VendorListView(generic.ObjectListView):
-    queryset = Vendor.objects.all()
+    # queryset = Vendor.objects.all()
+    queryset = Vendor.objects.annotate(
+        fqdn_count=count_related(FQDN, 'vendor_company_fk')
+    )
     filterset = filtersets.VendorFilterSet
     filterset_form = forms.VendorFilterForm
     table = tables.VendorTable
@@ -402,7 +395,13 @@ class VendorListView(generic.ObjectListView):
 @register_model_view(Vendor)
 class VendorView(generic.ObjectView):
     queryset = Vendor.objects.all()
-    
+
+    def get_extra_context(self, request, instance):
+        related_models = (
+            (FQDN.objects.restrict(request.user, 'view').filter(vendor_company_fk=instance), 'vendor_id'),
+        )
+        return {"related_models": related_models}
+
 
 @register_model_view(Vendor, 'edit')
 class VendorEditView(generic.ObjectEditView):
@@ -435,12 +434,62 @@ class VendorBulkDeleteView(generic.BulkDeleteView):
 
 
 
+
+# --
+# WebEmail
+# --
+
+class WebEmailListView(generic.ObjectListView):
+    queryset = WebEmail.objects.all()
+    filterset = filtersets.WebEmailFilterSet
+    filterset_form = forms.WebEmailFilterForm
+    table = tables.WebEmailTable
+
+
+# @register_model_view(WebEmail)
+# class WebEmailView(generic.ObjectView):
+#     queryset = WebEmail.objects.all()
+
+
+# @register_model_view(WebEmail, 'edit')
+# class WebEmailEditView(generic.ObjectEditView):
+#     queryset = WebEmail.objects.all()
+#     form = forms.WebEmailForm
+
+
+# @register_model_view(WebEmail, 'delete')
+# class WebEmailDeleteView(generic.ObjectDeleteView):
+#     queryset = WebEmail.objects.all()
+
+
+# class WebEmailBulkImportView(generic.BulkImportView):
+#     queryset = WebEmail.objects.all()
+#     model_form = forms.WebEmailImportForm
+
+
+# class WebEmailBulkEditView(generic.BulkEditView):
+#     queryset = WebEmail.objects.all()
+#     filterset = filtersets.WebEmailFilterSet
+#     table = tables.WebEmailTable
+#     form = forms.WebEmailBulkEditForm
+
+
+# class WebEmailBulkDeleteView(generic.BulkDeleteView):
+#     queryset = WebEmail.objects.all()
+#     filterset = filtersets.WebEmailFilterSet
+#     table = tables.WebEmailTable
+
+
+
 # --
 # WebserverFramework
 # --
 
 class WebserverFrameworkListView(generic.ObjectListView):
-    queryset = WebserverFramework.objects.all()
+    # queryset = WebserverFramework.objects.all()
+    queryset = WebserverFramework.objects.annotate(
+        fqdn_count=count_related(FQDN, 'tech_webserver_1')
+    )
     filterset = filtersets.WebserverFrameworkFilterSet
     filterset_form = forms.WebserverFrameworkFilterForm
     table = tables.WebserverFrameworkTable
@@ -452,10 +501,10 @@ class WebserverFrameworkView(generic.ObjectView):
 
     def get_extra_context(self, request, instance):
         related_models = (
-            (FQDN.objects.restrict(request.user, 'view').filter(tech_webserver_1=instance), 'tech_webserver_1_id'),
+            (FQDN.objects.restrict(request.user, 'view').filter(tech_webserver_1=instance), 'webserverframework_id'),
         )
         return {'related_models': related_models}
-    
+
 
 @register_model_view(WebserverFramework, 'edit')
 class WebserverFrameworkEditView(generic.ObjectEditView):
