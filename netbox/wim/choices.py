@@ -52,7 +52,7 @@ class AssetConfidenceChoices(ChoiceSet):
 
 
 class AssetStatusReasonChoices(ChoiceSet):
-    """ The reasons behind why an asset has a particular status. 
+    """ The reasons behind why an asset has a particular status.
     """
     REASON_PERSONAL = "Personal Registration"
     REASON_DECOMISSIONED = "Decommissioned Website"
@@ -108,7 +108,7 @@ class FQDNOpsStatusChoices(ChoiceSet):
     FQDNSTATUS_4 = "4-DNS Host Server Down"
     FQDNSTATUS_5 = "5-Active"
     FQDNSTATUS_NA = "NA"
-    
+
     CHOICES = (
         (FQDNSTATUS_UNKNOWN, "0-Unknown-Test", "orange"),
         (FQDNSTATUS_1, "1-Whois", "gray"),
@@ -169,7 +169,6 @@ class DomainOwnershipStatusChoices(ChoiceSet):
 # Supporting Data Choices
 #
 
-
 class AssetClassChoices(ChoiceSet):
     ASSET_DOMAIN = "Domain"
     ASSET_FQDN = "FQDN"
@@ -183,15 +182,18 @@ class AssetClassChoices(ChoiceSet):
 class CloudProviderChoices(ChoiceSet):
     CLOUD_AWS = "AWS"
     CLOUD_AZURE = "Azure"
+    CLOUD_ALIBABA = "Alibaba"
     CLOUD_DIGOCEAN = "Digital Ocean"
     CLOUD_GOOGLE = "Google"
-    CLOUD_ALIBABA = "Alibaba"
+    CLOUD_ORACLE = "Oracle"
 
     CHOICES = [
         (CLOUD_AWS, "AWS", "orange"),
         (CLOUD_AZURE, "Azure",  "blue"),
+        (CLOUD_ALIBABA, "Alibaba", "gray"),
+        (CLOUD_DIGOCEAN, "Digital Ocean", "blue"),
         (CLOUD_GOOGLE, "Google", "cyan"),
-        (CLOUD_ALIBABA, "Alibaba", "red"),
+        (CLOUD_ORACLE, "Oracle", "red"),
     ]
 
 
