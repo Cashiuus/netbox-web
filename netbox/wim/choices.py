@@ -103,9 +103,9 @@ class FQDNOpsStatusChoices(ChoiceSet):
     FQDNSTATUS_UNKNOWN = "0-Unknown-Test"
     FQDNSTATUS_1 = "1-Whois"
     FQDNSTATUS_2 = "2-DNS"
+    FQDNSTATUS_4 = "2-DNS Host Server Down"
     FQDNSTATUS_3A = "3-Parked"
     FQDNSTATUS_3B = "3-Redirect"
-    FQDNSTATUS_4 = "4-DNS Host Server Down"
     FQDNSTATUS_5 = "5-Active"
     FQDNSTATUS_NA = "NA"
 
@@ -113,9 +113,9 @@ class FQDNOpsStatusChoices(ChoiceSet):
         (FQDNSTATUS_UNKNOWN, "0-Unknown-Test", "orange"),
         (FQDNSTATUS_1, "1-Whois", "gray"),
         (FQDNSTATUS_2, "2-DNS", "green"),
+        (FQDNSTATUS_4, "2-DNS Host Server Down", "red"),
         (FQDNSTATUS_3A, "3-Parked", "pink"),
         (FQDNSTATUS_3B, "3-Redirect", "pink"),
-        (FQDNSTATUS_4, "4-DNS Host Server Down", "red"),
         (FQDNSTATUS_5, "5-Active", "blue"),
         (FQDNSTATUS_NA, "NA", "gray"),
     )
