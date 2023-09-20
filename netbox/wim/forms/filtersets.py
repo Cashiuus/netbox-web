@@ -113,6 +113,11 @@ class FQDNFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
         required=False,
         label=_('Compliance Programs'),
     )
+    geo_region_choice = forms.MultipleChoiceField(
+        choices=GeoRegionChoices,
+        required=False,
+        label=_('Geo Region (choice)'),
+    )
 
     # -- Booleans --
     mark_triaging = forms.BooleanField(
@@ -206,7 +211,7 @@ class FQDNFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
     fieldsets = (
         (None, ('q', 'filter_id', 'tag')),
         ("Filters", (
-            'mark_triaging', 
+            'mark_triaging',
             'domain_id',
             'status',
             'asset_confidence', 'asset_class',
@@ -217,6 +222,7 @@ class FQDNFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
         ('Filter by Business', (
             # 'impacted_group_orig', 'impacted_division_orig',
             'businessgroup_id', 'businessdivision_id',
+            'geo_region_choice',
             'location_orig', 'location',
             'tenant_group_id', 'tenant_id',
             'vendor_id',
