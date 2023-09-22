@@ -11,6 +11,7 @@ router.APIRootView = views.WIMRootView
 
 router.register('domains', views.DomainViewSet)
 router.register('fqdns', views.FQDNViewSet)
+router.register('brands', views.BrandViewSet)
 router.register('business-groups', views.BusinessGroupViewSet)
 router.register('business-divisions', views.BusinessDivisionViewSet)
 # router.register('business-criticalities', views.BusinessCriticalityViewSet)

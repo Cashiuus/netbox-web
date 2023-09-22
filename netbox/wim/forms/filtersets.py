@@ -17,6 +17,7 @@ from utilities.forms.widgets import APISelectMultiple, DatePicker, DateTimePicke
 
 
 __all__ = (
+    'BrandFilterForm',
     'DomainFilterForm',
     'FQDNFilterForm',
     'BusinessGroupFilterForm',
@@ -45,40 +46,42 @@ class DomainFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
         choices=add_blank_choice(DomainStatusChoices),
         required=False
     )
-    confidence = forms.MultipleChoiceField(
+    asset_confidence = forms.MultipleChoiceField(
         choices=add_blank_choice(AssetConfidenceChoices),
-        required=False
-    )
-
-    date_registrar_expiry = forms.DateField(required=False, widget=DatePicker())
-    date_last_recon_scanned = forms.DateField(required=False, widget=DatePicker())
-
-    last_scanned__before = forms.DateField(
         required=False,
-        widget=DatePicker()
     )
-
-    expires__before = forms.DateField(
+    # -- Dates --
+    date_last_recon_scanned__before = forms.DateField(
         required=False,
-        widget=DatePicker()
+        widget=DatePicker(),
     )
-
+    date_registrar_expiry__before = forms.DateField(
+        required=False,
+        widget=DatePicker(),
+    )
+    # -- Bools --
     meets_standards = forms.NullBooleanField(
         required=False,
-        widget=forms.Select(choices=BOOLEAN_WITH_BLANK_CHOICES)
+        widget=forms.Select(choices=BOOLEAN_WITH_BLANK_CHOICES),
     )
     # -- FKs --
+    brand_id = DynamicModelMultipleChoiceField(
+        queryset=Brand.objects.all(),
+        required=False,
+        label=_('Brand/Acquisition'),
+    )
 
     tag = TagFilterField(model)
 
     fieldsets = (
         (None, ('q', 'filter_id', 'tag')),
-        ('Filter by Status', ('status', 'confidence', 'meets_standards')),
+        ('Filter by Status', ('status', 'asset_confidence', 'meets_standards')),
         ('Filter by Date', (
-            'date_registrar_expiry', 'date_last_recon_scanned',
-            'last_scanned__before', 'expires__before',
+            'date_last_recon_scanned__before', 'date_registrar_expiry__before',
         )),
-        ('Filter by Business', ('tenant_group_id', 'tenant_id')),
+        ('Filter by Business', (
+            'tenant_group_id', 'tenant_id', 'brand_id',
+        )),
     )
 
 
@@ -231,6 +234,10 @@ class FQDNFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
             'compliance_programs_choice',
         ))
     )
+
+
+class BrandFilterForm(NetBoxModelFilterSetForm):
+    model = Brand
 
 
 class BusinessGroupFilterForm(NetBoxModelFilterSetForm):

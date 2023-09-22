@@ -25,6 +25,10 @@ class DomainSerializer(NestedGroupModelSerializer):
         choices=DomainStatusChoices,
         required=False,
     )
+    asset_confidence = ChoiceField(
+        choices=AssetConfidenceChoices,
+        required=False,
+    )
     # rir = NestedRIRSerializer()
     tenant = NestedTenantSerializer(required=False, allow_null=True)
     # asn_count = serializers.IntegerField(read_only=True)
@@ -33,6 +37,7 @@ class DomainSerializer(NestedGroupModelSerializer):
         model = Domain
         fields = (
             'id', 'url', 'display', 'name', 'status',
+            'asset_confidence',
             'date_registrar_expiry', 'date_first_registered',
             'tenant',
         )
@@ -48,7 +53,7 @@ class FQDNSerializer(NetBoxModelSerializer):
     impacted_group_orig = NestedBusinessGroupSerializer(required=False, allow_null=True)
     impacted_division_orig = NestedBusinessDivisionSerializer(required=False, allow_null=True)
     vendor_company_fk = NestedVendorSerializer(required=False, allow_null=True)
-    
+
     # -- Choices --
     status = ChoiceField(
         choices=FQDNStatusChoices,
@@ -80,6 +85,20 @@ class FQDNSerializer(NetBoxModelSerializer):
             'sitelocation_count',
         )
 
+
+#
+# Brand
+#
+
+class BrandSerializer(NetBoxModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='wim-api:brand-detail')
+    # tenant = NestedTenantSerializer(required=False, allow_null=True)
+
+    class Meta:
+        model = Brand
+        fields = (
+            'id', 'url', 'display', 'name',
+        )
 
 
 #

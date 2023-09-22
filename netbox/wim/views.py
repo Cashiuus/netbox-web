@@ -154,6 +154,62 @@ class DomainBulkDeleteView(generic.BulkDeleteView):
 
 
 
+# --
+# Brand
+# --
+
+class BrandListView(generic.ObjectListView):
+    # queryset = Brand.objects.all()
+    queryset = Brand.objects.annotate(
+        # fqdn_count=count_related(FQDN, 'brand'),
+        domain_count=count_related(Domain, 'brand'),
+    )
+    filterset = filtersets.BrandFilterSet
+    filterset_form = forms.BrandFilterForm
+    table = tables.BrandTable
+
+
+@register_model_view(Brand)
+class BrandView(generic.ObjectView):
+    queryset = Brand.objects.all()
+
+    def get_extra_context(self, request, instance):
+        # TODO: The counts are working, but unsure how the links work yet
+        related_models = (
+            # (FQDN.objects.restrict(request.user, 'view').filter(brand=instance), 'brand_id'),
+            (Domain.objects.restrict(request.user, 'view').filter(brand=instance), 'brand_id'),
+        )
+        return {'related_models': related_models}
+
+
+@register_model_view(Brand, 'edit')
+class BrandEditView(generic.ObjectEditView):
+    queryset = Brand.objects.all()
+    form = forms.BrandForm
+
+
+@register_model_view(Brand, 'delete')
+class BrandDeleteView(generic.ObjectDeleteView):
+    queryset = Brand.objects.all()
+
+
+class BrandBulkImportView(generic.BulkImportView):
+    queryset = Brand.objects.all()
+    model_form = forms.BrandImportForm
+
+
+class BrandBulkEditView(generic.BulkEditView):
+    queryset = Brand.objects.all()
+    filterset = filtersets.BrandFilterSet
+    table = tables.BrandTable
+    form = forms.BrandBulkEditForm
+
+
+class BrandBulkDeleteView(generic.BulkDeleteView):
+    queryset = Brand.objects.all()
+    filterset = filtersets.BrandFilterSet
+    table = tables.BrandTable
+
 
 # --
 # Business Group

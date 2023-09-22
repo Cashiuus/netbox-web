@@ -67,6 +67,10 @@
                       <td>{% checkmark object.meets_standards %}</td>
                   </tr>
                   <tr>
+                    <th scope="row">Brand/Acquisition</th>
+                    <td>{{ object.brand|linkify|placeholder }}</td>
+                  </tr>
+                  <tr>
                     <th scope="row">Flagship?</th>
                     <td>{% checkmark object.is_flagship %}</td>
                 </tr>

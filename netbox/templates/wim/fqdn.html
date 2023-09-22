@@ -24,7 +24,7 @@
                 {% if object.website_homepage_image %}
                     <div style="float:right; margin-right: 20px">
                         {# picture here #}
-                        
+
                     </div>
                 {% endif %}
                 <tr>
@@ -39,7 +39,7 @@
                                 <a href="{% url 'wim:fqdn_scan' pk=object.pk %}" class="btn btn-sm btn-success lh-l" title="Scan">
                                     <i class="mdi mdi-transit-connection-variant" aria-hidden="true"></i> Launch Scan
                                 </a>
-                            
+
                             </div>
                         {% endif %}
                     </td>
@@ -108,7 +108,7 @@
                     <th scope="row">Site Location (NB)</th>
                     <td>{{ object.location|linkify }}</td>
                 </tr>
-                
+
                 <tr>
                     <th scope="row">Geo Region (Choice)</th>
                     <td>
@@ -294,7 +294,7 @@
                     <th scope="row">TLS Cert SHA1 Hash</th>
                     <td>{{ object.tls_cert_sha1 }}</td>
                 </tr>
-                
+
                 <tr>
                     <th scope="row">Notes</th>
                     <td>{{ object.notes }}</td>
@@ -356,6 +356,16 @@
                                 {{ object.tenant.group|linkify }} /
                             {% endif %}
                             {{ object.tenant|linkify|placeholder }}
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Brand/Acquisition</th>
+                        <td>
+                            {% if object.domain.brand %}
+                                {{ object.domain.brand|linkify|placeholder }}
+                            {% endif %}
                         </td>
                         <td></td>
                         <td></td>

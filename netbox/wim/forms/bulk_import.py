@@ -16,6 +16,7 @@ from utilities.forms.fields import (
 )
 
 __all__ = (
+    'BrandImportForm',
     'DomainImportForm',
     'FQDNImportForm',
     'BusinessGroupImportForm',
@@ -63,6 +64,12 @@ class DomainImportForm(NetBoxModelImportForm):
         to_field_name='name',
         help_text=_('Assigned tenant')
     )
+    brand = CSVModelChoiceField(
+        queryset=Brand.objects.all(),
+        required=False,
+        to_field_name='name',
+        help_text=_('Brand/Acquisition')
+    )
 
     # registrar_company = CSVModelChoiceField(
     #     queryset=Registrar.objects.all(),
@@ -86,7 +93,7 @@ class DomainImportForm(NetBoxModelImportForm):
         fields = [
             'name', 'status', 'asset_confidence', 'ownership_type',
             'meets_standards',
-            'tenant',
+            'tenant', 'brand',
             'date_registrar_expiry', 'date_first_registered',
             'date_last_recon_scanned',
             'is_internet_facing', 'is_flagship',
@@ -411,6 +418,12 @@ class FQDNImportForm(NetBoxModelImportForm):
                 # TODO: For now, changing this field to a CharField until I can add in cleaning
 
 
+class BrandImportForm(NetBoxModelImportForm):
+    slug = SlugField()
+
+    class Meta:
+        model = Brand
+        fields =  ('name', 'slug')
 
 
 class BusinessGroupImportForm(NetBoxModelImportForm):

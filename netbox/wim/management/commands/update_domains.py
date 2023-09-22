@@ -7,7 +7,7 @@ from wim.run_tasks.run_domain_updater import update_domains
 
 
 class Command(BaseCommand):
-    help = "Update whois registration data for domains"
+    help = "Update Whois registration data for domains"
 
     def handle(self, *model_names, **options):
         self.stdout.write(f"Updating {Domain.objects.count()} domains...")

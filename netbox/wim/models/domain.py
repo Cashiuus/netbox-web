@@ -13,7 +13,7 @@ from django.utils.translation import gettext as _
 from netbox.models import PrimaryModel
 from wim.validators import DNSValidator
 from wim.choices import *
-# This has to be imported this way to avoid circular import error 
+# This has to be imported this way to avoid circular import error
 # for FQDN referenced in function below
 from wim.models import FQDN
 
@@ -25,12 +25,12 @@ __all__ = (
 
 class Domain(PrimaryModel):
     """
-    A root/parent web domain which will house WHOIS registrar details 
+    A root/parent web domain which will house WHOIS registrar details
     and be tied to FQDN's/Subdomains.
     """
     name = models.CharField(
-        _('Name'), 
-        max_length=255, 
+        _('Name'),
+        max_length=255,
         unique=True,
         validators=[DNSValidator],
         help_text='A top-level/parent web domain'
@@ -42,7 +42,7 @@ class Domain(PrimaryModel):
     #     default=RECORD_STATUS_CHOICES.new,
     #     help_text='Operational status of this Domain'
     # )
-    
+
     status = models.CharField(
         _('Status'),
         max_length=50,
@@ -50,7 +50,7 @@ class Domain(PrimaryModel):
         default=DomainStatusChoices.STATUS_NEW,
         help_text='Operational status of this Domain',
     )
-    
+
     slug = models.SlugField(max_length=100)
 
     asset_confidence = models.CharField(
@@ -59,6 +59,14 @@ class Domain(PrimaryModel):
         choices=AssetConfidenceChoices,
         default=AssetConfidenceChoices.CONFIDENCE_CANDIDATE,
         help_text='Asset attribution confidence level',
+    )
+
+    brand = models.ForeignKey(
+        'Brand',
+        on_delete=models.CASCADE,
+        blank=True, null=True,
+        related_name='domains',
+        help_text=_('Brand'),
     )
 
     ownership_type = models.CharField(
@@ -71,16 +79,16 @@ class Domain(PrimaryModel):
 
     # prev name: registrar_expiry_date
     date_registrar_expiry = models.DateField(
-        _('Domain Expiration'), 
+        _('Domain Expiration'),
         blank=True, null=True,
     )
     # prev name: date_first_seen
     date_first_registered = models.DateField(
-        _('Date Registered'), 
+        _('Date Registered'),
         blank=True, null=True,
     )
     date_last_recon_scanned = models.DateField(
-        _('Date Last Scanned'), 
+        _('Date Last Scanned'),
         blank=True, null=True,
         help_text='Date this domain was last scanned by web recon workflow'
     )
@@ -128,10 +136,10 @@ class Domain(PrimaryModel):
     #     null=True,
     #     verbose_name='Registrar',
     # )
-    
+
     registrant_org = models.CharField(
-        _('Registrant Org'), 
-        max_length=255, 
+        _('Registrant Org'),
+        max_length=255,
         blank=True
     )
     # registrant_email = models.CharField(_('Registrant Email'), max_length=255, blank=True, default='')
@@ -147,12 +155,12 @@ class Domain(PrimaryModel):
         verbose_name='Registration Emails',
     )
     registrar_domain_statuses = models.TextField(
-        _('Domain Statuses'), 
+        _('Domain Statuses'),
         blank=True, default='',
         help_text='Domain statuses, such as ClientTransferProhibited',
     )
     nameservers = models.TextField(
-        _('Nameservers'), 
+        _('Nameservers'),
         blank=True,
         help_text='Comma-separated list of authoritative namservers for this domain',
     )
@@ -161,7 +169,7 @@ class Domain(PrimaryModel):
     soa_nameservers = models.CharField(_('SOA Nameservers'), max_length=255, blank=True, default='')
     soa_email = models.EmailField(_('SOA Email'), max_length=255, blank=True, default='')
     #alexa_ranked = models.BooleanField(_('Alexa Ranked'), null=True, default=False)
-    
+
     date_created = models.DateTimeField(
         _('Date Created'),
         auto_now_add=True,
@@ -172,7 +180,7 @@ class Domain(PrimaryModel):
         auto_now=True,
         help_text='system field for modified date',
     )
-    
+
     notes = models.TextField(_('Notes'), blank=True, default='')
 
     # @property
@@ -189,10 +197,10 @@ class Domain(PrimaryModel):
 
     def __str__(self):
         return self.name
-    
+
     def get_absolute_url(self):
         return reverse('wim:domain', args=[self.pk])
-    
+
     def get_child_fqdns(self):
         """
         Return all FQDNs that are children of this root domain.
@@ -200,9 +208,9 @@ class Domain(PrimaryModel):
         return FQDN.objects.filter(
             domain=self.name,
         )
-    
+
     def get_status_color(self):
         return DomainStatusChoices.colors.get(self.status)
-    
+
     def get_ownership_type_color(self):
         return DomainOwnershipStatusChoices.colors.get(self.ownership_type)

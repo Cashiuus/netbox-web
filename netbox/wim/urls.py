@@ -1,5 +1,4 @@
 from django.urls import include, path
-
 from utilities.urls import get_model_urls
 from . import views
 
@@ -22,6 +21,14 @@ urlpatterns = [
     path('domains/edit/', views.DomainBulkEditView.as_view(), name='domain_bulk_edit'),
     path('domains/delete/', views.DomainBulkDeleteView.as_view(), name='domain_bulk_delete'),
     path('domains/<int:pk>/', include(get_model_urls('wim', 'domain'))),
+
+    # Brands
+    path('brands/', views.BrandListView.as_view(), name='brand_list'),
+    path('brands/add/', views.BrandEditView.as_view(), name='brand_add'),
+    path('brands/import/', views.BrandBulkImportView.as_view(), name='brand_import'),
+    path('brands/edit/', views.BrandBulkEditView.as_view(), name='brand_bulk_edit'),
+    path('brands/delete/', views.BrandBulkDeleteView.as_view(), name='brand_bulk_delete'),
+    path('brands/<int:pk>/', include(get_model_urls('wim', 'brand'))),
 
     # Business Groups
     path('business-groups/', views.BusinessGroupListView.as_view(), name='businessgroup_list'),

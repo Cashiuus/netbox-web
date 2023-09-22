@@ -27,6 +27,7 @@ from wim.models import *
 
 
 __all__ = (
+    'BrandForm',
     'DomainForm',
     'FQDNForm',
     'BusinessDivisionForm',
@@ -67,6 +68,12 @@ class DomainForm(TenancyForm, NetBoxModelForm):
     #     required=True,
     #     selector=True,
     # )
+    brand = DynamicModelChoiceField(
+        queryset=Brand.objects.all(),
+        required=False,
+        selector=True,
+        label=_('Brand/Acquisition'),
+    )
 
     # -- M2M --
     registration_emails = DynamicModelMultipleChoiceField(
@@ -84,8 +91,8 @@ class DomainForm(TenancyForm, NetBoxModelForm):
         model = Domain
         fields = [
             'name', 'status', 'asset_confidence',
-            'tenant', 'ownership_type',
-            'is_flagship', 'is_internet_facing',
+            'tenant', 'ownership_type', 'brand',
+            'is_internet_facing', 'is_flagship',
             'meets_standards',
             'date_registrar_expiry', 'date_first_registered',
             'date_last_recon_scanned',
@@ -97,6 +104,8 @@ class DomainForm(TenancyForm, NetBoxModelForm):
             'registrar_domain_statuses',
             'notes',
         ]
+
+
 
 
 class FQDNForm(TenancyForm, NetBoxModelForm):
@@ -414,6 +423,15 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
             'notes',
             'tags',
         ]
+
+
+class BrandForm(NetBoxModelForm):
+
+    slug = SlugField()
+
+    class Meta:
+        model = Brand
+        fields = ['name', 'slug', 'description']
 
 
 class BusinessGroupForm(NetBoxModelForm):

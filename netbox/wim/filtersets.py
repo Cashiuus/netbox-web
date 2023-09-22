@@ -12,8 +12,8 @@ from netbox.filtersets import (
 )
 from tenancy.filtersets import TenancyFilterSet
 from utilities.filters import (
-    ContentTypeFilter, MultiValueCharFilter, 
-    MultiValueNumberFilter, NumericArrayFilter, 
+    ContentTypeFilter, MultiValueCharFilter,
+    MultiValueNumberFilter, NumericArrayFilter,
     TreeNodeMultipleChoiceFilter,
 )
 # from virtualization.models import VirtualMachine, VMInterface
@@ -22,6 +22,7 @@ from .models import *
 
 
 __all__ = (
+    'BrandFilterSet',
     'DomainFilterSet',
     'FQDNFilterSet',
     'BusinessGroupFilterSet',
@@ -45,21 +46,39 @@ class DomainFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
         choices=DomainStatusChoices,
         # null_value=None
     )
-
-    date_last_recon_canned = django_filters.DateFilter()
-    scanned_before = django_filters.DateFilter(
+    asset_confidence = django_filters.MultipleChoiceFilter(
+        choices=AssetConfidenceChoices,
+        # null_value=None
+    )
+    # -- FKs --
+    brand_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=Brand.objects.all(),
+        field_name='brand',
+        label=_('Brand/Acquisition'),
+    )
+    # -- Dates --
+    date_last_recon_scanned = django_filters.DateFilter()
+    date_last_recon_scanned__before = django_filters.DateFilter(
         field_name='date_last_recon_scanned',
-        lookup_expr='lte'
+        lookup_expr='lte',
+        label=_('Last Scanned Before'),
+    )
+    date_registrar_expiry = django_filters.DateFilter()
+    date_registrar_expiry__before = django_filters.DateFilter(
+        field_name='date_registrar_expiry',
+        lookup_expr='lte',
+        label=_('Expired Before'),
     )
 
     class Meta:
         model = Domain
         fields = [
             'id', 'name', 'status', 'asset_confidence',
-            'date_registrar_expiry', 'date_last_recon_scanned',
+            'brand_id',
+            # 'date_registrar_expiry', 'date_last_recon_scanned',
             'meets_standards',
         ]
-    
+
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
@@ -106,6 +125,10 @@ class FQDNFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
     # )
 
     # -- FKs --
+    # brand = django_filters.ModelMultipleChoiceFilter(
+    #     queryset=Brand.objects.all(),
+    #     label=_('Brand/Acquisition')
+    # )
     impacted_group_orig = django_filters.ModelMultipleChoiceFilter(
         queryset=BusinessGroup.objects.all(),
         label=_('Business Group')
@@ -192,15 +215,12 @@ class FQDNFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
             'compliance_programs_choice',
             'is_vendor_managed',
         ]
-    
+
     # NOTE: This search controls the "quick search" in the tab of the listview table
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
 
-        # return queryset.filter(
-        #     Q(name__icontains=value)
-        # )
         return queryset.filter(
             Q(name__icontains=value) |
             Q(public_ip_1__icontains=value)
@@ -215,6 +235,13 @@ class FQDNFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
 
     #     except (AddrFormatError, ValueError):
     #         return queryset.none()
+
+
+class BrandFilterSet(OrganizationalModelFilterSet):
+
+    class Meta:
+        model = Brand
+        fields = ['id', 'name', 'slug']
 
 
 # class BusinessGroupFilterSet(OrganizationalModelFilterSet, TenancyFilterSet):
@@ -241,7 +268,7 @@ class OperatingSystemFilterSet(OrganizationalModelFilterSet):
             'platform_family', 'platform_type',
             'build_number', 'cpe', 'color',
         )
-    
+
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
@@ -255,7 +282,7 @@ class SiteLocationFilterSet(OrganizationalModelFilterSet):
     class Meta:
         model = SiteLocation
         fields = (
-            'id', 'name', 'slug', 'code', 
+            'id', 'name', 'slug', 'code',
             'impacted_group_orig', 'impacted_division_orig',
             'geo_region_choice',
             'geo_region', 'tenant',
@@ -276,7 +303,7 @@ class VendorFilterSet(OrganizationalModelFilterSet):
         fields = (
             'id', 'name', 'slug',
         )
-    
+
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
@@ -302,7 +329,7 @@ class WebserverFrameworkFilterSet(OrganizationalModelFilterSet):
         fields = (
             'id', 'name', 'slug', 'product', 'version', 'raw_banner', 'cpe',
         )
-    
+
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset

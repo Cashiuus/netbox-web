@@ -124,13 +124,14 @@ To first start setting up this project as a new application, you need to start i
 project_root/
 
 
-
     netbox/
+        netbox/
+            navigation/
+                menu.py             - Left sidebar app links are in here
 
         templates/
             app/
                 {files}.html        - The HTML templates for app pages
-
 
 
 
@@ -157,7 +158,7 @@ project_root/
             {model_name}.py     - A table definition for a model that defines default columns, and fields that may be viewed in a table "list view". Linked to views.py as the defined table to use for the view.
         tests/
             test_models.py      - Basic app tests can go here, and are necessary if you wish to make a PR.
-    
+
 
         apps.py         - Once you configure search.py, you will import it here to enable it for inclusion in the global search
         choices.py      - All choices definitions for CharField's that use choices in this app

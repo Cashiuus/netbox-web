@@ -57,7 +57,7 @@ class FQDNTable(TenancyColumnsMixin, NetBoxTable):
         model = FQDN
         # exclude = ('id',)
         fields = (
-            "name", "id", 
+            "name", "id",
             "mark_triaging", "asset_confidence",
             "status", "status_reason",
             'date_last_recon',
@@ -65,6 +65,7 @@ class FQDNTable(TenancyColumnsMixin, NetBoxTable):
             'asset_class', 'domain',
             'owners_orig', 'impacted_group_orig', 'impacted_division_orig',
             # 'owners_nb',
+            'brand',
             'geo_region_choice', 'geo_region',
             'location_orig', 'location',
             'env_model', 'architectural_model',
@@ -91,7 +92,7 @@ class FQDNTable(TenancyColumnsMixin, NetBoxTable):
             'website_url', 'website_title', 'website_email_orig',
             'site_operation_age',
             'redirect_health', 'redirect_url',
-            'is_vendor_managed', 'is_vendor_hosted', 
+            'is_vendor_managed', 'is_vendor_hosted',
             'vendor_company_orig', 'vendor_company_fk', 'vendor_pocs_orig',
             'vendor_url', 'vendor_notes',
             'feature_acct_mgmt', 'feature_webauth_type', 'feature_auth_self_registration',
@@ -111,7 +112,7 @@ class FQDNTable(TenancyColumnsMixin, NetBoxTable):
             # 'slug',
         )
         default_columns = (
-            'name', 'id', 'status', 'asset_confidence', 'fqdn_status', 'website_status', 
+            'name', 'id', 'status', 'asset_confidence', 'fqdn_status', 'website_status',
             'impacted_group_orig', 'impacted_division_orig', 'location_orig',
             'public_ip_1', 'had_bugbounty', 'is_risky',
             'owners_orig',

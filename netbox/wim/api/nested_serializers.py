@@ -22,6 +22,14 @@ class NestedFQDNSerializer(WritableNestedSerializer):
         fields = ['id', 'url', 'display', 'name']
 
 
+class NestedBrandSerializer(WritableNestedSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='wim-api:brand-detail')
+
+    class Meta:
+        model = models.Brand
+        fields = ('id', 'url', 'display', 'name', 'slug')
+
+
 class NestedBusinessGroupSerializer(WritableNestedSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='wim-api:businessgroup-detail')
 
