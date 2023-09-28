@@ -33,7 +33,7 @@
                     <td>{% badge object.get_ownership_type_display bg_color=object.get_ownership_type_color %}</td>
                   </tr>
                   <tr>
-                      <th scope="row">Expires</th>
+                      <th scope="row">Domain Expires</th>
                       <td>
                           {% if object.date_registrar_expiry %}
                               {{ object.date_registrar_expiry }}
@@ -43,7 +43,7 @@
                       </td>
                   </tr>
                   <tr>
-                      <th scope="row">Registered</th>
+                      <th scope="row">First Registered</th>
                       <td>{{ object.date_first_registered|placeholder }}</td>
                   </tr>
                   <tr>
@@ -67,10 +67,6 @@
                       <td>{% checkmark object.meets_standards %}</td>
                   </tr>
                   <tr>
-                    <th scope="row">Brand/Acquisition</th>
-                    <td>{{ object.brand|linkify|placeholder }}</td>
-                  </tr>
-                  <tr>
                     <th scope="row">Flagship?</th>
                     <td>{% checkmark object.is_flagship %}</td>
                 </tr>
@@ -79,15 +75,16 @@
                     <td>{% checkmark object.is_internet_facing %}</td>
                 </tr>
                 <tr>
-                    <th scope="row">Registrar Name</th>
-                    <td>{{ object.registrar_company_orig }}</td>
+                    <th scope="row">Brand/Acquisition</th>
+                    <td>{{ object.brand|linkify|placeholder }}</td>
                 </tr>
                 <tr>
-                    <th scope="row">Registrar IANA ID</th>
+                    <th scope="row">Tenant</th>
                     <td>
-                        {% if object.registrar_iana_id_orig %}
-                            {{ object.registrar_iana_id_orig }}
+                        {% if object.tenant.group %}
+                            {{ object.tenant.group|linkify }} /
                         {% endif %}
+                        {{ object.tenant|linkify|placeholder }}
                     </td>
                 </tr>
                 <tr>
@@ -109,12 +106,15 @@
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row">Tenant</th>
+                    <th scope="row">Registrar Name</th>
+                    <td>{{ object.registrar_company_orig }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Registrar IANA ID</th>
                     <td>
-                        {% if object.tenant.group %}
-                            {{ object.tenant.group|linkify }} /
+                        {% if object.registrar_iana_id_orig %}
+                            {{ object.registrar_iana_id_orig }}
                         {% endif %}
-                        {{ object.tenant|linkify|placeholder }}
                     </td>
                 </tr>
                 <tr>

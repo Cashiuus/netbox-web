@@ -38,11 +38,11 @@ CPE
 OperatingSystem
 Registrar - Deleting this in favor of a common Registrar/Vendor/Provider table
 SiteLocation
+Software
 SupportGroup - Unsure if using this
 Vendor
 WebEmail
 # WebIPAddress - Disabled and attempting to use Netbox version in ipam/
-WebserverFramework
 ```
 
 
@@ -101,7 +101,7 @@ To first start setting up this project as a new application, you need to start i
 5. Manufacturers, Providers and/or Vendors
 6. RIRs
 7. ASNs
-8. Platforms, OperatingSystems, WebserverFrameworks
+8. Platforms, OperatingSystems, Software
 9. Device Types, Roles
 10. VRFs (Virtual Routing and Forwarding) - Create a general "Public Internet" one w/ no Tenant that our public subnets can fall into
 11. IP/VLAN Roles
@@ -238,6 +238,10 @@ According to the docs, you just have to subclass SearchIndex, but when I did tha
 - Doc: https://docs.netbox.dev/en/stable/plugins/development/dashboard-widgets/
 
 I'd suggest this page include some information on how to generate or use the "filters" form field when creating widgets in order to filter down the object lists or counts. It requires json, but not sure the exact syntax it must be.
+
+
+
+I started making a custom one in wim/widgets.py but it's unfinished.
 
 
 

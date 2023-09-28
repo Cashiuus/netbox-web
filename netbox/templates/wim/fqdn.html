@@ -49,16 +49,12 @@
                     <td>{% checkmark object.mark_triaging %}</td>
                 </tr>
                 <tr>
-                    <th scope="row">Date Last Recon</th>
-                    <td>{{ object.date_last_recon|annotated_date }}</td>
-                </tr>
-                <tr>
                     <th scope="row">Asset Confidence</th>
                     <td>{{ object.asset_confidence }}</td>
                 </tr>
                 <tr>
                     <th scope="row">Status</th>
-                    <td>{% badge object.get_status_display bg_color=object.get_status_color %}</td>
+                    <td>{{ object.get_status_display }}</td>
                 </tr>
                 {% if object.status_reason %}
                 <tr>
@@ -104,50 +100,46 @@
                     <th scope="row">Site Location (Orig)</th>
                     <td>{{ object.location_orig|placeholder }}</td>
                 </tr>
-                <tr>
-                    <th scope="row">Site Location (NB)</th>
-                    <td>{{ object.location|linkify }}</td>
-                </tr>
-
+                {% if object.location %}
+                    <tr>
+                        <th scope="row">Site Location (NB)</th>
+                        <td>{{ object.location|linkify }}</td>
+                    </tr>
+                {% endif %}
                 <tr>
                     <th scope="row">Geo Region (Choice)</th>
                     <td>
                         {% if object.geo_region_choice %}
-                            {% badge object.get_geo_region_choice_display bg_color=object.get_geo_region_choice_color %}
+                            {{ object.get_geo_region_choice_display }}
                         {% else %}
                             {{ ''|placeholder }}
                         {% endif %}
                     </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Geo Region (NB)</th>
-                    <td>{{ object.geo_region|placeholder }}</td>
-                  </tr>
+                </tr>
+                {% if object.geo_region %}
+                    <tr>
+                        <th scope="row">Geo Region (NB)</th>
+                        <td>{{ object.geo_region|placeholder }}</td>
+                    </tr>
+                {% endif %}
                   <tr>
                     <th scope="row">Public IP (Orig)</th>
                     <td>{{ object.public_ip_1|placeholder }}
                     </td>
                 </tr>
+                {% if object.ipaddress_public_8 %}
+                    <tr>
+                    <th scope="row">Public IP (NB)</th>
+                    <td>{{ object.ipaddress_public_8|placeholder }}</td>
+                    </tr>
+                {% endif %}
                 <tr>
-                  <th scope="row">Public IP (NB)</th>
-                  <td>{{ object.ipaddress_public_8|placeholder }}
-                  </td>
-                </tr>
-                  <tr>
                     <th scope="row">Hosting Architecture</th>
                     <td>{{ object.get_architectural_model_display }}</td>
-                  </tr>
-                  <tr>
+                </tr>
+                <tr>
                     <th scope="row">Hosting Environ</th>
                     <td>{{ object.get_env_model_display }}</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Criticality Score</th>
-                    <td>{{ object.criticality_score_1 }}</td>
-                  </tr>
-                <tr>
-                    <th scope="row">In CMDB?</th>
-                    <td>{% checkmark object.is_in_cmdb %}</td>
                 </tr>
                 <tr>
                     <th scope="row">Flagship?</th>
@@ -160,10 +152,6 @@
                 <tr>
                     <th scope="row">Is Nonprod Mirror?</th>
                     <td>{% checkmark object.is_nonprod_mirror %}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Cloud Provider</th>
-                    <td>{{ object.get_cloud_provider_display }}</td>
                 </tr>
               </table>
           </div>
@@ -189,9 +177,47 @@
                     <td>{{ object.get_website_role_display }}</td>
                 </tr>
                 <tr>
+                    <th scope="row">Website Operation Age</th>
+                    <td>{{ object.site_operation_age|annotated_date }}</td>
+                </tr>
+                <tr>
                     <th scope="row">Website Email</th>
                     <td>{{ object.website_email_orig }}</td>
                 </tr>
+                <tr>
+                    <th scope="row">OS (Orig)</th>
+                    <td>{{ object.os_char }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">OS (myFK)</th>
+                    <td>{{ object.os_1|placeholder }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">OS (NB - Platform)</th>
+                    <td>{{ object.os_8|placeholder }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Web Software</th>
+                    <td>
+                        {% if object.software %}
+                            {{ object.software.all|join:", " }}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Webserver Framework</th>
+                    <td>{{ object.tech_webserver_orig }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Addtl Technologies</th>
+                    <td>{{ object.tech_addtl }}</td>
+                </tr>
+                {% if object.cloud_provider %}
+                    <tr>
+                        <th scope="row">Cloud Provider</th>
+                        <td>{{ object.get_cloud_provider_display }}</td>
+                    </tr>
+                {% endif %}
                 <tr>
                     <th scope="row">Private IP (1)</th>
                     <td>{{ object.private_ip_1 }}</td>
@@ -215,52 +241,12 @@
                     <td>{{ object.hostname_orig }}</td>
                 </tr>
                 <tr>
-                    <th scope="row">OS (Orig)</th>
-                    <td>{{ object.os_char }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">OS (myFK)</th>
-                    <td>{{ object.os_1|placeholder }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">OS (NB - Platform)</th>
-                    <td>{{ object.os_8|placeholder }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Webserver Framework</th>
-                    <td>{{ object.tech_webserver_orig }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Webserver Framework (FK)</th>
-                    <td>{{ object.tech_webserver_1|placeholder }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Addtl Technologies</th>
-                    <td>{{ object.tech_addtl }}</td>
-                </tr>
-                <tr>
                     <th scope="row">Redirect Health</th>
                     <td>{{ object.get_redirect_health_display }}</td>
                 </tr>
                 <tr>
                     <th scope="row">Redirect URL</th>
                     <td>{{ object.redirect_url|placeholder }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Response Code</th>
-                    <td>{{ object.response_code|placeholder }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Content Length</th>
-                    <td>{{ object.content_length|placeholder }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">VHOST?</th>
-                    <td>{% checkmark object.is_vhost %}</td>
-                </tr>
-                <tr>
-                    <th scope="row">HTTP2?</th>
-                    <td>{% checkmark object.is_http2 %}</td>
                 </tr>
                 <tr>
                     <th scope="row">CNAMES</th>
@@ -294,7 +280,22 @@
                     <th scope="row">TLS Cert SHA1 Hash</th>
                     <td>{{ object.tls_cert_sha1 }}</td>
                 </tr>
-
+                <tr>
+                    <th scope="row">Response Code</th>
+                    <td>{{ object.response_code|placeholder }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Content Length</th>
+                    <td>{{ object.content_length|placeholder }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">VHOST?</th>
+                    <td>{% checkmark object.is_vhost %}</td>
+                </tr>
+                <tr>
+                    <th scope="row">HTTP2?</th>
+                    <td>{% checkmark object.is_http2 %}</td>
+                </tr>
                 <tr>
                     <th scope="row">Notes</th>
                     <td>{{ object.notes }}</td>
@@ -349,6 +350,10 @@
             <h5 class="card-header">Ownership</h5>
             <div class="card-body">
                 <table class="table table-hover attr-table">
+                    <tr>
+                        <th scope="row">Business Criticality Score</th>
+                        <td colspan="3">{{ object.criticality_score_1 }}</td>
+                    </tr>
                     <tr>
                         <th scope="row">Tenant</th>
                         <td>
@@ -410,6 +415,10 @@
                         <td></td>
                         <td></td>
                     </tr>
+                    <tr>
+                        <th scope="row">In CMDB?</th>
+                        <td colspan="3">{% checkmark object.is_in_cmdb %}</td>
+                    </tr>
                 </table>
             </div>
         </div>
@@ -421,6 +430,10 @@
             </h5>
             <div class="card-body">
                 <table class="table table-hover attr-table">
+                    <tr>
+                        <th scope="row">Date Last Recon</th>
+                        <td colspan="3">{{ object.date_last_recon|annotated_date }}</td>
+                    </tr>
                   <tr>
                       <th scope="row">Risky?</th>
                       <td>{% checkmark object.is_risky %}</td>
@@ -438,10 +451,6 @@
                       <td>{{ object.pentest_priority|placeholder }}</td>
                       <th scope="row">Last Pentest</th>
                       <td>{{ object.date_last_pentest|annotated_date }}</td>
-                  </tr>
-                  <tr>
-                      <th scope="row">Website Operation Age</th>
-                      <td colspan="3">{{ object.site_operation_age|annotated_date }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Akamai?</th>
@@ -523,7 +532,7 @@
         </div>
     </div>
 
-    {% include 'inc/panels/image_attachments.html' %}
+    {# {% include 'inc/panels/image_attachments.html' %} #}
     {% plugin_right_page object %}
 	</div>
 </div>

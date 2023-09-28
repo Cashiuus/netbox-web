@@ -4,8 +4,6 @@ from netbox.api.routers import NetBoxRouter
 from . import views
 
 
-app_name = "wim-api"
-
 router = NetBoxRouter()
 router.APIRootView = views.WIMRootView
 
@@ -19,17 +17,8 @@ router.register('operating-systems', views.OperatingSystemViewSet)
 router.register('site-locations', views.SiteLocationViewSet)
 router.register('vendors', views.VendorViewSet)
 router.register('webemails', views.WebEmailViewSet)
-router.register('webserver-frameworks', views.WebserverFrameworkViewSet)
+router.register('software', views.SoftwareViewSet)
 
 
-
-# urlpatterns = [
-#     # TODO: This is actually meant to get "available" things like IP's not used in a range, etc.
-#     # Unsure how i might use this particular feature...
-#     # path(
-#     #     'domains/<int:pk>/'
-#     # )
-# ]
-
-# urlpatterns += router.urls
+app_name = "wim-api"
 urlpatterns = router.urls

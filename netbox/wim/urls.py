@@ -78,13 +78,13 @@ urlpatterns = [
     # path('web-emails/delete/', views.WebEmailBulkDeleteView.as_view(), name='webemail_bulk_delete'),
     # path('web-emails/<int:pk>/', include(get_model_urls('wim', 'webemail'))),
 
-    # Webserver Frameworks
-    path('web-frameworks/', views.WebserverFrameworkListView.as_view(), name='webserverframework_list'),
-    path('web-frameworks/add/', views.WebserverFrameworkEditView.as_view(), name='webserverframework_add'),
-    path('web-frameworks/import/', views.WebserverFrameworkBulkImportView.as_view(), name='webserverframework_import'),
-    path('web-frameworks/edit/', views.WebserverFrameworkBulkEditView.as_view(), name='webserverframework_bulk_edit'),
-    path('web-frameworks/delete/', views.WebserverFrameworkBulkDeleteView.as_view(), name='webserverframework_bulk_delete'),
-    path('web-frameworks/<int:pk>/', include(get_model_urls('wim', 'webserverframework'))),
+    # Software, Tech, Webserver Frameworks
+    path('software/', views.SoftwareListView.as_view(), name='software_list'),
+    path('software/add/', views.SoftwareEditView.as_view(), name='software_add'),
+    path('software/import/', views.SoftwareBulkImportView.as_view(), name='software_import'),
+    path('software/edit/', views.SoftwareBulkEditView.as_view(), name='software_bulk_edit'),
+    path('software/delete/', views.SoftwareBulkDeleteView.as_view(), name='software_bulk_delete'),
+    path('software/<int:pk>/', include(get_model_urls('wim', 'software'))),
 
     # CPEs
     # path('cpes/', views.CPEListView.as_view(), name='cpe_list'),

@@ -54,6 +54,14 @@ class FQDNSerializer(NetBoxModelSerializer):
     impacted_division_orig = NestedBusinessDivisionSerializer(required=False, allow_null=True)
     vendor_company_fk = NestedVendorSerializer(required=False, allow_null=True)
 
+    # -- M2M --
+    software = SerializedPKRelatedField(
+        queryset=Software.objects.all(),
+        serializer=NestedSoftwareSerializer,
+        required=False,
+        many=True,
+    )
+
     # -- Choices --
     status = ChoiceField(
         choices=FQDNStatusChoices,
@@ -80,6 +88,7 @@ class FQDNSerializer(NetBoxModelSerializer):
             'id', 'url', 'display', 'name', 'status',
             'fqdn_status', 'website_status',
             'impacted_group_orig', 'impacted_division_orig',
+            'software',
             'vendor_company_fk',
             'tenant',
             'sitelocation_count',
@@ -218,11 +227,11 @@ class WebEmailSerializer(NetBoxModelSerializer):
 
 
 #
-# WebserverFramework
+# Software
 #
 
-class WebserverFrameworkSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='wim-api:webserverframework-detail')
+class SoftwareSerializer(NetBoxModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='wim-api:software-detail')
     # status = ChoiceField(
     #     choices=FQDNStatusChoices,
     #     required=False,
@@ -230,7 +239,7 @@ class WebserverFrameworkSerializer(NetBoxModelSerializer):
     # tenant = NestedTenantSerializer(required=False, allow_null=True)
 
     class Meta:
-        model = WebserverFramework
+        model = Software
         fields = (
             'id', 'url', 'display', 'name', 'product', 'version', 'raw_banner', 'cpe'
         )

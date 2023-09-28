@@ -64,7 +64,7 @@ class DomainViewSet(NetBoxModelViewSet):
 class FQDNViewSet(NetBoxModelViewSet):
     queryset = FQDN.objects.prefetch_related(
         'impacted_group_orig', 'impacted_division_orig', 'domain',
-        'vendor_company_fk',
+        'vendor_company_fk', 'software',
         'tags',
     )
     serializer_class = serializers.FQDNSerializer
@@ -110,20 +110,22 @@ class SiteLocationViewSet(NetBoxModelViewSet):
     filterset_class = filtersets.SiteLocationFilterSet
 
 
+class SoftwareViewSet(NetBoxModelViewSet):
+    # NOTE: This queryset points to FQDN, therefore uses the fieldname
+    # that is defined there for the software M2M model field
+    queryset = Software.objects.annotate(
+        fqdn_count=count_related(FQDN, 'software')
+    )
+    serializer_class = serializers.SoftwareSerializer
+    filterset_class = filtersets.SoftwareFilterSet
+
+
 class VendorViewSet(NetBoxModelViewSet):
     queryset = Vendor.objects.prefetch_related('tags').annotate(
         fqdn_count=count_related(FQDN, 'vendor_company_fk')
     )
     serializer_class = serializers.VendorSerializer
     filterset_class = filtersets.VendorFilterSet
-
-
-class WebserverFrameworkViewSet(NetBoxModelViewSet):
-    queryset = WebserverFramework.objects.annotate(
-        fqdn_count=count_related(FQDN, 'tech_webserver_1')
-    )
-    serializer_class = serializers.WebserverFrameworkSerializer
-    filterset_class = filtersets.WebserverFrameworkFilterSet
 
 
 class WebEmailViewSet(NetBoxModelViewSet):

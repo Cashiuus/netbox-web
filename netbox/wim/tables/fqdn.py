@@ -47,6 +47,17 @@ class FQDNTable(TenancyColumnsMixin, NetBoxTable):
     #     orderable=False,
     #     verbose_name="Program"
     # )
+    software = columns.ManyToManyColumn(
+        linkify_item=True,
+        verbose_name='Software',
+    )
+    software_count = columns.LinkedCountColumn(
+        accessor=tables.A('software__count'),
+        viewname='wim:software_list',
+        url_params={'software_id': 'pk'},
+        verbose_name='Software Count',
+    )
+
     # -- Text -- Can use either Markdown or Char
     notes = columns.MarkdownColumn()
     vendor_notes = columns.MarkdownColumn()
@@ -84,8 +95,9 @@ class FQDNTable(TenancyColumnsMixin, NetBoxTable):
             'risk_analysis_notes',
             'is_compliance_required', 'compliance_programs_choice',
             'tech_webserver_orig',
-            'tech_webserver_1',
+            # 'tech_webserver_1',
             'tech_addtl',
+            'software', 'software_count',
             'is_cloud_hosted', 'cloud_provider',
             'is_akamai', 'is_load_protected', 'is_waf_protected',
             'website_role',

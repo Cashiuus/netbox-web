@@ -26,7 +26,7 @@ __all__ = (
     'OperatingSystemBulkEditForm',
     'SiteLocationBulkEditForm',
     'VendorBulkEditForm',
-    'WebserverFrameworkBulkEditForm',
+    'SoftwareBulkEditForm',
 )
 
 
@@ -69,18 +69,25 @@ class DomainBulkEditForm(NetBoxModelBulkEditForm):
 
 class FQDNBulkEditForm(NetBoxModelBulkEditForm):
 
-    mark_triaging = forms.NullBooleanField(
-        required=False,
-        widget=BulkEditNullBooleanSelect(),
-        label=_('Triaging'),
-    )
+    # mark_triaging = forms.NullBooleanField(
+    #     required=False,
+    #     widget=BulkEditNullBooleanSelect(),
+    #     label=_('Triaging'),
+    # )
+
+    # -- M2M --
+    # software = DynamicModelMultipleChoiceField(
+    #     queryset=Software.objects.all(),
+    #     required=False,
+    #     label=_('Software'),
+    # )
 
     # -- NetBox Built-In Fields --
     description = forms.CharField(
         max_length=200,
         required=False,
     )
-    # comments field gets defined here, don't include in fieldsets below, or
+    # comments field gets defined here, don't include in fieldsets below or
     # it'll show up twice on form
     comments = CommentField()
 
@@ -91,7 +98,7 @@ class FQDNBulkEditForm(NetBoxModelBulkEditForm):
             # 'impacted_group_orig', 'impacted_division_orig',
             # 'owners_orig',
             # 'tenant',
-            "mark_triaging",
+            # "mark_triaging",
             'description',
         )),
     )
@@ -170,5 +177,5 @@ class VendorBulkEditForm(NetBoxModelBulkEditForm):
     model = Vendor
 
 
-class WebserverFrameworkBulkEditForm(NetBoxModelBulkEditForm):
-    model = WebserverFramework
+class SoftwareBulkEditForm(NetBoxModelBulkEditForm):
+    model = Software

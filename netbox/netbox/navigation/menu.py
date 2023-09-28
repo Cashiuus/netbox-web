@@ -359,6 +359,7 @@ WEB_MENU = Menu(
             label=_('Business'),
             items=(
                 get_model_item('wim', 'brand', _('Brands')),
+                # get_model_item('wim', 'businesscriticality', _('Business Criticalities')),
                 get_model_item('wim', 'businessgroup', _('Business Groups')),
                 get_model_item('wim', 'businessdivision', _('Business Divisions')),
                 get_model_item('wim', 'sitelocation', _('Site Locations')),
@@ -368,11 +369,10 @@ WEB_MENU = Menu(
         MenuGroup(
             label=_('Categorization'),
             items=(
-                # get_model_item('wim', 'businesscriticality', _('Business Criticalities')),
-                get_model_item('wim', 'operatingsystem', _('Operating Systems')),
-                get_model_item('wim', 'vendor', _('Vendors')),
-                get_model_item('wim', 'webserverframework', _('Webserver Frameworks')),
                 # get_model_item('wim', 'complianceprogram', _('Compliance Programs')),
+                get_model_item('wim', 'operatingsystem', _('Operating Systems')),
+                get_model_item('wim', 'software', _('Software')),
+                get_model_item('wim', 'vendor', _('Web Vendors')),
             ),
         ),
     ),

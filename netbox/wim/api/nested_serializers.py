@@ -46,6 +46,14 @@ class NestedBusinessDivisionSerializer(WritableNestedSerializer):
         fields = ('id', 'url', 'display', 'name', 'slug', 'acronym')
 
 
+class NestedSoftwareSerializer(WritableNestedSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='wim-api:software-detail')
+
+    class Meta:
+        model = models.Software
+        fields = ['id', 'url', 'display', 'name']
+
+
 @extend_schema_serializer(
     exclude_fields=('fqdn_count',)
 )

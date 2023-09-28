@@ -24,7 +24,7 @@ __all__ = (
     'OperatingSystemImportForm',
     'SiteLocationImportForm',
     'VendorImportForm',
-    'WebserverFrameworkImportForm',
+    'SoftwareImportForm',
 )
 
 
@@ -331,7 +331,13 @@ class FQDNImportForm(NetBoxModelImportForm):
     )
 
     # -- M2M Fields --
-    # compliance_programs =
+    # Basing this off VirtualDeviceContext M2M from dcim/forms/bulk_import.py
+    software = CSVModelMultipleChoiceField(
+        queryset=Software.objects.all(),
+        required=False,
+        to_field_name='name',
+        help_text=_('Software names and versions separated by commas, encased in double-quotes'),
+    )
 
     class Meta:
         model = FQDN
@@ -363,6 +369,7 @@ class FQDNImportForm(NetBoxModelImportForm):
             # 'ipaddress_private_8',
             'hostname_orig', 'os_char',
             # 'os_1', 'os_8',
+            'software',
             'tech_webserver_orig',
             # 'tech_webserver_1',
             'tech_addtl',
@@ -515,6 +522,16 @@ class SiteLocationImportForm(NetBoxModelImportForm):
         )
 
 
+class SoftwareImportForm(NetBoxModelImportForm):
+    # TODO: Hoping this slug here makes it auto-generate and not have to
+    # have slug in the import form -- test this theory.
+    slug = SlugField()
+
+    class Meta:
+        model = Software
+        fields = ('name', 'slug', 'product', 'version', 'raw_banner', 'cpe')
+
+
 class VendorImportForm(NetBoxModelImportForm):
 
     class Meta:
@@ -525,13 +542,3 @@ class VendorImportForm(NetBoxModelImportForm):
             'url',
             'vendor_pocs_orig', 'notes',
         )
-
-
-
-class WebserverFrameworkImportForm(NetBoxModelImportForm):
-
-    class Meta:
-        model = WebserverFramework
-        fields = ('name', 'product', 'version', 'raw_banner', 'cpe')
-
-

@@ -14,7 +14,7 @@ __all__ = (
     'SiteLocationTable',
     'VendorTable',
     'WebEmailTable',
-    'WebserverFrameworkTable',
+    'SoftwareTable',
 )
 
 
@@ -147,6 +147,24 @@ class SiteLocationTable(TenancyColumnsMixin, NetBoxTable):
         )
 
 
+class SoftwareTable(NetBoxTable):
+    name = tables.Column(linkify=True)
+
+    fqdn_count = columns.LinkedCountColumn(
+        viewname='wim:fqdn_list',
+        url_params={'software_id': 'pk'},
+        verbose_name=_('FQDNs'),
+    )
+
+    class Meta(NetBoxTable.Meta):
+        model = Software
+        exclude = ('id',)
+        fields = (
+            'name', 'product', 'version', 'raw_banner', 'cpe', 'fqdn_count',
+        )
+        default_columns = ('name', 'raw_banner', 'cpe', 'product', 'version', 'fqdn_count')
+
+
 class VendorTable(NetBoxTable):
     name = tables.Column(linkify=True)
 
@@ -187,21 +205,3 @@ class WebEmailTable(NetBoxTable):
             'email_address',
         )
         default_columns = ('email_address',)
-
-
-class WebserverFrameworkTable(NetBoxTable):
-    name = tables.Column(linkify=True)
-
-    fqdn_count = columns.LinkedCountColumn(
-        viewname='wim:fqdn_list',
-        url_params={'webserverframework_id': 'pk'},
-        verbose_name=_('FQDNs'),
-    )
-
-    class Meta(NetBoxTable.Meta):
-        model = WebserverFramework
-        exclude = ('id',)
-        fields = (
-            'name', 'product', 'version', 'raw_banner', 'cpe', 'fqdn_count',
-        )
-        default_columns = ('name', 'raw_banner', 'cpe', 'product', 'version', 'fqdn_count')

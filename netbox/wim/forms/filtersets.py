@@ -26,7 +26,7 @@ __all__ = (
     'SiteLocationFilterForm',
     'VendorFilterForm',
     'WebEmailFilterForm',
-    'WebserverFrameworkFilterForm',
+    'SoftwareFilterForm',
 )
 
 # PREFIX_MASK_LENGTH_CHOICES = add_blank_choice([
@@ -87,6 +87,7 @@ class DomainFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
 
 class FQDNFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
     model = FQDN
+    tag = TagFilterField(model)
 
     # -- Choices --
     status = forms.MultipleChoiceField(
@@ -130,6 +131,27 @@ class FQDNFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
             choices=((True, "Yes"), (False, "No"))
         ),
     )
+    is_risky = forms.BooleanField(
+        required=False,
+        label=_('Is Risky'),
+        widget=forms.RadioSelect(
+            choices=((True, "Yes"), (False, "No"))
+        ),
+    )
+    had_bugbounty = forms.BooleanField(
+        required=False,
+        label=_('Had Bug Bounty Submission'),
+        widget=forms.RadioSelect(
+            choices=((True, "Yes"), (False, "No"))
+        ),
+    )
+    vuln_scan_coverage = forms.BooleanField(
+        required=False,
+        label=_('Vuln Scanner Coverage'),
+        widget=forms.RadioSelect(
+            choices=((True, "Yes"), (False, "No"))
+        ),
+    )
     is_in_cmdb = forms.BooleanField(
         required=False,
         label=_('Is In CMDB'),
@@ -151,39 +173,44 @@ class FQDNFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
             choices=((True, "Yes"), (False, "No"))
         ),
     )
+    tls_cert_self_signed = forms.BooleanField(
+        required=False,
+        label=_('TLS Cert Is Self-Signed'),
+        widget=forms.RadioSelect(
+            choices=((True, "Yes"), (False, "No"))
+        ),
+    )
+    is_vendor_managed = forms.BooleanField(
+        required=False,
+        label=_('Vendor Managed'),
+        widget=forms.RadioSelect(
+            choices=((True, "Yes"), (False, "No"))
+        ),
+    )
 
-    # -- FKs --
-    impacted_group_orig = DynamicModelMultipleChoiceField(
-        queryset=BusinessGroup.objects.all(),
+    # -- Dates --
+    tls_cert_expires__before = forms.DateField(
         required=False,
-        label=_('Impacted BU Group')
+        label=_('TLS Cert Expires Before'),
+        widget=DatePicker(),
     )
-    impacted_division_orig = DynamicModelMultipleChoiceField(
-        queryset=BusinessDivision.objects.all(),
+    date_last_recon__before = forms.DateField(
         required=False,
-        label=_('Impacted BU Division')
+        label=_('Last Recon Before'),
+        widget=DatePicker(),
     )
-    location_orig = DynamicModelMultipleChoiceField(
+
+    # -- FKs + Serializers --
+    location_orig_id = DynamicModelMultipleChoiceField(
         queryset=SiteLocation.objects.all(),
         required=False,
         label=_('Location (Orig)'),
     )
-    location = DynamicModelMultipleChoiceField(
+    location_id = DynamicModelMultipleChoiceField(
         queryset=Site.objects.all(),
         required=False,
         label=_('Location (NB)'),
     )
-
-    # -- User model --
-    # user = DynamicModelMultipleChoiceField(
-    #     queryset=User.objects.all(),
-    #     required=False,
-    #     label=_('User'),
-    #     widget=APISelectMultiple(api_url='/api/users/users/')
-    # )
-
-    tag = TagFilterField(model)
-
     # -- Related Objects Handlers/Filters --
     domain_id = DynamicModelMultipleChoiceField(
         queryset=Domain.objects.all(),
@@ -205,34 +232,51 @@ class FQDNFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
         required=False,
         label=_('Vendor'),
     )
-    webserverframework_id = DynamicModelMultipleChoiceField(
-        queryset=WebserverFramework.objects.all(),
+    # -- Software M2M --
+    software_id = DynamicModelMultipleChoiceField(
+        queryset=Software.objects.all(),
         required=False,
-        label=_('Web Framework'),
+        label=_('Software'),
     )
+    # -- User model --
+    # user = DynamicModelMultipleChoiceField(
+    #     queryset=User.objects.all(),
+    #     required=False,
+    #     label=_('User'),
+    #     widget=APISelectMultiple(api_url='/api/users/users/')
+    # )
 
     fieldsets = (
         (None, ('q', 'filter_id', 'tag')),
-        ("Filters", (
+        ("Status", (
             'mark_triaging',
-            'domain_id',
             'status',
-            'asset_confidence', 'asset_class',
+            'asset_confidence',
             'fqdn_status', 'website_status',
+        )),
+        ('Security', (
+            'is_risky', 'had_bugbounty',
+            'vuln_scan_coverage',
+            'date_last_recon__before',
+            'tls_cert_self_signed',
+            'tls_cert_expires__before',
+            'compliance_programs_choice',
+        )),
+        ('Attributes', (
+            'domain_id',
+            'software_id',
+            'asset_class',
             'is_in_cmdb', 'is_flagship',
             'is_nonprod_mirror',
         )),
-        ('Filter by Business', (
-            # 'impacted_group_orig', 'impacted_division_orig',
-            'businessgroup_id', 'businessdivision_id',
+        ('Business', (
             'geo_region_choice',
-            'location_orig', 'location',
+            'location_orig_id', 'location_id',
+            'businessgroup_id', 'businessdivision_id',
             'tenant_group_id', 'tenant_id',
             'vendor_id',
+            'is_vendor_managed',
         )),
-        ('Filter by Security Criteria', (
-            'compliance_programs_choice',
-        ))
     )
 
 
@@ -276,9 +320,12 @@ class SiteLocationFilterForm(NetBoxModelFilterSetForm):
     tag = TagFilterField(model)
 
 
+class SoftwareFilterForm(NetBoxModelFilterSetForm):
+    model = Software
+
+
 class VendorFilterForm(NetBoxModelFilterSetForm):
     model = Vendor
-
     name = forms.CharField()
 
     fieldsets = (
@@ -291,8 +338,3 @@ class VendorFilterForm(NetBoxModelFilterSetForm):
 
 class WebEmailFilterForm(NetBoxModelFilterSetForm):
     model = WebEmail
-
-
-class WebserverFrameworkFilterForm(NetBoxModelFilterSetForm):
-    model = WebserverFramework
-

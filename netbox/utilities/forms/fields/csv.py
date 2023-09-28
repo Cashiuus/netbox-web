@@ -84,7 +84,11 @@ class CSVModelMultipleChoiceField(forms.ModelMultipleChoiceField):
     }
 
     def clean(self, value):
-        value = value.split(',') if value else []
+        # value = value.split(',') if value else []
+        if value:
+            value = [x.strip() for x in value.split(",")]
+        else:
+            value = []
         return super().clean(value)
 
 

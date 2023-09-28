@@ -75,10 +75,10 @@ class DomainStatusChoices(ChoiceSet):
 
     CHOICES = [
         # (STATUS_PLANNED, 'Planned', 'cyan'),
-        (STATUS_NEW, 'New', 'blue'),
+        (STATUS_NEW, 'New', 'orange'),
         (STATUS_ACTIVE, 'Active', 'green'),
-        (STATUS_DECOMMISSIONING, 'Decommissioning', 'red'),
-        (STATUS_RETIRED, 'Archived', 'red'),
+        (STATUS_DECOMMISSIONING, 'Decommissioning', 'purple'),
+        (STATUS_RETIRED, 'Archived', 'gray'),
     ]
 
 
@@ -92,9 +92,9 @@ class FQDNStatusChoices(ChoiceSet):
 
     CHOICES = [
         # (STATUS_PLANNED, 'Planned', 'cyan'),
-        (STATUS_NEW, 'New', 'blue'),
+        (STATUS_NEW, 'New', 'orange'),
         (STATUS_ACTIVE, 'Active', 'green'),
-        (STATUS_DECOMMISSIONING, 'Decommissioning', 'red'),
+        (STATUS_DECOMMISSIONING, 'Decommissioning', 'purple'),
         (STATUS_RETIRED, 'Archived', 'gray'),
     ]
 
@@ -112,11 +112,11 @@ class FQDNOpsStatusChoices(ChoiceSet):
     CHOICES = (
         (FQDNSTATUS_UNKNOWN, "0-Unknown-Test", "orange"),
         (FQDNSTATUS_1, "1-Whois", "gray"),
-        (FQDNSTATUS_2, "2-DNS", "green"),
-        (FQDNSTATUS_4, "2-DNS Host Server Down", "red"),
+        (FQDNSTATUS_2, "2-DNS", "cyan"),
+        (FQDNSTATUS_4, "2-DNS Host Server Down", "cyan"),
         (FQDNSTATUS_3A, "3-Parked", "pink"),
         (FQDNSTATUS_3B, "3-Redirect", "pink"),
-        (FQDNSTATUS_5, "5-Active", "blue"),
+        (FQDNSTATUS_5, "5-Active", "green"),
         (FQDNSTATUS_NA, "NA", "gray"),
     )
 
@@ -134,11 +134,11 @@ class WebsiteOpsStatusChoices(ChoiceSet):
     WEBSITESTATUS_NA = "NA"
 
     CHOICES = (
-        (WEBSITESTATUS_UNKNOWN, "0-Unknown-Test", "orange"),
+        (WEBSITESTATUS_UNKNOWN, "0-Unknown-Test", "red"),
         (WEBSITESTATUS_NONSITE, "3-Live Non-Website Server", "cyan"),
-        (WEBSITESTATUS_DEFAULT, "4-Live Default Webserver", "red"),
-        (WEBSITESTATUS_BROKEN, "4-Live Broken Website", "red"),
-        (WEBSITESTATUS_CUSTOMSPLASH, "4-Live Custom Parked Website", "red"),
+        (WEBSITESTATUS_DEFAULT, "4-Live Default Webserver", "orange"),
+        (WEBSITESTATUS_BROKEN, "4-Live Broken Website", "orange"),
+        (WEBSITESTATUS_CUSTOMSPLASH, "4-Live Custom Parked Website", "orange"),
         (WEBSITESTATUS_GOOD, "5-Live Valid Website", "green"),
         (WEBSITESTATUS_DUPEDOMAIN, "6-Live Domain WWW Pointer", "gray"),
         # (WEBSITESTATUS_NONPROD, "6-Live Nonprod Sister Website", "gray"),
@@ -158,7 +158,7 @@ class DomainOwnershipStatusChoices(ChoiceSet):
     OWNEDSTATUS_UNKNOWN = "Unknown"
 
     CHOICES = (
-        (OWNEDSTATUS_COMPANY, "Company-Owned", "blue"),
+        (OWNEDSTATUS_COMPANY, "Company-Owned", "green"),
         (OWNEDSTATUS_PROVIDER, "Provider-Owned", "purple"),
         (OWNEDSTATUS_UNKNOWN, "Unknown", "red"),
     )
@@ -174,7 +174,7 @@ class AssetClassChoices(ChoiceSet):
     ASSET_FQDN = "FQDN"
 
     CHOICES = (
-        (ASSET_DOMAIN, 'Domain', 'blue'),
+        (ASSET_DOMAIN, 'Domain', 'teal'),
         (ASSET_FQDN, 'FQDN', 'cyan'),
     )
 
@@ -191,7 +191,7 @@ class CloudProviderChoices(ChoiceSet):
         (CLOUD_AWS, "AWS", "orange"),
         (CLOUD_AZURE, "Azure",  "blue"),
         (CLOUD_ALIBABA, "Alibaba", "gray"),
-        (CLOUD_DIGOCEAN, "Digital Ocean", "blue"),
+        (CLOUD_DIGOCEAN, "Digital Ocean", "teal"),
         (CLOUD_GOOGLE, "Google", "cyan"),
         (CLOUD_ORACLE, "Oracle", "red"),
     ]

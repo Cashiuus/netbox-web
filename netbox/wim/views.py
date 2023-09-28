@@ -538,57 +538,57 @@ class WebEmailListView(generic.ObjectListView):
 
 
 # --
-# WebserverFramework
+# Software
 # --
 
-class WebserverFrameworkListView(generic.ObjectListView):
-    # queryset = WebserverFramework.objects.all()
-    queryset = WebserverFramework.objects.annotate(
-        fqdn_count=count_related(FQDN, 'tech_webserver_1')
+class SoftwareListView(generic.ObjectListView):
+    # queryset = Software.objects.all()
+    queryset = Software.objects.annotate(
+        fqdn_count=count_related(FQDN, 'software')
     )
-    filterset = filtersets.WebserverFrameworkFilterSet
-    filterset_form = forms.WebserverFrameworkFilterForm
-    table = tables.WebserverFrameworkTable
+    filterset = filtersets.SoftwareFilterSet
+    filterset_form = forms.SoftwareFilterForm
+    table = tables.SoftwareTable
 
 
-@register_model_view(WebserverFramework)
-class WebserverFrameworkView(generic.ObjectView):
-    queryset = WebserverFramework.objects.all()
+@register_model_view(Software)
+class SoftwareView(generic.ObjectView):
+    queryset = Software.objects.all()
 
     def get_extra_context(self, request, instance):
         related_models = (
-            (FQDN.objects.restrict(request.user, 'view').filter(tech_webserver_1=instance), 'webserverframework_id'),
+            (FQDN.objects.restrict(request.user, 'view').filter(software__in=[instance]), 'software_id'),
         )
         return {'related_models': related_models}
 
 
-@register_model_view(WebserverFramework, 'edit')
-class WebserverFrameworkEditView(generic.ObjectEditView):
-    queryset = WebserverFramework.objects.all()
-    form = forms.WebserverFrameworkForm
+@register_model_view(Software, 'edit')
+class SoftwareEditView(generic.ObjectEditView):
+    queryset = Software.objects.all()
+    form = forms.SoftwareForm
 
 
-@register_model_view(WebserverFramework, 'delete')
-class WebserverFrameworkDeleteView(generic.ObjectDeleteView):
-    queryset = WebserverFramework.objects.all()
+@register_model_view(Software, 'delete')
+class SoftwareDeleteView(generic.ObjectDeleteView):
+    queryset = Software.objects.all()
 
 
-class WebserverFrameworkBulkImportView(generic.BulkImportView):
-    queryset = WebserverFramework.objects.all()
-    model_form = forms.WebserverFrameworkImportForm
+class SoftwareBulkImportView(generic.BulkImportView):
+    queryset = Software.objects.all()
+    model_form = forms.SoftwareImportForm
 
 
-class WebserverFrameworkBulkEditView(generic.BulkEditView):
-    queryset = WebserverFramework.objects.all()
-    filterset = filtersets.WebserverFrameworkFilterSet
-    table = tables.WebserverFrameworkTable
-    form = forms.WebserverFrameworkBulkEditForm
+class SoftwareBulkEditView(generic.BulkEditView):
+    queryset = Software.objects.all()
+    filterset = filtersets.SoftwareFilterSet
+    table = tables.SoftwareTable
+    form = forms.SoftwareBulkEditForm
 
 
-class WebserverFrameworkBulkDeleteView(generic.BulkDeleteView):
-    queryset = WebserverFramework.objects.all()
-    filterset = filtersets.WebserverFrameworkFilterSet
-    table = tables.WebserverFrameworkTable
+class SoftwareBulkDeleteView(generic.BulkDeleteView):
+    queryset = Software.objects.all()
+    filterset = filtersets.SoftwareFilterSet
+    table = tables.SoftwareTable
 
 
 

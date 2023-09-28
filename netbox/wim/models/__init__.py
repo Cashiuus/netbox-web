@@ -1,11 +1,11 @@
-from .brand import *
-from .classifiers import *
+from .business import *
 from .cpe import *
 # Due to config in Domian, need to import FQDN first
 from .fqdn import *
 from .domain import *
 from .email import *
 from .vendor import *
+from .web import *
 
 
 __all__ = (
@@ -14,16 +14,14 @@ __all__ = (
     'BusinessGroup',
     'BusinessCriticality',
     'CPE',
-    # 'DataSource',
     'Domain',
     'FQDN',
     'OperatingSystem',
     # 'ParkedStatus',
     # 'Registrar',
     'SiteLocation',
+    'Software',
     'SupportGroup',
     'Vendor',
     'WebEmail',
-    # 'WebIPAddress',
-    'WebserverFramework',
 )

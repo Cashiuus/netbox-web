@@ -36,7 +36,7 @@ __all__ = (
     'SiteLocationForm',
     'VendorForm',
     'WebEmailForm',
-    'WebserverFrameworkForm',
+    'SoftwareForm',
 )
 
 
@@ -114,11 +114,6 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
         choices=FQDNStatusChoices,
         required=False,
     )
-    # TODO: forms.RadioSelect doesn't seem to work, doesn't
-    #       show up on website form
-    # asset_confidence = forms.ChoiceField(
-    #     choices=AssetConfidenceChoices,
-    # )
     asset_class = forms.ChoiceField(
         choices=AssetClassChoices,
         required=False,
@@ -200,19 +195,12 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
         selector=True,
         label=_('Private IP (NB)'),
     )
-
-    # TODO: Improve upon this, it just looks like a box to type in,
-    # doesn't connect to the IPAddress FK
-    # ipaddress_public_8 = IPNetworkFormField(required=False)
-    # ipaddress_private_8 = IPNetworkFormField(required=False)
-
     # os_1 = DynamicModelChoiceField(
     #     queryset=OperatingSystem.objects.all(),
     #     required=False,
     #     selector=True,
     #     label=_("OS (My FK)")
     # )
-
     os_8 = DynamicModelChoiceField(
         queryset=Platform.objects.all(),
         required=False,
@@ -253,15 +241,22 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
         #     "sites":
         # }
     )
-    tech_webserver_1 = DynamicModelChoiceField(
-        queryset=WebserverFramework.objects.all(),
-        required=False,
-        label=_('Webserver Framework (FK)'),
-    )
+    # tech_webserver_1 = DynamicModelChoiceField(
+    #     queryset=Software.objects.all(),
+    #     required=False,
+    #     label=_('Webserver Framework (FK)'),
+    # )
     vendor_company_fk = DynamicModelChoiceField(
         queryset=Vendor.objects.all(),
         required=False,
         label=_('Vendor Company (FK)'),
+    )
+
+    # -- M2M --
+    software = DynamicModelMultipleChoiceField(
+        queryset=Software.objects.all(),
+        required=False,
+        label=_('Software'),
     )
 
     # -- Booleans --
@@ -286,7 +281,6 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
     is_cloud_hosted = forms.BooleanField(required=False)
     # is_vendor_managed = forms.BooleanField(required=False)
     # is_vendor_hosted = forms.BooleanField(required=False)
-
     is_akamai = forms.BooleanField(required=False)
     is_load_protected = forms.BooleanField(required=False)
     is_waf_protected = forms.BooleanField(required=False)
@@ -329,7 +323,8 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
             'website_role',
             'site_operation_age',
             'redirect_health', 'redirect_url',
-            'tech_webserver_orig', 'tech_webserver_1', 'tech_addtl',
+            'software',
+            'tech_webserver_orig', 'tech_addtl',
             "cnames", "dns_a_record_ips",
         )),
         ("Security", (
@@ -398,7 +393,8 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
             'website_url', 'website_title', 'website_email_orig',
             'site_operation_age',
             'redirect_health', 'redirect_url',
-            'tech_webserver_orig', 'tech_webserver_1', 'tech_addtl',
+            'software',
+            'tech_webserver_orig', 'tech_addtl',
             "cnames", "dns_a_record_ips",
             'had_bugbounty', 'is_risky',
             'vuln_scan_coverage', 'date_last_vulnscan',
@@ -503,11 +499,11 @@ class WebEmailForm(NetBoxModelForm):
         )
 
 
-class WebserverFrameworkForm(NetBoxModelForm):
+class SoftwareForm(NetBoxModelForm):
     slug = SlugField()
 
     class Meta:
-        model = WebserverFramework
+        model = Software
         fields = (
             'name', 'slug', 'product', 'version',
             'raw_banner', 'cpe',

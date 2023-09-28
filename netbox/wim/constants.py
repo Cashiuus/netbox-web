@@ -1,7 +1,5 @@
 from django.db.models import Q
 
-# from .choices import FHRPGroupProtocolChoices, IPAddressRoleChoices
-
 
 WEBSITE_IMAGE_FORMATS = 'image/bmp,image/gif,image/jpeg,image/png,image/tiff,image/webp'
 
@@ -15,13 +13,14 @@ WIM_DASHBOARD = [
     {
         'widget': 'extras.ObjectCountsWidget',
         'width': 4,
-        'height': 2,
+        'height': 3,
         'color': 'orange',
         'title': 'WEB INVENTORY (WIM)',
         'config': {
             'models': [
                 'wim.domain',
                 'wim.fqdn',
+                'wim.software',
             ]
         }
     },

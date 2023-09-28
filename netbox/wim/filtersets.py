@@ -29,9 +29,9 @@ __all__ = (
     'BusinessDivisionFilterSet',
     'OperatingSystemFilterSet',
     'SiteLocationFilterSet',
+    'SoftwareFilterSet',
     'VendorFilterSet',
     'WebEmailFilterSet',
-    'WebserverFrameworkFilterSet',
 )
 
 
@@ -90,13 +90,6 @@ class DomainFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
 
 
 class FQDNFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
-
-    # -- Model Specific Filters --
-    # contains = django_filters.CharFilter(
-    #     method='search_contains',
-    #     label=_('FQDNs which contain search keyword'),
-    # )
-
     # -- Choices --
     status = django_filters.MultipleChoiceFilter(
         choices=FQDNStatusChoices,
@@ -120,80 +113,117 @@ class FQDNFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
     compliance_programs_choice = django_filters.MultipleChoiceFilter(
         choices=ComplianceProgramChoices,
     )
-    # website_role = django_filters.MultipleChoiceFilter(
-    #     choices=WebsiteRoleChoices
-    # )
-
-    # -- FKs --
-    # brand = django_filters.ModelMultipleChoiceFilter(
-    #     queryset=Brand.objects.all(),
-    #     label=_('Brand/Acquisition')
-    # )
-    impacted_group_orig = django_filters.ModelMultipleChoiceFilter(
-        queryset=BusinessGroup.objects.all(),
-        label=_('Business Group')
-    )
-    impacted_division_orig = django_filters.ModelMultipleChoiceFilter(
-        queryset=BusinessDivision.objects.all(),
-        label=_('Business Division')
-    )
-    location_orig = django_filters.ModelMultipleChoiceFilter(
-        queryset=SiteLocation.objects.all(),
-        label=_('Location (Orig)')
-    )
-    location = django_filters.ModelMultipleChoiceFilter(
-        queryset=Site.objects.all(),
-        label=_('Location (NB)')
-    )
-    # NOTE: dcim/filtersets.py uses a TreeNodeMultipleChoiceFilter for Region field
-    geo_region = django_filters.ModelMultipleChoiceFilter(
-        queryset=Region.objects.all(),
-        label=_('Region (NB)'),
-    )
-    # vendor_company_fk = django_filters.ModelMultipleChoiceFilter(
-    #     queryset=Vendor.objects.all(),
-    #     label=_('Vendor Company (FK)'),
-    # )
 
     # -- Booleans --
+    is_risky = django_filters.BooleanFilter(label=_('Is Risky'))
+    had_bugbounty = django_filters.BooleanFilter(label=_('Had Bug Bounty Submission'))
+    vuln_scan_coverage = django_filters.BooleanFilter(label=_('Vuln Scanner Coverage'))
     is_in_cmdb = django_filters.BooleanFilter(
         label=_('Is In CMDB?'),
     )
-    # is_nonprod_mirror = django_filters.BooleanFilter(
-    #     label=_('Is Nonprod Mirror'),
-    # )
+    is_nonprod_mirror = django_filters.BooleanFilter(
+        label=_('Is Nonprod Mirror'),
+    )
+    tls_cert_self_signed = django_filters.BooleanFilter(label=_('TLS Cert Is Self-Signed'))
+    is_vendor_managed = django_filters.BooleanFilter(label=_('Vendor Managed'))
 
+    # -- Dates --
+    tls_cert_expires = django_filters.DateFilter()
+    tls_cert_expires__before = django_filters.DateFilter(
+        field_name='tls_cert_expires',
+        lookup_expr='lte',
+        label=_('TLS Cert Expires Before'),
+    )
+    date_last_recon = django_filters.DateFilter()
+    date_last_recon__before = django_filters.DateFilter(
+        field_name='date_last_recon',
+        lookup_expr='lte',
+        label=_('Last Recon Before'),
+    )
+
+    # -- FKs --
     # -- Related Objects Handlers/Filters --
     domain_id = django_filters.ModelMultipleChoiceFilter(
         field_name='domain',
         queryset=Domain.objects.all(),
         label=_('Domain (ID)'),
     )
+    impacted_group_orig = django_filters.ModelMultipleChoiceFilter(
+        queryset=BusinessGroup.objects.all(),
+        label=_('Business Group')
+    )
     businessgroup_id = django_filters.ModelMultipleChoiceFilter(
         field_name='impacted_group_orig',
         queryset=BusinessGroup.objects.all(),
         label=_('Org Group (ID)'),
+    )
+    impacted_division_orig = django_filters.ModelMultipleChoiceFilter(
+        queryset=BusinessDivision.objects.all(),
+        label=_('Business Division'),
     )
     businessdivision_id = django_filters.ModelMultipleChoiceFilter(
         field_name='impacted_division_orig',
         queryset=BusinessDivision.objects.all(),
         label=_('Org Division (ID)'),
     )
-    webserverframework_id = django_filters.ModelMultipleChoiceFilter(
-        field_name='tech_webserver_1',
-        queryset=WebserverFramework.objects.all(),
-        label=_('Web Framework (ID)'),
+    location_orig = django_filters.ModelMultipleChoiceFilter(
+        queryset=SiteLocation.objects.all(),
+        label=_('Location (Orig)'),
+    )
+    location_orig_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=SiteLocation.objects.all(),
+        field_name='location_orig',
+        label=_('Location (Orig-ID)'),
+    )
+    location = django_filters.ModelMultipleChoiceFilter(
+        queryset=Site.objects.all(),
+        label=_('Location (NB)')
+    )
+    location_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=Site.objects.all(),
+        field_name='location',
+        label=_('Location (NB-ID)'),
+    )
+    # NOTE: dcim/filtersets.py uses a TreeNodeMultipleChoiceFilter for Region field
+    geo_region = django_filters.ModelMultipleChoiceFilter(
+        queryset=Region.objects.all(),
+        label=_('Region (NB)'),
+    )
+    geo_region_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=Region.objects.all(),
+        field_name="geo_region",
+        label=_('Region (NB-ID)'),
+    )
+    # tech_webserver_1_id = django_filters.ModelMultipleChoiceFilter(
+    #     field_name='tech_webserver_1',
+    #     queryset=Software.objects.all(),
+    #     label=_('Tech Webserver (ID)'),
+    # )
+
+    # -- Vendor FK + Serializer --
+    vendor_company_fk = django_filters.ModelMultipleChoiceFilter(
+        field_name='vendor_company_fk__slug',
+        queryset=Vendor.objects.all(),
+        to_field_name='slug',
+        label=_('Vendor (slug)'),
     )
     vendor_id = django_filters.ModelMultipleChoiceFilter(
         field_name='vendor_company_fk',
         queryset=Vendor.objects.all(),
         label=_('Vendor (ID)'),
     )
-    vendor_company_fk = django_filters.ModelMultipleChoiceFilter(
-        field_name='vendor_company_fk__slug',
-        queryset=Vendor.objects.all(),
-        to_field_name='slug',
-        label=_('Vendor (slug)'),
+    # -- Software M2M + Serializer --
+    software = django_filters.ModelMultipleChoiceFilter(
+        # TODO: Which field should I use here, name or slug?
+        field_name='software__name',
+        queryset=Software.objects.all(),
+        to_field_name='software',
+        label=_('Software')
+    )
+    software_id = django_filters.ModelMultipleChoiceFilter(
+        field_name='software',
+        queryset=Software.objects.all(),
+        label=_('Software (ID)')
     )
 
     class Meta:
@@ -205,15 +235,12 @@ class FQDNFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
             'fqdn_status', 'website_status',
             'is_flagship', 'is_nonprod_mirror',
             'is_in_cmdb',
-            'impacted_group_orig', 'impacted_division_orig',
-            'geo_region_choice', 'geo_region',
-            'location_orig', 'location',
             'owners_orig',
             'public_ip_1', 'ipaddress_public_8',
-            'date_last_recon',
+            # 'date_last_recon',
             'vuln_scan_coverage', 'date_last_vulnscan',
             'compliance_programs_choice',
-            'is_vendor_managed',
+            # 'is_vendor_managed',
         ]
 
     # NOTE: This search controls the "quick search" in the tab of the listview table
@@ -224,6 +251,7 @@ class FQDNFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
         return queryset.filter(
             Q(name__icontains=value) |
             Q(public_ip_1__icontains=value)
+            # Q(software__icontains=value )
         )
 
     # def search_contains(self, queryset, name, value):
@@ -236,6 +264,11 @@ class FQDNFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
     #     except (AddrFormatError, ValueError):
     #         return queryset.none()
 
+
+
+#
+# -- Secondary Sets
+#
 
 class BrandFilterSet(OrganizationalModelFilterSet):
 
@@ -296,6 +329,23 @@ class SiteLocationFilterSet(OrganizationalModelFilterSet):
         )
 
 
+class SoftwareFilterSet(OrganizationalModelFilterSet):
+
+    class Meta:
+        model = Software
+        fields = (
+            'id', 'name', 'slug',
+            'product', 'version', 'raw_banner', 'cpe',
+        )
+
+    def search(self, queryset, name, value):
+        if not value.strip():
+            return queryset
+        return queryset.filter(
+            Q(raw_banner__icontains=value)
+        )
+
+
 class VendorFilterSet(OrganizationalModelFilterSet):
 
     class Meta:
@@ -312,28 +362,10 @@ class VendorFilterSet(OrganizationalModelFilterSet):
         )
 
 
-
 class WebEmailFilterSet(OrganizationalModelFilterSet):
 
     class Meta:
         model = WebEmail
         fields = (
-            'id', 'name', 'slug', 'email_address', 'domain_tmp',
+            'id', 'name', 'slug', 'email_address', 'domain',
         )
-
-
-class WebserverFrameworkFilterSet(OrganizationalModelFilterSet):
-
-    class Meta:
-        model = WebserverFramework
-        fields = (
-            'id', 'name', 'slug', 'product', 'version', 'raw_banner', 'cpe',
-        )
-
-    def search(self, queryset, name, value):
-        if not value.strip():
-            return queryset
-        return queryset.filter(
-            Q(raw_banner__icontains=value)
-        )
-
