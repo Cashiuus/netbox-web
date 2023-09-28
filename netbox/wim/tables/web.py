@@ -158,11 +158,12 @@ class SoftwareTable(NetBoxTable):
 
     class Meta(NetBoxTable.Meta):
         model = Software
-        exclude = ('id',)
+        # exclude = ('id',)
         fields = (
-            'name', 'product', 'version', 'raw_banner', 'cpe', 'fqdn_count',
+            'name', 'id', 'product', 'version', 'raw_banner',
+            'cpe', 'fqdn_count',
         )
-        default_columns = ('name', 'raw_banner', 'cpe', 'product', 'version', 'fqdn_count')
+        default_columns = ('name', 'product', 'version', 'fqdn_count')
 
 
 class VendorTable(NetBoxTable):
