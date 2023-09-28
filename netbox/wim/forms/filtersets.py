@@ -323,10 +323,17 @@ class SiteLocationFilterForm(NetBoxModelFilterSetForm):
 class SoftwareFilterForm(NetBoxModelFilterSetForm):
     model = Software
 
+    # name = forms.CharField(required=False)
+    # product = forms.CharField(required=False)
+
+    fieldsets = (
+        (None, ('q', 'filter_id')),
+    )
+
 
 class VendorFilterForm(NetBoxModelFilterSetForm):
     model = Vendor
-    name = forms.CharField()
+    name = forms.CharField(required=False)
 
     fieldsets = (
         (None, ('q', 'filter_id')),

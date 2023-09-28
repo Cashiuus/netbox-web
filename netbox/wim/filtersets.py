@@ -342,7 +342,8 @@ class SoftwareFilterSet(OrganizationalModelFilterSet):
         if not value.strip():
             return queryset
         return queryset.filter(
-            Q(raw_banner__icontains=value)
+            Q(name__icontains=value) |
+            Q(product__icontains=value)
         )
 
 
@@ -368,4 +369,11 @@ class WebEmailFilterSet(OrganizationalModelFilterSet):
         model = WebEmail
         fields = (
             'id', 'name', 'slug', 'email_address', 'domain',
+        )
+
+    def search(self, queryset, name, value):
+        if not value.strip():
+            return queryset
+        return queryset.filter(
+            Q(email_address__icontains=value)
         )

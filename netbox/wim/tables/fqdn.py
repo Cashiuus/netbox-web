@@ -126,8 +126,7 @@ class FQDNTable(TenancyColumnsMixin, NetBoxTable):
         default_columns = (
             'name', 'id', 'status', 'asset_confidence', 'fqdn_status', 'website_status',
             'impacted_group_orig', 'impacted_division_orig', 'location_orig',
-            'public_ip_1', 'had_bugbounty', 'is_risky',
-            'owners_orig',
+            'public_ip_1', 'had_bugbounty', 'is_risky', 'software',
         )
 
 
