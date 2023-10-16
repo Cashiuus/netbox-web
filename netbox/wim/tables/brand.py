@@ -18,7 +18,7 @@ class BrandTable(NetBoxTable):
     domain_count = columns.LinkedCountColumn(
         viewname='wim:domain_list',
         url_params={'brand_id': 'pk'},
-        verbose_name="Domains",
+        verbose_name="Related Domains",
     )
 
     class Meta(NetBoxTable.Meta):
@@ -26,7 +26,6 @@ class BrandTable(NetBoxTable):
         # exclude = ('id',)
         fields = (
             'pk', 'id', 'name',
-            'domain_count',
-            'fqdn_count',
+            'domain_count', 'description',
         )
-        default_columns = ('name', 'domain_count', 'fqdn_count')
+        default_columns = ('name', 'domain_count', 'description')

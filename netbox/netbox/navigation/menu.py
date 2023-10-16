@@ -370,7 +370,7 @@ WEB_MENU = Menu(
             label=_('Categorization'),
             items=(
                 # get_model_item('wim', 'complianceprogram', _('Compliance Programs')),
-                get_model_item('wim', 'operatingsystem', _('Operating Systems')),
+                # get_model_item('wim', 'operatingsystem', _('Operating Systems')),
                 get_model_item('wim', 'software', _('Software')),
                 get_model_item('wim', 'vendor', _('Web Vendors')),
             ),

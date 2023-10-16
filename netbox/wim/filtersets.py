@@ -194,11 +194,6 @@ class FQDNFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
         field_name="geo_region",
         label=_('Region (NB-ID)'),
     )
-    # tech_webserver_1_id = django_filters.ModelMultipleChoiceFilter(
-    #     field_name='tech_webserver_1',
-    #     queryset=Software.objects.all(),
-    #     label=_('Tech Webserver (ID)'),
-    # )
 
     # -- Vendor FK + Serializer --
     vendor_company_fk = django_filters.ModelMultipleChoiceFilter(

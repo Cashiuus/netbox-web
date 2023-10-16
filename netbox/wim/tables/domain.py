@@ -14,6 +14,10 @@ class DomainTable(TenancyColumnsMixin, NetBoxTable):
     name = tables.Column(
         linkify=True
     )
+    # -- FKs --
+    brand = tables.Column(linkify=True)
+
+    # -- Related Object Count Handlers --
     fqdn_count = columns.LinkedCountColumn(
         viewname='wim:fqdn_list',
         url_params={'domain_id': 'pk'},
@@ -38,7 +42,7 @@ class DomainTable(TenancyColumnsMixin, NetBoxTable):
         # exclude = ('id',)
         fields = (
             'name', 'id', 'fqdn_count', 'status',
-            'asset_confidence', 'ownership_type', 'brand',
+            'asset_confidence', 'brand', 'ownership_type',
             'date_first_registered', 'date_registrar_expiry',
             'date_last_recon_scanned',
             'meets_standards', 'is_flagship', 'is_internet_facing',
@@ -53,5 +57,6 @@ class DomainTable(TenancyColumnsMixin, NetBoxTable):
             'asset_confidence', 'ownership_type',
             'date_first_registered', 'date_registrar_expiry',
             'date_last_recon_scanned',
-            'meets_standards', 'registrar_company_orig', 'registrant_org',
+            'meets_standards', 'brand',
+            'registrar_company_orig', 'registrant_org',
         )

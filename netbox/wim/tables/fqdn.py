@@ -23,7 +23,6 @@ class FQDNTable(TenancyColumnsMixin, NetBoxTable):
     website_status = columns.ChoiceFieldColumn(verbose_name=_('Website Status'))
     website_role = columns.ChoiceFieldColumn()
     redirect_health = columns.ChoiceFieldColumn()
-    # compliance_programs_choice = columns.ChoiceFieldColumn()
 
     # -- Bools --
     mark_triaging = columns.BooleanColumn(verbose_name="Triaging")
@@ -94,10 +93,8 @@ class FQDNTable(TenancyColumnsMixin, NetBoxTable):
             'date_last_pentest', 'pentest_priority',
             'risk_analysis_notes',
             'is_compliance_required', 'compliance_programs_choice',
-            'tech_webserver_orig',
-            # 'tech_webserver_1',
-            'tech_addtl',
             'software', 'software_count',
+            'tech_webserver_orig', 'tech_addtl',
             'is_cloud_hosted', 'cloud_provider',
             'is_akamai', 'is_load_protected', 'is_waf_protected',
             'website_role',

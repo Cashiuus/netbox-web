@@ -102,8 +102,9 @@ class ParkedStatus(OrganizationalModel):
 
 class OperatingSystem(OrganizationalModel):
     """
-        A selection of operating system definitions to be used with Assets.
+    An operating system definition to be used with Assets.
     """
+    # Default orgmodel fields: name, slug, description
     vendor = models.CharField(_('Vendor'), max_length=100)
     product = models.CharField(
         _('Product Name'),
@@ -116,7 +117,6 @@ class OperatingSystem(OrganizationalModel):
         blank=True,
         help_text='Revision or Service Pack value'
     )
-    build_number = models.CharField(_("OS Build"), max_length=50, blank=True)
     platform_family = models.CharField(
         _('Platform Family'),
         max_length=50,
@@ -132,7 +132,7 @@ class OperatingSystem(OrganizationalModel):
         default=PlatformTypeChoices.PLATFORMTYPE_SERVER,
         help_text='The category type of platform to which this belongs'
     )
-
+    build_number = models.CharField(_("OS Build"), max_length=50, blank=True)
     cpe = models.OneToOneField(
         to='wim.CPE',
         on_delete=models.PROTECT,
@@ -141,16 +141,16 @@ class OperatingSystem(OrganizationalModel):
         null=True,
         verbose_name='CPE'
     )
-
     color = ColorField(
         default=ColorChoices.COLOR_GREY
     )
 
     class Meta:
-        ordering = ['vendor', 'product']
-        unique_together = ['vendor', 'product', 'update']
-        verbose_name = _('operating system')
-        verbose_name_plural = _('operating systems')
+        ordering = ['name']
+        # ordering = ['vendor', 'product']
+        # unique_together = ['vendor', 'product', 'update']
+        verbose_name = _('Operating System')
+        verbose_name_plural = _('Operating Systems')
 
     def __str__(self):
         return u'%s %s %s' % (self.vendor, self.product, self.update)

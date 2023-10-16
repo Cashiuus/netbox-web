@@ -241,11 +241,6 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
         #     "sites":
         # }
     )
-    # tech_webserver_1 = DynamicModelChoiceField(
-    #     queryset=Software.objects.all(),
-    #     required=False,
-    #     label=_('Webserver Framework (FK)'),
-    # )
     vendor_company_fk = DynamicModelChoiceField(
         queryset=Vendor.objects.all(),
         required=False,
@@ -289,7 +284,7 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
     tls_cert_is_wildcard = forms.BooleanField(required=False)
 
     # -- JSON fields --
-    # scan_fingerprint_json = JSONField(required=False)
+    scan_fingerprint_json = JSONField(required=False, label='Scan Fingerprint')
 
     fieldsets = (
         ("FQDN", (

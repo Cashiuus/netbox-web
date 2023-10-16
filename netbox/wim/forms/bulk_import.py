@@ -1,3 +1,5 @@
+import json
+
 from django import forms
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
@@ -10,10 +12,12 @@ from wim.constants import *
 from wim.models import *
 from netbox.forms import NetBoxModelImportForm
 from tenancy.models import Tenant
+from utilities.choices import ImportFormatChoices
 from utilities.forms.fields import (
     CSVChoiceField, CSVContentTypeField, CSVModelChoiceField, CSVModelMultipleChoiceField, CSVTypedChoiceField,
     SlugField,
 )
+
 
 __all__ = (
     'BrandImportForm',
@@ -111,7 +115,6 @@ class DomainImportForm(NetBoxModelImportForm):
 #   FQDN
 #
 class FQDNImportForm(NetBoxModelImportForm):
-
     # -- Choices Fields --
     status = CSVChoiceField(
         choices=FQDNStatusChoices,
@@ -339,6 +342,13 @@ class FQDNImportForm(NetBoxModelImportForm):
         help_text=_('Software names and versions separated by commas, encased in double-quotes'),
     )
 
+    # -- JSON or Data type fields --
+    # scan_fingerprint_json = forms.CharField(
+    #     required=False,
+    #     widget=forms.Textarea(attrs={'class': 'font-monospace'}),
+    #     help_text=_('Enter scan fingerprint in JSON format'),
+    # )
+
     class Meta:
         model = FQDN
         # exclude = ('id',)
@@ -369,10 +379,7 @@ class FQDNImportForm(NetBoxModelImportForm):
             # 'ipaddress_private_8',
             'hostname_orig', 'os_char',
             # 'os_1', 'os_8',
-            'software',
-            'tech_webserver_orig',
-            # 'tech_webserver_1',
-            'tech_addtl',
+            'software', 'tech_webserver_orig', 'tech_addtl',
 
             'had_bugbounty', 'is_risky',
             'vuln_scan_coverage', 'date_last_vulnscan',
@@ -382,6 +389,7 @@ class FQDNImportForm(NetBoxModelImportForm):
             'cnames', 'dns_a_record_ips',
             'tls_protocol_version', 'tls_cert_info', 'tls_cert_expires',
             'tls_cert_is_wildcard', 'tls_cert_self_signed', 'tls_cert_sha1',
+            'scan_fingerprint_json',
 
             # TODO: Clean this up later on
             # 'parked_status',
@@ -409,10 +417,12 @@ class FQDNImportForm(NetBoxModelImportForm):
             'tags',
         )
 
+    # NOTE: This would be for limiting queryset choices down from all to a filtered list of choices
+    # -- See netbox/ipam/forms/bulk_import.py -> IPAddressImportForm
     # def __init__(self, data=None, *args, **kwargs):
     #     super().__init__(data, *args, **kwargs)
     #     pass
-        # if data:
+    #     if data:
             # # Limit business divisions queryset by assigned group
             # # TODO: See line 491 in /dcim/forms/bulk_import.py
             # params = {f"impacted_division_orig__{self.fields['group'].to_field_name}": data.get('impacted_group_orig')}
@@ -423,6 +433,28 @@ class FQDNImportForm(NetBoxModelImportForm):
         #     for val in self.data["redirect_url"]:
                 # If redirect_url is a string and not a valid URL, it's probably just a path
                 # TODO: For now, changing this field to a CharField until I can add in cleaning
+
+    # NOTE: This is how you clean data on import -- see IPAddressImportForm or
+    # for JSON see netbox/utilities/forms/bulk_import.py -> BulkImportForm -> "data" form field
+    # def clean(self):
+    #     super().clean()
+
+    #     import_method = "JSON"
+    #     # Form data or Uploaded File
+    #     if self.cleaned_data["scan_fingerprint_json"]
+
+
+    # def _clean_json(self, data):
+    #     """
+    #     JSON clean method taken from netbox/utilities/forms/bulk_import.py -> BulkImportForm
+    #     """
+    #     data = json.loads(data)
+
+
+
+
+
+
 
 
 class BrandImportForm(NetBoxModelImportForm):

@@ -304,29 +304,22 @@ class FQDN(PrimaryModel):
         help_text='The hosted architecutral infrastructure model for this property (e.g. On-Premise, Cloud)'
     )
     # -- Software Technologies / Frameworks --
+    software = models.ManyToManyField(
+        to='Software',
+        related_name='fqdns',
+        blank=True,
+        help_text=_('Software running on this asset'),
+    )
     tech_webserver_orig = models.CharField(
         _('Webserver Framework (orig)'),
         max_length=500,
         blank=True,
         help_text='Primary webserver framework operating on the asset property'
     )
-    tech_webserver_1 = models.ForeignKey(
-        'Software',
-        on_delete=models.SET_NULL,
-        blank=True, null=True,
-        verbose_name='Webserver Tech-FK',
-        help_text="FK to local webserver framework table for primary technology of the web property",
-    )
     tech_addtl = models.TextField(
         _('Addtl Tech'),
         blank=True, default='',
         help_text='Additional tech powering the site'
-    )
-    software = models.ManyToManyField(
-        to='Software',
-        related_name='fqdns',
-        blank=True,
-        help_text=_('Software running on this asset'),
     )
 
     # DNS Type Fields
@@ -362,7 +355,6 @@ class FQDN(PrimaryModel):
     is_vhost = models.BooleanField(_('VHost'), null=True, default=False)
     is_http2 = models.BooleanField(_('HTTP2'), null=True, default=False)
 
-    # prev name: status_code
     response_code = models.PositiveSmallIntegerField(_('Response Code'), blank=True, null=True,
                                                    help_text='Website response code')
     content_length = models.PositiveIntegerField(_('Content Length'), blank=True, null=True,
