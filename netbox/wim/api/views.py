@@ -64,7 +64,7 @@ class DomainViewSet(NetBoxModelViewSet):
 class FQDNViewSet(NetBoxModelViewSet):
     queryset = FQDN.objects.prefetch_related(
         'impacted_group_orig', 'impacted_division_orig', 'domain',
-        'vendor_company_fk', 'software',
+        'vendor_company_fk', 'software', 'location_orig', 'location',
         'tags',
     )
     serializer_class = serializers.FQDNSerializer

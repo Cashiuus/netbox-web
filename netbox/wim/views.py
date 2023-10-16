@@ -4,6 +4,7 @@ from django.db.models import Prefetch
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext as _
+from django.http import QueryDict
 
 from circuits.models import Provider
 from dcim.models import Interface, Site
@@ -11,6 +12,7 @@ from netbox.views import generic
 # from tenancy.views import ObjectContactsView
 from utilities.utils import count_related
 from utilities.views import ViewTab, register_model_view
+from netbox.views.generic.utils import get_prerequisite_model
 
 from . import filtersets, forms, tables
 from .models import *
@@ -29,10 +31,31 @@ from .models import *
 
 class FQDNListView(generic.ObjectListView):
     queryset = FQDN.objects.all()
-
     filterset = filtersets.FQDNFilterSet
     filterset_form = forms.FQDNFilterForm
     table = tables.FQDNTable
+
+
+class FQDNDefaultFilteredListView(generic.ObjectListView):
+    # Render a standard table list view that is filtered to exclude archived records
+    queryset = FQDN.objects.all()
+    filterset = filtersets.FQDNFilterSet
+    filterset_form = forms.FQDNFilterForm
+    table = tables.FQDNTable
+
+    # url_suffix = "?status=New&status=Active&status=Decommissioning"
+
+    def get(self, request):
+
+        q = QueryDict(mutable=True)
+        q['status'] = 'New'
+        q.update({'status': 'Active'})
+        q.update({'status': 'Decommissioning'})
+        query_string = q.urlencode()
+
+        base_url = reverse('wim:fqdn_list')
+        full_url = f"{base_url}?{query_string}"
+        return redirect(full_url)
 
 
 @register_model_view(FQDN)

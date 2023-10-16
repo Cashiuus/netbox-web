@@ -33,7 +33,7 @@
                         {{ object.name }}
                         {% if perms.wim.add_scan %}
                             <div class="float-md-end">
-                                <a href="https://community.riskiq.com/search/{{ object.name }}/resolutions" target="_blank" rel="noopener noreferrer" style="padding-right:20px;">RiskIQ</a>
+                                {# <a href="https://community.riskiq.com/search/{{ object.name }}/resolutions" target="_blank" rel="noopener noreferrer" style="padding-right:20px;">RiskIQ</a> #}
 
                                 {# <a href="{% url 'wim:fqdn_scan' %}?domain={{ object.name }}&return_url={{ object.get_absolute_url }}"  #}
                                 <a href="{% url 'wim:fqdn_scan' pk=object.pk %}" class="btn btn-sm btn-success lh-l" title="Scan">
@@ -98,7 +98,7 @@
                 </tr>
                 <tr>
                     <th scope="row">Site Location (Orig)</th>
-                    <td>{{ object.location_orig|placeholder }}</td>
+                    <td>{{ object.location_orig|linkify }}</td>
                 </tr>
                 {% if object.location %}
                     <tr>
@@ -125,6 +125,9 @@
                   <tr>
                     <th scope="row">Public IP (Orig)</th>
                     <td>{{ object.public_ip_1|placeholder }}
+                        <div class="float-md-end">
+                            <a href="https://ipgeolocation.io/ip-location/{{ object.name }}/" target="_blank" rel="noopener noreferrer" style="padding-right:20px;">Geo IP</a>
+                        </div>
                     </td>
                 </tr>
                 {% if object.ipaddress_public_8 %}
@@ -197,20 +200,12 @@
                     <td>{{ object.os_8|placeholder }}</td>
                 </tr>
                 <tr>
-                    <th scope="row">Web Software</th>
+                    <th scope="row">Software</th>
                     <td>
                         {% if object.software %}
                             {{ object.software.all|join:", " }}
                         {% endif %}
                     </td>
-                </tr>
-                <tr>
-                    <th scope="row">Webserver Framework</th>
-                    <td>{{ object.tech_webserver_orig }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Addtl Technologies</th>
-                    <td>{{ object.tech_addtl }}</td>
                 </tr>
                 {% if object.cloud_provider %}
                     <tr>

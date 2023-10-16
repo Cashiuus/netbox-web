@@ -4,6 +4,7 @@ from rest_framework import serializers
 
 from netbox.api.fields import ChoiceField, ContentTypeField, SerializedPKRelatedField
 from netbox.api.serializers import NetBoxModelSerializer, NestedGroupModelSerializer, WritableNestedSerializer
+from dcim.api.nested_serializers import NestedSiteSerializer
 from netbox.constants import NESTED_SERIALIZER_PREFIX
 from tenancy.api.nested_serializers import NestedTenantSerializer
 from utilities.api import get_serializer_for_model
@@ -53,6 +54,7 @@ class FQDNSerializer(NetBoxModelSerializer):
     impacted_group_orig = NestedBusinessGroupSerializer(required=False, allow_null=True)
     impacted_division_orig = NestedBusinessDivisionSerializer(required=False, allow_null=True)
     vendor_company_fk = NestedVendorSerializer(required=False, allow_null=True)
+    location = NestedSiteSerializer(required=False, allow_null=True)
 
     # -- M2M --
     software = SerializedPKRelatedField(
@@ -90,7 +92,7 @@ class FQDNSerializer(NetBoxModelSerializer):
             'impacted_group_orig', 'impacted_division_orig',
             'software',
             'vendor_company_fk',
-            'tenant',
+            'tenant', 'location',
             'sitelocation_count',
         )
 

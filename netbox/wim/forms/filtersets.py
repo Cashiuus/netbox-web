@@ -44,10 +44,14 @@ class DomainFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
     # -- Choices --
     status = forms.MultipleChoiceField(
         choices=add_blank_choice(DomainStatusChoices),
-        required=False
+        required=False,
     )
     asset_confidence = forms.MultipleChoiceField(
         choices=add_blank_choice(AssetConfidenceChoices),
+        required=False,
+    )
+    ownership_type = forms.MultipleChoiceField(
+        choices=add_blank_choice(DomainOwnershipStatusChoices),
         required=False,
     )
     # -- Dates --
@@ -75,12 +79,13 @@ class DomainFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
 
     fieldsets = (
         (None, ('q', 'filter_id', 'tag')),
-        ('Filter by Status', ('status', 'asset_confidence', 'meets_standards')),
+        ('Filter by Fields', (
+            'status', 'asset_confidence', 'ownership_type',
+            'meets_standards',
+            'tenant_group_id', 'tenant_id', 'brand_id',
+        )),
         ('Filter by Date', (
             'date_last_recon_scanned__before', 'date_registrar_expiry__before',
-        )),
-        ('Filter by Business', (
-            'tenant_group_id', 'tenant_id', 'brand_id',
         )),
     )
 

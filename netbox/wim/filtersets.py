@@ -50,6 +50,11 @@ class DomainFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
         choices=AssetConfidenceChoices,
         # null_value=None
     )
+    ownership_type = django_filters.MultipleChoiceFilter(
+        choices=DomainOwnershipStatusChoices,
+        label=_('Ownership'),
+    )
+
     # -- FKs --
     brand_id = django_filters.ModelMultipleChoiceFilter(
         queryset=Brand.objects.all(),

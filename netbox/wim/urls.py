@@ -7,6 +7,7 @@ app_name = 'wim'
 urlpatterns = [
     # FQDN's
     path('fqdns/', views.FQDNListView.as_view(), name='fqdn_list'),
+    path('fqdns/default', views.FQDNDefaultFilteredListView.as_view(), name='fqdn_list_filtered'),
     path('fqdns/add/', views.FQDNEditView.as_view(), name='fqdn_add'),
     path('fqdns/import/', views.FQDNBulkImportView.as_view(), name='fqdn_import'),
     path('fqdns/edit/', views.FQDNBulkEditView.as_view(), name='fqdn_bulk_edit'),

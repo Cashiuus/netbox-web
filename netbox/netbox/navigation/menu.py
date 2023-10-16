@@ -351,8 +351,16 @@ WEB_MENU = Menu(
         MenuGroup(
             label=_('Web Properties'),
             items=(
-                get_model_item('wim', 'fqdn', _('FQDNs')),
+                # get_model_item('wim', 'fqdn', _('FQDNs')),
                 get_model_item('wim', 'domain', _('Domains')),
+                MenuItem(
+                    link='wim:fqdn_list_filtered',
+                    link_text=_('FQDNs'),
+                    buttons=get_model_buttons('wim', 'fqdn', ['add', 'import']),
+                    # NOTE: Don't need permissions specific as long as we're using
+                    # a standard ListView object which checks permissions already
+                    # permissions=['wim:view_fqdn'],
+                ),
             ),
         ),
         MenuGroup(
