@@ -50,16 +50,18 @@ class DomainForm(TenancyForm, NetBoxModelForm):
     asset_confidence = forms.ChoiceField(
         choices=AssetConfidenceChoices,
         required=False,
+        label=_('Confidence'),
         help_text=_('Domain attribution confidence level')
     )
     ownership_type = forms.ChoiceField(
         choices=DomainOwnershipStatusChoices,
         required=False,
+        label=_('Ownership'),
     )
 
     # -- Bools --
-    is_internet_facing = forms.BooleanField(required=False)
-    is_flagship = forms.BooleanField(required=False)
+    # is_internet_facing = forms.BooleanField(required=False)
+    # is_flagship = forms.BooleanField(required=False)
     # meets_standards = forms.BooleanField(required=False)
 
     # -- FKs --
@@ -91,9 +93,8 @@ class DomainForm(TenancyForm, NetBoxModelForm):
         model = Domain
         fields = [
             'name', 'status', 'asset_confidence',
-            'tenant', 'ownership_type', 'brand',
-            'is_internet_facing', 'is_flagship',
-            'meets_standards',
+            'ownership_type', 'brand',
+            'is_flagship', 'meets_standards',
             'date_registrar_expiry', 'date_first_registered',
             'date_last_recon_scanned',
             'registrar_company_orig', 'registrar_iana_id_orig',
@@ -102,8 +103,15 @@ class DomainForm(TenancyForm, NetBoxModelForm):
             'nameservers', 'mail_servers', 'whois_servers',
             'soa_nameservers', 'soa_email',
             'registrar_domain_statuses',
+            'is_internet_facing',
+            'tenant_group', 'tenant',
             'notes',
         ]
+        widgets = {
+            'date_registrar_expiry': DatePicker(),
+            'date_first_registered': DatePicker(),
+            'date_last_recon_scanned': DatePicker(),
+        }
 
 
 
@@ -372,12 +380,13 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
             'location_orig', 'location',
             'geo_region_choice', 'geo_region',
             'env_model', 'architectural_model',
-            'public_ip_1', 'ipaddress_public_8',
             'is_internet_facing', 'is_nonprod_mirror',
             'is_flagship', "is_in_cmdb",
             'is_akamai', 'is_load_protected', 'is_waf_protected',
             'tenant', 'owners_orig',
             'support_group_website_technical_orig', 'support_group_website_approvals_orig',
+
+            'public_ip_1', 'ipaddress_public_8',
             'private_ip_1', 'private_ip_2',
             # 'ipaddress_private_8',
             'hostname_orig',
@@ -414,6 +423,12 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
             'notes',
             'tags',
         ]
+        widgets = {
+            'date_last_pentest': DatePicker(),
+            'date_last_vulnscan': DatePicker(),
+            'date_last_recon': DatePicker(),
+            'site_operation_age': DatePicker(),
+        }
 
 
 class BrandForm(NetBoxModelForm):

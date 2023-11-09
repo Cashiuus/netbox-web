@@ -391,8 +391,6 @@ class FQDNImportForm(NetBoxModelImportForm):
             'tls_cert_is_wildcard', 'tls_cert_self_signed', 'tls_cert_sha1',
             'scan_fingerprint_json',
 
-            # TODO: Clean this up later on
-            # 'parked_status',
             'is_cloud_hosted', 'cloud_provider',
             'is_akamai', 'is_load_protected', 'is_waf_protected',
 

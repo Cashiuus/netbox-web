@@ -53,10 +53,11 @@ class DomainTable(TenancyColumnsMixin, NetBoxTable):
             'tags', 'created', 'last_updated', 'date_created', 'date_modified',
         )
         default_columns = (
-            'name', 'id', 'status', 'fqdn_count',
-            'asset_confidence', 'ownership_type',
+            'name', 'id', 'status',
+            'ownership_type',
             'date_first_registered', 'date_registrar_expiry',
             'date_last_recon_scanned',
-            'meets_standards', 'brand',
+            'fqdn_count', 'brand',
+            'meets_standards',
             'registrar_company_orig', 'registrant_org',
         )

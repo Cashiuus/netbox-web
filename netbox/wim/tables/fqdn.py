@@ -40,6 +40,19 @@ class FQDNTable(TenancyColumnsMixin, NetBoxTable):
     feature_api = columns.BooleanColumn(verbose_name="Has API")
     is_compliance_required = columns.BooleanColumn(verbose_name="Compliance Required")
 
+    # -- FKs --
+    location_orig = tables.Column(
+        # accessor='location_orig',
+        linkify=True,
+    )
+    # The lambda below ensures the link points to dcim/sites/<id> correctly
+    location = tables.Column(
+        accessor='location__facility',
+        # linkify=True,
+        linkify=lambda record: record.location.get_absolute_url(),
+        verbose_name='Site Location',
+    )
+
     # -- M2M --
     # compliance_programs = tables.ManyToManyColumn(
     #     linkify_item=False,
@@ -66,6 +79,8 @@ class FQDNTable(TenancyColumnsMixin, NetBoxTable):
     class Meta(NetBoxTable.Meta):
         model = FQDN
         # exclude = ('id',)
+        # NOTE: This field order determines how they appear in table configuration
+        # which looks best when they are in alphabetical order
         fields = (
             "name", "id",
             "mark_triaging", "asset_confidence",
@@ -75,7 +90,7 @@ class FQDNTable(TenancyColumnsMixin, NetBoxTable):
             'asset_class', 'domain',
             'owners_orig', 'impacted_group_orig', 'impacted_division_orig',
             # 'owners_nb',
-            'brand',
+            # 'brand',
             'geo_region_choice', 'geo_region',
             'location_orig', 'location',
             'env_model', 'architectural_model',
@@ -97,9 +112,8 @@ class FQDNTable(TenancyColumnsMixin, NetBoxTable):
             'tech_webserver_orig', 'tech_addtl',
             'is_cloud_hosted', 'cloud_provider',
             'is_akamai', 'is_load_protected', 'is_waf_protected',
-            'website_role',
+            'website_role', 'site_operation_age',
             'website_url', 'website_title', 'website_email_orig',
-            'site_operation_age',
             'redirect_health', 'redirect_url',
             'is_vendor_managed', 'is_vendor_hosted',
             'vendor_company_orig', 'vendor_company_fk', 'vendor_pocs_orig',
@@ -121,9 +135,7 @@ class FQDNTable(TenancyColumnsMixin, NetBoxTable):
             # 'slug',
         )
         default_columns = (
-            'name', 'id', 'status', 'asset_confidence', 'fqdn_status', 'website_status',
+            'name', 'id', 'status', 'fqdn_status', 'website_status',
             'impacted_group_orig', 'impacted_division_orig', 'location_orig',
             'public_ip_1', 'had_bugbounty', 'is_risky', 'software',
         )
-
-

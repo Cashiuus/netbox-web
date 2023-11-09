@@ -315,8 +315,8 @@
                     <td>{% checkmark object.is_vendor_hosted %}</td>
                 </tr>
                 <tr>
-                    <th scope="row">Vendor Name (Orig)</th>
-                    <td>{{ object.vendor_company_orig }}</td>
+                    <th scope="row">Vendor Name</th>
+                    <td>{{ object.vendor_company_fk|linkify|placeholder }}</td>
                 </tr>
                 <tr>
                     <th scope="row">Vendor POCs</th>
