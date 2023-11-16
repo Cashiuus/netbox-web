@@ -41,13 +41,17 @@ class DomainTable(TenancyColumnsMixin, NetBoxTable):
         model = Domain
         # exclude = ('id',)
         fields = (
-            'name', 'id', 'fqdn_count', 'status',
-            'asset_confidence', 'brand', 'ownership_type',
+            'name', 'id', 'fqdn_count',
+            'status', 'asset_confidence',
+            'brand', 'ownership_type',
             'date_first_registered', 'date_registrar_expiry',
             'date_last_recon_scanned',
             'meets_standards', 'is_flagship', 'is_internet_facing',
-            'registrar_company_orig', 'registrar_iana_id_orig',
+            'registrar_company_orig',
             'registrant_org', 'registration_emails_orig', 'registration_emails',
+            'nameservers', 'registrar_domain_statuses',
+            'mail_servers', 'whois_servers',
+            'soa_nameservers', 'soa_email',
             'notes',
             'tenant',
             'tags', 'created', 'last_updated', 'date_created', 'date_modified',

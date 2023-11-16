@@ -205,9 +205,7 @@ class Domain(PrimaryModel):
         """
         Return all FQDNs that are children of this root domain.
         """
-        return FQDN.objects.filter(
-            domain=self.name,
-        )
+        return FQDN.objects.filter(domain=self.name)
 
     def get_status_color(self):
         return DomainStatusChoices.colors.get(self.status)
