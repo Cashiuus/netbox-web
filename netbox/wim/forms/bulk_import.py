@@ -21,17 +21,114 @@ from utilities.forms.fields import (
 
 __all__ = (
     'BrandImportForm',
-    'DomainImportForm',
-    'FQDNImportForm',
     'BusinessGroupImportForm',
     'BusinessDivisionImportForm',
+    'CertificateImportForm',
+    'DomainImportForm',
+    'FQDNImportForm',
     'OperatingSystemImportForm',
     'SiteLocationImportForm',
-    'VendorImportForm',
     'SoftwareImportForm',
+    'VendorImportForm',
 )
 
 
+#
+# Brands
+#
+class BrandImportForm(NetBoxModelImportForm):
+    slug = SlugField()
+
+    class Meta:
+        model = Brand
+        fields =  ('name', 'slug')
+
+
+#
+# BusinessGroups
+#
+class BusinessGroupImportForm(NetBoxModelImportForm):
+    # -- FKs --
+    # principal_location_orig = CSVModelChoiceField(
+    #     queryset = SiteLocation.objects.all(),
+    #     to_field_name="code",
+    # )
+    # principal_location_nb = CSVModelChoiceField(
+    #     queryset=Site.objects.all(),
+    #     to_field_name='name',
+    # )
+
+    slug = SlugField()
+
+    class Meta:
+        model = BusinessGroup
+        fields = (
+            'name', 'slug', 'acronym', 'description',
+            'principal_location_orig', 'principal_location_nb',
+        )
+
+
+#
+# BusinessDivisions
+#
+class BusinessDivisionImportForm(NetBoxModelImportForm):
+    # -- FKs --
+    group = CSVModelChoiceField(
+        queryset=BusinessGroup.objects.all(),
+        required=True,
+        to_field_name="acronym",
+        help_text='Linked/Parent Business group acronym'
+    )
+    principal_location_orig = CSVModelChoiceField(
+        queryset=SiteLocation.objects.all(),
+        to_field_name='code',
+        required=False,
+        help_text='Linked site location code'
+    )
+
+    class Meta:
+        model = BusinessDivision
+        fields = (
+            'name', 'slug', 'acronym', 'group', 'description',
+            'principal_location_orig',
+        )
+
+
+#
+# Certificates
+#
+class CertificateImportForm(NetBoxModelImportForm):
+    # -- Choices --
+    signing_algorithm = CSVChoiceField(
+        choices=CertSigningAlgorithmChoices,
+        required=False,
+        help_text=_('Cert key signing algorithm used'),
+    )
+    key_type = CSVChoiceField(
+        choices=CertKeyTypeChoices,
+        required=False,
+        help_text=_('Cert key signing algorithm used'),
+    )
+    key_bitlength = CSVChoiceField(
+        choices=CertBitLengthChoices,
+        required=False,
+        help_text=_('Cert key signing algorithm used'),
+    )
+    class Meta:
+        model = Certificate
+        fields = (
+            "hash_sha1",
+            "hash_sha256", "hash_md5",
+            "date_issued", "date_expiration",
+            "sdn", "scn", "san", "sorg",
+            "idn", "icn", "iorg", "signing_algorithm",
+            "key_type", "key_bitlength", "is_wildcard", "is_self_signed",
+        )
+
+
+#
+# Domains
+#
 class DomainImportForm(NetBoxModelImportForm):
     # -- Choices Fields --
     status = CSVChoiceField(
@@ -94,7 +191,7 @@ class DomainImportForm(NetBoxModelImportForm):
     class Meta:
         model = Domain
         # fields = ('name', 'tenant')
-        fields = [
+        fields = (
             'name', 'status', 'asset_confidence', 'ownership_type',
             'meets_standards',
             'tenant', 'brand',
@@ -108,7 +205,7 @@ class DomainImportForm(NetBoxModelImportForm):
             'nameservers', 'mail_servers', 'whois_servers',
             'soa_nameservers', 'soa_email',
             'notes',
-        ]
+        )
 
 
 #
@@ -275,6 +372,12 @@ class FQDNImportForm(NetBoxModelImportForm):
         required=False,
         help_text=_('Parent domain for this asset')
     )
+    certificate = CSVModelChoiceField(
+        queryset=Certificate.objects.all(),
+        to_field_name='hash_sha1',
+        required=False,
+        help_text=_('TLS Certificate SHA1 hash running on this resource')
+    )
     impacted_group_orig = CSVModelChoiceField(
         queryset=BusinessGroup.objects.all(),
         to_field_name="acronym",
@@ -387,7 +490,8 @@ class FQDNImportForm(NetBoxModelImportForm):
             'site_operation_age',
 
             'cnames', 'dns_a_record_ips',
-            'tls_protocol_version', 'tls_cert_info', 'tls_cert_expires',
+            'tls_protocol_version', 'certificate',
+            'tls_cert_info', 'tls_cert_expires',
             'tls_cert_is_wildcard', 'tls_cert_self_signed', 'tls_cert_sha1',
             'scan_fingerprint_json',
 
@@ -447,63 +551,6 @@ class FQDNImportForm(NetBoxModelImportForm):
     #     JSON clean method taken from netbox/utilities/forms/bulk_import.py -> BulkImportForm
     #     """
     #     data = json.loads(data)
-
-
-
-
-
-
-
-
-class BrandImportForm(NetBoxModelImportForm):
-    slug = SlugField()
-
-    class Meta:
-        model = Brand
-        fields =  ('name', 'slug')
-
-
-class BusinessGroupImportForm(NetBoxModelImportForm):
-    # principal_location_orig = CSVModelChoiceField(
-    #     queryset = SiteLocation.objects.all(),
-    #     to_field_name="code",
-    # )
-    # principal_location_nb = CSVModelChoiceField(
-    #     queryset=Site.objects.all(),
-    #     to_field_name='name',
-    # )
-
-    slug = SlugField()
-
-    class Meta:
-        model = BusinessGroup
-        fields = (
-            'name', 'slug', 'acronym', 'description',
-            'principal_location_orig', 'principal_location_nb',
-        )
-
-
-class BusinessDivisionImportForm(NetBoxModelImportForm):
-
-    group = CSVModelChoiceField(
-        queryset=BusinessGroup.objects.all(),
-        required=True,
-        to_field_name="acronym",
-        help_text='Linked/Parent Business group acronym'
-    )
-    principal_location_orig = CSVModelChoiceField(
-        queryset=SiteLocation.objects.all(),
-        to_field_name='code',
-        required=False,
-        help_text='Linked site location code'
-    )
-
-    class Meta:
-        model = BusinessDivision
-        fields = (
-            'name', 'slug', 'acronym', 'group', 'description',
-            'principal_location_orig',
-        )
 
 
 class OperatingSystemImportForm(NetBoxModelImportForm):

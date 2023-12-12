@@ -18,16 +18,18 @@ from utilities.forms.widgets import APISelectMultiple, DatePicker, DateTimePicke
 
 __all__ = (
     'BrandFilterForm',
-    'DomainFilterForm',
-    'FQDNFilterForm',
     'BusinessGroupFilterForm',
     'BusinessDivisionFilterForm',
+    'CertificateFilterForm',
+    'DomainFilterForm',
+    'FQDNFilterForm',
     'OperatingSystemFilterForm',
     'SiteLocationFilterForm',
+    'SoftwareFilterForm',
     'VendorFilterForm',
     'WebEmailFilterForm',
-    'SoftwareFilterForm',
 )
+
 
 # PREFIX_MASK_LENGTH_CHOICES = add_blank_choice([
 #     (i, i) for i in range(PREFIX_LENGTH_MIN, PREFIX_LENGTH_MAX + 1)
@@ -36,6 +38,38 @@ __all__ = (
 # IPADDRESS_MASK_LENGTH_CHOICES = add_blank_choice([
 #     (i, i) for i in range(IPADDRESS_MASK_LENGTH_MIN, IPADDRESS_MASK_LENGTH_MAX + 1)
 # ])
+
+
+class CertificateFilterForm(NetBoxModelFilterSetForm):
+    model = Certificate
+
+    # -- Choices --
+    signing_algorithm = forms.MultipleChoiceField(
+        choices=add_blank_choice(CertSigningAlgorithmChoices),
+        required=False,
+    )
+    key_bitlength = forms.MultipleChoiceField(
+        choices=add_blank_choice(CertBitLengthChoices),
+        required=False,
+    )
+    # -- Dates -- Only have to define custom date fields, not model date fields
+    date_expiration__before = forms.DateField(
+        required=False,
+        widget=DatePicker(),
+    )
+
+    # NOTE: Only put custom dates here, unless you want to be able to filter
+    # on a single exact date of the year.
+    fieldsets = (
+        (None, ('q', 'filter_id')),
+        ("Filter by Fields", (
+            "signing_algorithm", "key_bitlength",
+        )),
+        ("Filter By Date", (
+            "date_expiration__before",
+        )),
+    )
+
 
 
 class DomainFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
@@ -54,7 +88,7 @@ class DomainFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
         choices=add_blank_choice(DomainOwnershipStatusChoices),
         required=False,
     )
-    # -- Dates --
+    # -- Dates -- Only have to define custom date fields, not model date fields
     date_last_recon_scanned__before = forms.DateField(
         required=False,
         widget=DatePicker(),
@@ -126,6 +160,11 @@ class FQDNFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
         choices=GeoRegionChoices,
         required=False,
         label=_('Geo Region (choice)'),
+    )
+    tls_protocol_version = forms.MultipleChoiceField(
+        choices=TransportLayerSecurityVersionChoices,
+        required=False,
+        label=_('TLS Protocol Version'),
     )
 
     # -- Booleans --
@@ -206,6 +245,12 @@ class FQDNFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
     )
 
     # -- FKs + Serializers --
+    # NOTE: Making this a single choice field on purpose, rest are multiple
+    certificate_id = DynamicModelChoiceField(
+        queryset=Certificate.objects.all(),
+        required=False,
+        label=_('TLS Certificate'),
+    )
     location_orig_id = DynamicModelMultipleChoiceField(
         queryset=SiteLocation.objects.all(),
         required=False,
@@ -263,6 +308,7 @@ class FQDNFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
             'is_risky', 'had_bugbounty',
             'vuln_scan_coverage',
             'date_last_recon__before',
+            'tls_protocol_version', 'certificate_id',
             'tls_cert_self_signed',
             'tls_cert_expires__before',
             'compliance_programs_choice',

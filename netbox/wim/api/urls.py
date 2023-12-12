@@ -7,6 +7,7 @@ from . import views
 router = NetBoxRouter()
 router.APIRootView = views.WIMRootView
 
+router.register('certificates', views.CertificateViewSet)
 router.register('domains', views.DomainViewSet)
 router.register('fqdns', views.FQDNViewSet)
 router.register('brands', views.BrandViewSet)

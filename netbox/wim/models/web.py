@@ -1,7 +1,8 @@
-
+import datetime
 
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from netbox.models import OrganizationalModel, PrimaryModel
@@ -11,11 +12,121 @@ from wim.choices import *
 
 
 __all__ = (
+    'Certificate',
     'OperatingSystem',
     'ParkedStatus',
     'Software',
     'WebEmail',
 )
+
+
+
+class Certificate(PrimaryModel):
+    """
+    An encryption certificate generated to run on and/or provide security support for
+    the transport protocol of a web service.
+
+    Using SHA1 hash as the main unique field across other models for FK's.
+
+    Field List:
+        hash_sha1, hash_sha256, hash_md5, sdn, scn, san, sorg,
+        idn, icn, iorg, date_issued, date_expiration, signing_algorithm,
+        key_type, key_bitlength, is_wildcard, is_self_signed,
+        date_created, date_modified
+
+    +NetBox Built-In Fields:
+        description, comments,
+
+    """
+    hash_sha1 = models.CharField(_('SHA1'), max_length=50, unique=True)
+    hash_sha256 = models.CharField(_('SHA256'), max_length=65, blank=True)
+    hash_md5 = models.CharField(_('MD5'), max_length=32, blank=True)
+
+    sdn = models.CharField(_('Subject DN'), max_length=400)
+    scn = models.CharField(_('Subject CN'), max_length=400)
+    san = models.TextField(_('Subject AN'))
+    sorg = models.CharField(_('Subject Org'), max_length=400, blank=True)
+    idn = models.CharField(_('Issuer DN'), max_length=400)
+    icn = models.CharField(_('Issuer CN'), max_length=400)
+    iorg = models.CharField(_('Issuer Org'), max_length=400)
+    date_issued = models.DateField(_('Issued Date'), blank=True)
+    date_expiration = models.DateField(_('Expiration Date'),
+                                        help_text='TLS Cert expiration date')
+
+    # Extra/Optional fields, cannot get these via httpx, but perhaps another way
+    # Choices
+    signing_algorithm = models.CharField(
+        _('Signing Algorithm'),
+        max_length=20,
+        blank=True,
+        choices=CertSigningAlgorithmChoices,
+        # default=CertSigningAlgorithmChoices.HASH_SHA256,
+        help_text='Signing algorithm hash function',
+    )
+    key_type = models.CharField(
+        _('Key Type'),
+        max_length=20,
+        blank=True,
+        choices=CertKeyTypeChoices,
+        # default=CertKeyTypeChoices.TYPE_RSA,
+        help_text='The encryption key type',
+    )
+    key_bitlength = models.CharField(
+        _('Key Bit Length'),
+        max_length=20,
+        blank=True,
+        choices=CertBitLengthChoices,
+        # default=CertBitLengthChoices.BITLENGTH_2048,
+        help_text='The encryption key bith length (commonly 2048)',
+    )
+
+    # Reconfigured these two Booleans like other NetBox models, without any
+    # null ("Unknown") effect
+    # Default None makes these start as "Unknown"
+    is_wildcard = models.BooleanField(_('Cert Is Wildcard'), default=False)
+    is_self_signed = models.BooleanField(_('Is Self-Signed'), default=False)
+
+    date_created = models.DateTimeField(
+        _('Date Created'),
+        auto_now_add=True,
+        help_text='system field for creation date',
+    )
+    date_modified = models.DateTimeField(
+        _('Date Modified'),
+        auto_now=True,
+        help_text='system field for modified date',
+    )
+
+    class Meta:
+        # default_manager_name =
+        ordering = ['scn']
+        verbose_name = _('Certificate')
+        verbose_name_plural = _('Certificates')
+
+    def __str__(self):
+        return self.hash_sha1
+
+    def get_absolute_url(self):
+        return reverse('wim:certificate', args=[self.pk])
+
+    # Help on these methods: https://docs.djangoproject.com/en/5.0/intro/tutorial02/
+    def has_expired_cert(self):
+        """
+        Usage:  q = Certificate.objects.get(pk=1)
+                q.has_expired_cert()
+                >>> False | True
+        """
+        return self.date_expiration < timezone.now()
+
+    def has_expiring_cert(self):
+        """
+        Usage:  q = Certificate.objects.get(pk=1)
+                q.has_expiring_cert()
+                >>> False | True
+        """
+        # Cert expiration is greater than today, but less than 30 days from now
+        return self.date_expiration > timezone.now() and self.date_expiration < timezone.now() + datetime.timedelta(days=30)
+
 
 
 # class AssetClass(OrganizationalModel):

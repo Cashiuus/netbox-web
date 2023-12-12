@@ -25,74 +25,60 @@ from .models import *
 
 
 
-#
-# FQDNs
-#
+# --
+# Certificates
+# --
 
-class FQDNListView(generic.ObjectListView):
-    queryset = FQDN.objects.all()
-    filterset = filtersets.FQDNFilterSet
-    filterset_form = forms.FQDNFilterForm
-    table = tables.FQDNTable
-
-
-class FQDNDefaultFilteredListView(generic.ObjectListView):
-    # Render a standard table list view that is filtered to exclude archived records
-    queryset = FQDN.objects.all()
-    filterset = filtersets.FQDNFilterSet
-    filterset_form = forms.FQDNFilterForm
-    table = tables.FQDNTable
-
-    # url_suffix = "?status=New&status=Active&status=Decommissioning"
-
-    def get(self, request):
-
-        q = QueryDict(mutable=True)
-        q['status'] = 'New'
-        q.update({'status': 'Active'})
-        q.update({'status': 'Decommissioning'})
-        query_string = q.urlencode()
-
-        base_url = reverse('wim:fqdn_list')
-        full_url = f"{base_url}?{query_string}"
-        return redirect(full_url)
+class CertificateListView(generic.ObjectListView):
+    # queryset = Certificate.objects.all()
+    queryset = Certificate.objects.annotate(
+        fqdn_count=count_related(FQDN, 'certificate'),
+    )
+    filterset = filtersets.CertificateFilterSet
+    filterset_form = forms.CertificateFilterForm
+    table = tables.CertificateTable
 
 
-@register_model_view(FQDN)
-class FQDNView(generic.ObjectView):
-    queryset = FQDN.objects.all()
+@register_model_view(Certificate)
+class CertificateView(generic.ObjectView):
+    queryset = Certificate.objects.all()
+
+    def get_extra_context(self, request, instance):
+        # TODO: The counts are working, but unsure how the links work yet
+        related_models = (
+            (FQDN.objects.restrict(request.user, 'view').filter(certificate=instance), 'certificate_id'),
+            # (Domain.objects.restrict(request.user, 'view').filter(brand=instance), 'brand_id'),
+        )
+        return {'related_models': related_models}
 
 
-@register_model_view(FQDN, 'edit')
-class FQDNEditView(generic.ObjectEditView):
-    queryset = FQDN.objects.all()
-    form = forms.FQDNForm
+@register_model_view(Certificate, 'edit')
+class CertificateEditView(generic.ObjectEditView):
+    queryset = Certificate.objects.all()
+    form = forms.CertificateForm
 
 
-@register_model_view(FQDN, 'delete')
-class FQDNDeleteView(generic.ObjectDeleteView):
-    queryset = FQDN.objects.all()
+@register_model_view(Certificate, 'delete')
+class CertificateDeleteView(generic.ObjectDeleteView):
+    queryset = Certificate.objects.all()
 
 
-class FQDNBulkImportView(generic.BulkImportView):
-    queryset = FQDN.objects.all()
-    model_form = forms.FQDNImportForm
+class CertificateBulkImportView(generic.BulkImportView):
+    queryset = Certificate.objects.all()
+    model_form = forms.CertificateImportForm
 
 
-class FQDNBulkEditView(generic.BulkEditView):
-    queryset = FQDN.objects.all()
-    filterset = filtersets.FQDNFilterSet
-    table = tables.FQDNTable
-    form = forms.FQDNBulkEditForm
+class CertificateBulkEditView(generic.BulkEditView):
+    queryset = Certificate.objects.all()
+    filterset = filtersets.CertificateFilterSet
+    table = tables.CertificateTable
+    form = forms.CertificateBulkEditForm
 
 
-class FQDNBulkDeleteView(generic.BulkDeleteView):
-    queryset = FQDN.objects.all()
-    # queryset = FQDN.objects.annotate(
-    #     site_count=count_related(Site, 'fqdns')
-    # )
-    filterset = filtersets.FQDNFilterSet
-    table = tables.FQDNTable
+class CertificateBulkDeleteView(generic.BulkDeleteView):
+    queryset = Certificate.objects.all()
+    filterset = filtersets.CertificateFilterSet
+    table = tables.CertificateTable
 
 
 
@@ -174,6 +160,80 @@ class DomainBulkDeleteView(generic.BulkDeleteView):
     queryset = Domain.objects.all()
     filterset = filtersets.DomainFilterSet
     table = tables.DomainTable
+
+
+
+
+#
+# FQDNs
+#
+
+class FQDNListView(generic.ObjectListView):
+    queryset = FQDN.objects.all()
+    filterset = filtersets.FQDNFilterSet
+    filterset_form = forms.FQDNFilterForm
+    table = tables.FQDNTable
+
+
+class FQDNDefaultFilteredListView(generic.ObjectListView):
+    # Render a standard table list view that is filtered to exclude archived records
+    queryset = FQDN.objects.all()
+    filterset = filtersets.FQDNFilterSet
+    filterset_form = forms.FQDNFilterForm
+    table = tables.FQDNTable
+
+    # url_suffix = "?status=New&status=Active&status=Decommissioning"
+
+    def get(self, request):
+
+        q = QueryDict(mutable=True)
+        q['status'] = 'New'
+        q.update({'status': 'Active'})
+        q.update({'status': 'Decommissioning'})
+        query_string = q.urlencode()
+
+        base_url = reverse('wim:fqdn_list')
+        full_url = f"{base_url}?{query_string}"
+        return redirect(full_url)
+
+
+@register_model_view(FQDN)
+class FQDNView(generic.ObjectView):
+    queryset = FQDN.objects.all()
+
+
+@register_model_view(FQDN, 'edit')
+class FQDNEditView(generic.ObjectEditView):
+    queryset = FQDN.objects.all()
+    form = forms.FQDNForm
+
+
+@register_model_view(FQDN, 'delete')
+class FQDNDeleteView(generic.ObjectDeleteView):
+    queryset = FQDN.objects.all()
+
+
+class FQDNBulkImportView(generic.BulkImportView):
+    queryset = FQDN.objects.all()
+    model_form = forms.FQDNImportForm
+
+
+class FQDNBulkEditView(generic.BulkEditView):
+    queryset = FQDN.objects.all()
+    filterset = filtersets.FQDNFilterSet
+    table = tables.FQDNTable
+    form = forms.FQDNBulkEditForm
+
+
+class FQDNBulkDeleteView(generic.BulkDeleteView):
+    queryset = FQDN.objects.all()
+    # queryset = FQDN.objects.annotate(
+    #     site_count=count_related(Site, 'fqdns')
+    # )
+    filterset = filtersets.FQDNFilterSet
+    table = tables.FQDNTable
+
+
 
 
 

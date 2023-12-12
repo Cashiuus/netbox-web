@@ -23,6 +23,14 @@ urlpatterns = [
     path('domains/delete/', views.DomainBulkDeleteView.as_view(), name='domain_bulk_delete'),
     path('domains/<int:pk>/', include(get_model_urls('wim', 'domain'))),
 
+    # Certificates (TLS/Encryption web certificates)
+    path('certificates/', views.CertificateListView.as_view(), name='certificate_list'),
+    path('certificates/add/', views.CertificateEditView.as_view(), name='certificate_add'),
+    path('certificates/import/', views.CertificateBulkImportView.as_view(), name='certificate_import'),
+    path('certificates/edit/', views.CertificateBulkEditView.as_view(), name='certificate_bulk_edit'),
+    path('certificates/delete/', views.CertificateBulkDeleteView.as_view(), name='certificate_bulk_delete'),
+    path('certificates/<int:pk>/', include(get_model_urls('wim', 'certificate'))),
+
     # Brands
     path('brands/', views.BrandListView.as_view(), name='brand_list'),
     path('brands/add/', views.BrandEditView.as_view(), name='brand_add'),

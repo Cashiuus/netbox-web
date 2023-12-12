@@ -10,12 +10,37 @@ from wim.models import *
 __all__ = (
     'BusinessGroupTable',
     'BusinessDivisionTable',
+    'CertificateTable',
     'OperatingSystemTable',
     'SiteLocationTable',
     'VendorTable',
     'WebEmailTable',
     'SoftwareTable',
 )
+
+
+class CertificateTable(NetBoxTable):
+    hash_sha1 = tables.Column(linkify=True)
+
+    fqdn_count = columns.LinkedCountColumn(
+        viewname='wim:fqdn_list',
+        url_params={'certificate_id': 'pk'},
+        verbose_name=_('FQDNs'),
+    )
+
+    class Meta(NetBoxTable.Meta):
+        model = Certificate
+        fields = (
+            "hash_sha1", "id",
+            "date_issued", "date_expiration",
+            "sdn", "scn", "san", "sorg",
+            "idn", "icn", "iorg", "signing_algorithm",
+            "key_type", "key_bitlength", "is_wildcard", "is_self_signed",
+            "hash_sha256", "hash_md5",
+            'fqdn_count',
+        )
+        default_columns = ('hash_sha1', 'fqdn_count', 'date_expiration', 'scn', 'san', 'sorg')
+
 
 
 # class BusinessGroupTable(TenancyColumnsMixin, NetBoxTable):

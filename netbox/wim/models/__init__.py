@@ -12,6 +12,7 @@ __all__ = (
     'BusinessDivision',
     'BusinessGroup',
     'BusinessCriticality',
+    'Certificate',
     'CPE',
     'Domain',
     'FQDN',

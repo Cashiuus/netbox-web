@@ -17,6 +17,34 @@ from wim.models import *
 
 
 #
+# Certificates
+#
+
+class CertificateSerializer(NetBoxModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='wim-api:certificate-detail')
+    # tenant = NestedTenantSerializer(required=False, allow_null=True)
+
+    signing_algorithm = ChoiceField(
+        choices=CertSigningAlgorithmChoices,
+        required=False,
+        # null_value=None
+    )
+    key_bitlength = ChoiceField(
+        choices=CertBitLengthChoices,
+        # null_value=None
+        required=False,
+    )
+
+    class Meta:
+        model = Certificate
+        fields = (
+            'id', 'url', 'display', 'hash_sha1',
+            'signing_algorithm', 'key_bitlength',
+            'date_expiration',
+        )
+
+
+#
 # Domains
 #
 
@@ -55,6 +83,7 @@ class FQDNSerializer(NetBoxModelSerializer):
     impacted_division_orig = NestedBusinessDivisionSerializer(required=False, allow_null=True)
     vendor_company_fk = NestedVendorSerializer(required=False, allow_null=True)
     location = NestedSiteSerializer(required=False, allow_null=True)
+    certificate = NestedCertificateSerializer(required=False, allow_null=True)
 
     # -- M2M --
     software = SerializedPKRelatedField(
@@ -90,7 +119,7 @@ class FQDNSerializer(NetBoxModelSerializer):
             'id', 'url', 'display', 'name', 'status',
             'fqdn_status', 'website_status',
             'impacted_group_orig', 'impacted_division_orig',
-            'software',
+            'software', 'certificate',
             'vendor_company_fk',
             'tenant', 'location',
             'sitelocation_count',

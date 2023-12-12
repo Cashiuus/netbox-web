@@ -6,6 +6,16 @@ from netbox.api.serializers import WritableNestedSerializer
 from wim import models
 
 
+
+
+class NestedCertificateSerializer(WritableNestedSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='wim-api:certificate-detail')
+
+    class Meta:
+        model = models.Certificate
+        fields = ['id', 'url', 'display', 'hash_sha1']
+
+
 class NestedDomainSerializer(WritableNestedSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='wim-api:domain-detail')
 

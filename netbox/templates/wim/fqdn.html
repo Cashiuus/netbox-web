@@ -97,13 +97,17 @@
                     </td>
                 </tr>
                 <tr>
+                    <th scope="row">Site Location (NB)</th>
+                    <td>{{ object.location|linkify }}</td>
+                </tr>
+                <tr>
                     <th scope="row">Site Location (Orig)</th>
                     <td>{{ object.location_orig|linkify }}</td>
                 </tr>
-                {% if object.location %}
+                {% if object.geo_region %}
                     <tr>
-                        <th scope="row">Site Location (NB)</th>
-                        <td>{{ object.location|linkify }}</td>
+                        <th scope="row">Geo Region (NB)</th>
+                        <td>{{ object.geo_region|placeholder }}</td>
                     </tr>
                 {% endif %}
                 <tr>
@@ -116,14 +120,8 @@
                         {% endif %}
                     </td>
                 </tr>
-                {% if object.geo_region %}
-                    <tr>
-                        <th scope="row">Geo Region (NB)</th>
-                        <td>{{ object.geo_region|placeholder }}</td>
-                    </tr>
-                {% endif %}
                   <tr>
-                    <th scope="row">Public IP (Orig)</th>
+                    <th scope="row">Public IP</th>
                     <td>{{ object.public_ip_1|placeholder }}
                         <div class="float-md-end">
                             <a href="https://ipgeolocation.io/ip-location/{{ object.name }}/" target="_blank" rel="noopener noreferrer" style="padding-right:20px;">Geo IP</a>
@@ -131,10 +129,10 @@
                     </td>
                 </tr>
                 {% if object.ipaddress_public_8 %}
-                    <tr>
+                <tr>
                     <th scope="row">Public IP (NB)</th>
                     <td>{{ object.ipaddress_public_8|placeholder }}</td>
-                    </tr>
+                </tr>
                 {% endif %}
                 <tr>
                     <th scope="row">Hosting Architecture</th>
@@ -214,12 +212,12 @@
                     </tr>
                 {% endif %}
                 <tr>
-                    <th scope="row">Private IP (1)</th>
+                    <th scope="row">Private IP</th>
                     <td>{{ object.private_ip_1 }}</td>
                 </tr>
                 {% if object.private_ip_2 %}
                 <tr>
-                    <th scope="row">Private IP (2)</th>
+                    <th scope="row">Private IP 2</th>
                     <td>{{ object.private_ip_2 }}</td>
                 </tr>
                 {% endif %}
@@ -254,6 +252,10 @@
                 <tr>
                     <th scope="row">TLS Protocol</th>
                     <td>{{ object.tls_protocol_version }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">TLS Certificate</th>
+                    <td>{{ object.certificate|linkify }}</td>
                 </tr>
                 <tr>
                     <th scope="row">TLS Cert Expires</th>

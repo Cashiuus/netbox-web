@@ -39,38 +39,6 @@ class WIMRootView(APIRootView):
 #
 # Model ViewSets
 #
-
-class DomainViewSet(NetBoxModelViewSet):
-    # This method came from ipam/api/views.py
-    # queryset = Domain.objects.prefetch_related(
-    #     'tenant', 'registrar_company', 'tags',
-    # )
-    # This method came from dcim/api/views.py
-    # queryset = Domain.objects.add_related_count(
-    #     Domain.objects.all(),
-    #     FQDN,
-    #     'domain',
-    #     'fdn_count',
-    #     cumulative=True,
-    # ).prefetch_related('tags')
-
-    # Test with just objects
-    queryset = Domain.objects.all()
-
-    serializer_class = serializers.DomainSerializer
-    filterset_class = filtersets.DomainFilterSet
-
-
-class FQDNViewSet(NetBoxModelViewSet):
-    queryset = FQDN.objects.prefetch_related(
-        'impacted_group_orig', 'impacted_division_orig', 'domain',
-        'vendor_company_fk', 'software', 'location_orig', 'location',
-        'tags',
-    )
-    serializer_class = serializers.FQDNSerializer
-    filterset_class = filtersets.FQDNFilterSet
-
-
 class BrandViewSet(NetBoxModelViewSet):
     queryset = Brand.objects.prefetch_related('tags').annotate(
         # fqdn_count=count_related(FQDN, 'brand'),
@@ -94,6 +62,46 @@ class BusinessDivisionViewSet(NetBoxModelViewSet):
     )
     serializer_class = serializers.BusinessDivisionSerializer
     filterset_class = filtersets.BusinessDivisionFilterSet
+
+
+class CertificateViewSet(NetBoxModelViewSet):
+    # queryset = Certificate.objects.all()
+    queryset = Certificate.objects.prefetch_related('tags').annotate(
+        fqdn_count=count_related(FQDN, 'certificate')
+    )
+    serializer_class = serializers.CertificateSerializer
+    filterset_class = filtersets.CertificateFilterSet
+
+
+class DomainViewSet(NetBoxModelViewSet):
+    # This method came from ipam/api/views.py
+    # queryset = Domain.objects.prefetch_related(
+    #     'tenant', 'registrar_company', 'tags',
+    # )
+    # This method came from dcim/api/views.py
+    # queryset = Domain.objects.add_related_count(
+    #     Domain.objects.all(),
+    #     FQDN,
+    #     'domain',
+    #     'fdn_count',
+    #     cumulative=True,
+    # ).prefetch_related('tags')
+
+    # Test with just objects
+    queryset = Domain.objects.all()
+    serializer_class = serializers.DomainSerializer
+    filterset_class = filtersets.DomainFilterSet
+
+
+class FQDNViewSet(NetBoxModelViewSet):
+    queryset = FQDN.objects.prefetch_related(
+        'impacted_group_orig', 'impacted_division_orig', 'domain',
+        'vendor_company_fk', 'software', 'location_orig', 'location',
+        'certificate',
+        'tags',
+    )
+    serializer_class = serializers.FQDNSerializer
+    filterset_class = filtersets.FQDNFilterSet
 
 
 class OperatingSystemViewSet(NetBoxModelViewSet):

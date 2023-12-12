@@ -19,6 +19,7 @@ from wim.choices import *
 
 __all__ = (
     'BrandBulkEditForm',
+    'CertificateBulkEditForm',
     'FQDNBulkEditForm',
     'DomainBulkEditForm',
     'BusinessGroupBulkEditForm',
@@ -28,6 +29,28 @@ __all__ = (
     'VendorBulkEditForm',
     'SoftwareBulkEditForm',
 )
+
+
+class CertificateBulkEditForm(NetBoxModelBulkEditForm):
+    # -- Choices --
+    signing_algorithm = forms.ChoiceField(
+        choices=CertSigningAlgorithmChoices,
+        required=False,
+    )
+    key_type = forms.ChoiceField(
+        choices=CertSigningAlgorithmChoices,
+        required=False,
+    )
+    key_bitlength = forms.ChoiceField(
+        choices=CertSigningAlgorithmChoices,
+        required=False,
+    )
+
+    model = Certificate
+    fieldsets = (
+        (None, ('key_bitlength',)),
+    )
+    # nullable_fields = ('field1',)
 
 
 class DomainBulkEditForm(NetBoxModelBulkEditForm):

@@ -23,6 +23,7 @@ from .models import *
 
 __all__ = (
     'BrandFilterSet',
+    'CertificateFilterSet',
     'DomainFilterSet',
     'FQDNFilterSet',
     'BusinessGroupFilterSet',
@@ -33,6 +34,40 @@ __all__ = (
     'VendorFilterSet',
     'WebEmailFilterSet',
 )
+
+
+class CertificateFilterSet(NetBoxModelFilterSet):
+    # -- Multiple Choice Fields --
+    # signing_algorithm = django_filters.MultipleChoiceFilter(
+    #     choices=CertSigningAlgorithmChoices,
+    #     # null_value=None
+    # )
+    # key_bitlength = django_filters.MultipleChoiceFilter(
+    #     choices=CertBitLengthChoices,
+    #     # null_value=None
+    # )
+
+    # -- Dates --
+    # date_expiration = django_filters.DateFilter()
+    # date_expiration__before = django_filters.DateFilter(
+    #     field_name='date_expiration',
+    #     lookup_expr='lte',
+    #     label=_('Expiring Before'),
+    # )
+
+    class Meta:
+        model = Certificate
+        fields = [
+            'id', 'hash_sha1', 'san',
+            # 'signing_algorithm', 'key_bitlength',
+        ]
+
+    # def search(self, queryset, name, value):
+    #     if not value.strip():
+    #         return queryset
+    #     return queryset.filter(
+    #         Q(san__icontains=value)
+    #     )
 
 
 class DomainFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
@@ -118,6 +153,9 @@ class FQDNFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
     compliance_programs_choice = django_filters.MultipleChoiceFilter(
         choices=ComplianceProgramChoices,
     )
+    tls_protocol_version = django_filters.MultipleChoiceFilter(
+        choices=TransportLayerSecurityVersionChoices,
+    )
 
     # -- Booleans --
     is_risky = django_filters.BooleanFilter(label=_('Is Risky'))
@@ -152,6 +190,15 @@ class FQDNFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
         field_name='domain',
         queryset=Domain.objects.all(),
         label=_('Domain (ID)'),
+    )
+    # NOTE: I chose single choice on form, so doing single choice filter here too
+    certificate = django_filters.ModelChoiceFilter(
+        queryset=Certificate.objects.all(),
+        label=_('TLS Certificate'),
+    )
+    certificate_id = django_filters.ModelChoiceFilter(
+        queryset=Certificate.objects.all(),
+        label=_('TLS Certificate (ID)'),
     )
     impacted_group_orig = django_filters.ModelMultipleChoiceFilter(
         queryset=BusinessGroup.objects.all(),
@@ -263,7 +310,6 @@ class FQDNFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
 
     #     except (AddrFormatError, ValueError):
     #         return queryset.none()
-
 
 
 #

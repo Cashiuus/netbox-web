@@ -370,6 +370,56 @@ class PlatformTypeChoices(ChoiceSet):
     ]
 
 
+# TLS Certificate Key Types and Strengths
+# ---------------------------------------------------------
+class CertSigningAlgorithmChoices(ChoiceSet):
+    HASH_SHA1 = "SHA1"
+    HASH_SHA160 = "SHA160"
+    HASH_SHA224 = "SHA224"
+    HASH_SHA256 = "SHA256"
+    HASH_SHA384 = "SHA384"
+    HASH_SHA512 = "SHA512"
+
+    CHOICES = [
+        (HASH_SHA1, "SHA1", "red"),
+        (HASH_SHA160, "SHA160", "orange"),
+        (HASH_SHA224, "SHA224", "green"),
+        (HASH_SHA256, "SHA256", "green"),
+        (HASH_SHA384, "SHA384", "green"),
+        (HASH_SHA512, "SHA512", "green"),
+    ]
+
+
+class CertKeyTypeChoices(ChoiceSet):
+    TYPE_RSA = "RSA"
+    TYPE_EC = "EC"
+    TYPE_DSA = "DSA"
+
+    CHOICES = [
+        (TYPE_RSA, "RSA", "green"),
+        (TYPE_EC, "EC", "green"),
+        (TYPE_DSA, "DSA", "green"),
+    ]
+
+
+class CertBitLengthChoices(ChoiceSet):
+    BITLENGTH_1024 = "1024"
+    BITLENGTH_2048 = "2048"
+    BITLENGTH_3072 = "3072"
+    BITLENGTH_4096 = "4096"
+    BITLENGTH_7680 = "7680"
+    BITLENGTH_8192 = "8192"
+
+    CHOICES = [
+        (BITLENGTH_1024, "1024", "red"),
+        (BITLENGTH_2048, "2048", "green"),
+        (BITLENGTH_3072, "3072", "green"),
+        (BITLENGTH_4096, "4096", "green"),
+        (BITLENGTH_7680, "7680", "green"),
+        (BITLENGTH_8192, "8192", "green"),
+    ]
+
+
 # ========== my original way of doing choices ============
 
 RECORD_STATUS_CHOICES = Choices(

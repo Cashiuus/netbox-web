@@ -1,0 +1,124 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load plugins %}
+{% load render_table from django_tables2 %}
+
+
+{% block content %}
+<div class="row mb-3">
+  <div class="col col-md-6">
+
+    <div class="card">
+      <h5 class="card-header">
+        Certificate Details
+      </h5>
+      <div class="card-body">
+        <table class="table table-hover attr-table">
+          <tr>
+            <th scope="row">Date Issued</th>
+            <td>{{ object.date_issued|annotated_date }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Date Expires</th>
+            <td>{{ object.date_expiration|annotated_date }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Subject DN</th>
+            <td>{{ object.sdn }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Subject CN</th>
+            <td>{{ object.scn }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Subject AN</th>
+            <td>{{ object.san }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Subject Org</th>
+            <td>{{ object.sorg }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Issuer DN</th>
+            <td>{{ object.idn }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Issuer CN</th>
+            <td>{{ object.icn }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Issuer Org</th>
+            <td>{{ object.iorg }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Key Signing Algorithm</th>
+            <td>
+              {% if object.signing_algorithm %}
+                  {% badge object.get_signing_algorithm_display bg_color=object.get_signing_algorithm_color %}
+              {% else %}
+                  {{ ''|placeholder }}
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Key Type</th>
+            <td>{{ object.key_type }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Key Bit Length</th>
+            <td>
+              {% if object.key_bitlength %}
+                {% badge object.get_key_bitlength_display bg_color=object.get_key_bitlength_display.color %}
+              {% else %}
+                {{ ''|placeholder }}
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Is Wildcard</th>
+            <td>{% checkmark object.is_wildcard %}</td>
+          </tr>
+          <tr>
+            <th scope="row">Is Self Signed</th>
+            <td>{% checkmark object.is_self_signed %}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h5 class="card-header">
+        Certificate Hashes
+      </h5>
+      <div class="card-body">
+        <table class="table table-hover attr-table">
+          <tr>
+            <th scope="row">SHA1</th>
+            <td>{{ object.hash_sha1 }}</td>
+          </tr>
+          <tr>
+            <th scope="row">SHA256</th>
+            <td>{{ object.hash_sha256 }}</td>
+          </tr>
+          <tr>
+            <th scope="row">MD5</th>
+            <td>{{ object.hash_md5 }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    {% include 'inc/panels/tags.html' %}
+    {% plugin_left_page object %}
+  </div>
+  <div class="col col-md-6">
+    {% include 'inc/panels/related_objects.html' %}
+    {% include 'inc/panels/custom_fields.html' %}
+    {% plugin_right_page object %}
+  </div>
+</div>
+<div class="row mb-3">
+	<div class="col col-md-12">
+
+  </div>
+</div>
+{% endblock %}

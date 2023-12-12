@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
+from timezone_field import TimeZoneFormField
 
 from netbox.forms import NetBoxModelForm
 from tenancy.forms import TenancyForm
@@ -28,16 +29,97 @@ from wim.models import *
 
 __all__ = (
     'BrandForm',
-    'DomainForm',
-    'FQDNForm',
     'BusinessDivisionForm',
     'BusinessGroupForm',
+    'CertificateForm',
+    'DomainForm',
+    'FQDNForm',
     'OperatingSystemForm',
     'SiteLocationForm',
+    'SoftwareForm',
     'VendorForm',
     'WebEmailForm',
-    'SoftwareForm',
 )
+
+
+class BrandForm(NetBoxModelForm):
+
+    slug = SlugField()
+
+    class Meta:
+        model = Brand
+        fields = ['name', 'slug', 'description']
+
+
+class BusinessGroupForm(NetBoxModelForm):
+
+    slug = SlugField()
+
+    class Meta:
+        model = BusinessGroup
+        fields = ['name', 'acronym', 'slug']
+
+
+class BusinessDivisionForm(NetBoxModelForm):
+
+    slug = SlugField()
+
+    class Meta:
+        model = BusinessDivision
+        fields = ['name', 'acronym', 'slug', 'group']
+
+
+class CertificateForm(NetBoxModelForm):
+    """
+    Field List:
+        hash_sha1, hash_sha256, hash_md5, sdn, scn, san, sorg,
+        idn, icn, iorg, date_issued, date_expiration, signing_algorithm,
+        key_type, key_bitlength, is_wildcard, is_self_signed,
+        date_created, date_modified
+
+    +NetBox Built-In Fields:
+        description, comments,
+    """
+    # slug = SlugField()
+
+    # -- Choices --
+    signing_algorithm = forms.ChoiceField(
+        # choices=CertSigningAlgorithmChoices,
+        choices=add_blank_choice(CertSigningAlgorithmChoices),
+        required=False,
+        label=_('Algorithm'),
+        # help_text=_('')
+    )
+    key_type = forms.ChoiceField(
+        # choices=CertKeyTypeChoices,
+        choices=add_blank_choice(CertKeyTypeChoices),
+        required=False,
+        label=_('Key Type'),
+        # help_text=_('')
+    )
+    key_bitlength = forms.ChoiceField(
+        choices=add_blank_choice(CertBitLengthChoices),
+        required=False,
+        label=_('Key Bit Length'),
+        # help_text=_('')
+    )
+
+    class Meta:
+        model = Certificate
+        fields = [
+            "hash_sha1", "hash_sha256", "hash_md5",
+            "date_issued", "date_expiration",
+            "sdn", "scn", "san", "sorg",
+            "idn", "icn", "iorg",
+            "is_wildcard", "is_self_signed",
+            "signing_algorithm",
+            "key_type", "key_bitlength",
+        ]
+        widgets = {
+            'date_expiration': DatePicker(),
+            'date_issued': DatePicker(),
+        }
+
 
 
 class DomainForm(TenancyForm, NetBoxModelForm):
@@ -191,6 +273,12 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
         selector=True,
         label=_('Parent Domain'),
     )
+    certificate = DynamicModelChoiceField(
+        queryset=Certificate.objects.all(),
+        required=False,
+        # selector=True,
+        label=_('TLS Certificate'),
+    )
     ipaddress_public_8 = DynamicModelChoiceField(
         queryset=IPAddress.objects.all(),
         required=False,
@@ -252,6 +340,7 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
     vendor_company_fk = DynamicModelChoiceField(
         queryset=Vendor.objects.all(),
         required=False,
+        selector=True,
         label=_('Vendor Company (FK)'),
     )
 
@@ -353,6 +442,7 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
             'vendor_url', 'vendor_notes',
         )),
         ("TLS", (
+            'certificate',
             'tls_protocol_version', 'tls_cert_expires',
             'tls_cert_info', 'tls_cert_sha1', 'tls_cert_is_wildcard',
             #'tls_cert_self_signed',
@@ -417,6 +507,7 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
             'scoping_size', 'scoping_complexity', 'scoping_roles',
             'is_compliance_required', 'compliance_programs_choice',
 
+            'certificate',
             'tls_protocol_version', 'tls_cert_expires',
             'tls_cert_info', 'tls_cert_sha1', 'tls_cert_is_wildcard',
             'tls_cert_self_signed',
@@ -429,33 +520,6 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
             'date_last_recon': DatePicker(),
             'site_operation_age': DatePicker(),
         }
-
-
-class BrandForm(NetBoxModelForm):
-
-    slug = SlugField()
-
-    class Meta:
-        model = Brand
-        fields = ['name', 'slug', 'description']
-
-
-class BusinessGroupForm(NetBoxModelForm):
-
-    slug = SlugField()
-
-    class Meta:
-        model = BusinessGroup
-        fields = ['name', 'acronym', 'slug']
-
-
-class BusinessDivisionForm(NetBoxModelForm):
-
-    slug = SlugField()
-
-    class Meta:
-        model = BusinessDivision
-        fields = ['name', 'acronym', 'slug', 'group']
 
 
 class OperatingSystemForm(NetBoxModelForm):
@@ -475,13 +539,25 @@ class SiteLocationForm(NetBoxModelForm):
 
     slug = SlugField()
 
+    timezone = TimeZoneFormField(
+        choices=add_blank_choice(TimeZoneFormField().choices),
+        required=False,
+    )
+
+    comments = CommentField()
+
     class Meta:
         model = SiteLocation
         fields = [
-            'name', 'code', 'slug', 'active',
+            'name', 'code', 'slug', 'active', 'priority',
+            'description',
             'impacted_group_orig', 'impacted_division_orig',
+            'tenant',
             'geo_region_choice',
-            'geo_region', 'tenant',
+            'geo_region',
+            'timezone_1', 'timezone',
+            'street', 'city', 'state', 'country_1',
+            'tags',
         ]
 
 

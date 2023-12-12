@@ -6,6 +6,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 # from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from netbox.config import get_config
@@ -328,6 +329,24 @@ class FQDN(PrimaryModel):
     dns_a_record_ips = models.TextField(_("A-Records"), blank=True, default='')
 
     # TLS Details
+    certificate = models.ForeignKey(
+        'Certificate',
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        verbose_name="TLS Certificate",
+        help_text="TLS Certificate configured for this resource",
+    )
+
+    tls_protocol_version = models.CharField(
+        _('TLS Protocol'),
+        max_length=50,
+        blank=True,
+        choices=TransportLayerSecurityVersionChoices,
+        help_text='TLS/SSL protocol version operating on this property, if applicable'
+    )
+
+    # Old to phase out
     tls_cert_info = models.TextField(_('TLS Cert Info'), blank=True, default='',
                                      help_text='TLS Certificate info')
     tls_cert_expires = models.DateField(_('TLS Cert Expires'), blank=True, null=True,
@@ -338,19 +357,12 @@ class FQDN(PrimaryModel):
     # Default None makes these start as "Unknown"
     tls_cert_is_wildcard = models.BooleanField(_('Cert Is Wildcard'), default=False)
     tls_cert_self_signed = models.BooleanField(_('Cert Self-Signed'), default=False)
-    tls_version_int = models.IntegerField(
-        _("TLS Version"), blank=True, null=True,
-        choices=LAYER_SECURITY_CHOICES,
-        default=None,
-        help_text='SSL/TLS Protocol Version running based on recon results'
-    )
-    tls_protocol_version = models.CharField(
-        _('TLS Protocol'),
-        max_length=50,
-        choices=TransportLayerSecurityVersionChoices,
-        blank=True,
-        help_text='TLS/SSL protocol version operating on this property, if applicable'
-    )
+    # tls_version_int = models.IntegerField(
+    #     _("TLS Version"), blank=True, null=True,
+    #     choices=LAYER_SECURITY_CHOICES,
+    #     default=None,
+    #     help_text='SSL/TLS Protocol Version running based on recon results'
+    # )
 
     is_vhost = models.BooleanField(_('VHost'), null=True, default=False)
     is_http2 = models.BooleanField(_('HTTP2'), null=True, default=False)
@@ -615,6 +627,24 @@ class FQDN(PrimaryModel):
 
     def get_absolute_url(self):
         return reverse('wim:fqdn', args=[self.pk])
+
+    # Help on these methods: https://docs.djangoproject.com/en/5.0/intro/tutorial02/
+    def has_expired_cert(self):
+        """
+        Usage:  q = FQDN.objects.get(pk=1)
+                q.has_expired_cert()
+                >>> False | True
+        """
+        return self.tls_cert_expires < timezone.now()
+
+    def has_expiring_cert(self):
+        """
+        Usage:  q = FQDN.objects.get(pk=1)
+                q.has_expiring_cert()
+                >>> False | True
+        """
+        # Cert expiration is greater than today, but less than 30 days from now
+        return self.tls_cert_expires > timezone.now() and self.tls_cert_expires < timezone.now() + datetime.timedelta(days=30)
 
     ACTIVE_STATUS_LIST = (
         FQDNStatusChoices.STATUS_NEW,

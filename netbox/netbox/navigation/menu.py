@@ -361,6 +361,8 @@ WEB_MENU = Menu(
                     # a standard ListView object which checks permissions already
                     # permissions=['wim:view_fqdn'],
                 ),
+                get_model_item('wim', 'certificate', _('Certificates')),
+                get_model_item('wim', 'software', _('Software')),
             ),
         ),
         MenuGroup(
@@ -372,14 +374,6 @@ WEB_MENU = Menu(
                 get_model_item('wim', 'businessdivision', _('Business Divisions')),
                 get_model_item('wim', 'sitelocation', _('Site Locations')),
                 # get_model_item('wim', 'supportgroup', _('Support Group')),
-            ),
-        ),
-        MenuGroup(
-            label=_('Categorization'),
-            items=(
-                # get_model_item('wim', 'complianceprogram', _('Compliance Programs')),
-                # get_model_item('wim', 'operatingsystem', _('Operating Systems')),
-                get_model_item('wim', 'software', _('Software')),
                 get_model_item('wim', 'vendor', _('Web Vendors')),
             ),
         ),

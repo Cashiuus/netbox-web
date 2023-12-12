@@ -52,6 +52,7 @@ class FQDNTable(TenancyColumnsMixin, NetBoxTable):
         linkify=lambda record: record.location.get_absolute_url(),
         verbose_name='Site Location',
     )
+    certificate = tables.Column(linkify=True)
 
     # -- M2M --
     # compliance_programs = tables.ManyToManyColumn(
@@ -122,7 +123,8 @@ class FQDNTable(TenancyColumnsMixin, NetBoxTable):
             'feature_api',
             'scoping_size', 'scoping_complexity', 'scoping_roles', 'calc_loe',
             'cnames', 'dns_a_record_ips',
-            'tls_protocol_version', 'tls_cert_info', 'tls_cert_expires',
+            'tls_protocol_version', 'certificate',
+            'tls_cert_info', 'tls_cert_expires',
             'tls_cert_is_wildcard', 'tls_cert_self_signed', 'tls_cert_sha1',
             'is_vhost', 'is_http2',
             'response_code', 'content_length',
