@@ -6,4 +6,4 @@
 #
 # If NetBox has been installed into a nonstandard location, update the paths
 # below.
-/opt/netbox-web/venv/bin/python /opt/netbox-web/netbox/manage.py housekeeping
+/opt/netbox-web/venv/bin/python /opt/netbox-web/netbox/manage.py clean_certificates
