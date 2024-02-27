@@ -43,12 +43,12 @@ class Certificate(PrimaryModel):
     hash_md5 = models.CharField(_('MD5'), max_length=32, blank=True)
 
     sdn = models.CharField(_('Subject DN'), max_length=400)
-    scn = models.CharField(_('Subject CN'), max_length=400)
-    san = models.TextField(_('Subject AN'))
+    scn = models.CharField(_('Subject CN'), max_length=400, blank=True)
+    san = models.TextField(_('Subject AN'), blank=True)
     sorg = models.CharField(_('Subject Org'), max_length=400, blank=True)
     idn = models.CharField(_('Issuer DN'), max_length=400)
-    icn = models.CharField(_('Issuer CN'), max_length=400)
-    iorg = models.CharField(_('Issuer Org'), max_length=400)
+    icn = models.CharField(_('Issuer CN'), max_length=400, blank=True)
+    iorg = models.CharField(_('Issuer Org'), max_length=400, blank=True)
     date_issued = models.DateField(_('Issued Date'), blank=True)
     date_expiration = models.DateField(_('Expiration Date'),
                                         help_text='TLS Cert expiration date')

@@ -39,8 +39,10 @@ class CertificateTable(NetBoxTable):
             "hash_sha256", "hash_md5",
             'fqdn_count',
         )
-        default_columns = ('hash_sha1', 'fqdn_count', 'date_expiration', 'scn', 'san', 'sorg')
-
+        default_columns = (
+            'hash_sha1', 'fqdn_count', 'date_issued', 'date_expiration',
+            'scn', 'san', 'sorg'
+        )
 
 
 # class BusinessGroupTable(TenancyColumnsMixin, NetBoxTable):
