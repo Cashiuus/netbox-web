@@ -7,6 +7,7 @@ from django.utils.translation import gettext as _
 from netaddr.core import AddrFormatError
 
 from dcim.models import Device, Region, Site
+from ipam.models import IPAddress
 from netbox.filtersets import (
     ChangeLoggedModelFilterSet, OrganizationalModelFilterSet, NetBoxModelFilterSet
 )
@@ -42,32 +43,33 @@ class CertificateFilterSet(NetBoxModelFilterSet):
     #     choices=CertSigningAlgorithmChoices,
     #     # null_value=None
     # )
-    # key_bitlength = django_filters.MultipleChoiceFilter(
-    #     choices=CertBitLengthChoices,
-    #     # null_value=None
-    # )
+    key_bitlength = django_filters.MultipleChoiceFilter(
+        choices=CertBitLengthChoices,
+        # null_value=None
+    )
 
     # -- Dates --
-    # date_expiration = django_filters.DateFilter()
-    # date_expiration__before = django_filters.DateFilter(
-    #     field_name='date_expiration',
-    #     lookup_expr='lte',
-    #     label=_('Expiring Before'),
-    # )
+    date_expiration = django_filters.DateFilter()
+    date_expiration__before = django_filters.DateFilter(
+        field_name='date_expiration',
+        lookup_expr='lte',
+        label=_('Expiring Before'),
+    )
 
     class Meta:
         model = Certificate
         fields = [
             'id', 'hash_sha1', 'san',
-            # 'signing_algorithm', 'key_bitlength',
+            'key_bitlength',
         ]
 
-    # def search(self, queryset, name, value):
-    #     if not value.strip():
-    #         return queryset
-    #     return queryset.filter(
-    #         Q(san__icontains=value)
-    #     )
+    def search(self, queryset, name, value):
+        if not value.strip():
+            return queryset
+        return queryset.filter(
+            Q(hash_sha1__icontains=value) |
+            Q(san__icontains=value)
+        )
 
 
 class DomainFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
@@ -76,7 +78,7 @@ class DomainFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
     #     method='search_contains',
     #     label=_('Domains which contain this prefix or IP'),
     # )
-    # -- Multiple Choice Fields
+    # -- Multiple Choice Fields --
     status = django_filters.MultipleChoiceFilter(
         choices=DomainStatusChoices,
         # null_value=None
@@ -114,9 +116,7 @@ class DomainFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
         model = Domain
         fields = [
             'id', 'name', 'status', 'asset_confidence',
-            'brand_id',
-            # 'date_registrar_expiry', 'date_last_recon_scanned',
-            'meets_standards',
+            'brand_id', 'meets_standards',
         ]
 
     def search(self, queryset, name, value):
@@ -246,6 +246,11 @@ class FQDNFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
         field_name="geo_region",
         label=_('Region (NB-ID)'),
     )
+    ipaddress_public_8_id = django_filters.ModelMultipleChoiceFilter(
+        field_name='ipaddress_public_8',
+        queryset=IPAddress.objects.all(),
+        label=_('Public IP (ID)'),
+    )
 
     # -- Vendor FK + Serializer --
     vendor_company_fk = django_filters.ModelMultipleChoiceFilter(
@@ -294,10 +299,11 @@ class FQDNFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-
         return queryset.filter(
             Q(name__icontains=value) |
-            Q(public_ip_1__icontains=value)
+            Q(public_ip_1__icontains=value) |
+            Q(ipaddress_public_8__address__startswith=value) |
+            Q(owners_orig__icontains=value)
             # Q(software__icontains=value )
         )
 

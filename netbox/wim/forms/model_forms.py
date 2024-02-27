@@ -325,8 +325,9 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
         # If i use facility, I probably have edit this to pull 'facility' also...
         queryset=Site.objects.all(),
         required=False,
-        # TODO: When I enable this, the drop-down still populates with "name" and can't save
-        to_field_name="facility",
+        query_params={
+            'site_id': '$site'
+        },
         label=_('Site Location (NB)'),
     )
     geo_region = DynamicModelChoiceField(

@@ -1,0 +1,17 @@
+[Unit]
+Description=NetBox WIM Housekeeping Service
+Documentation=https://docs.netbox.dev/
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+
+User=netbox
+Group=netbox
+WorkingDirectory=/opt/netbox-web
+
+ExecStart=/opt/netbox-web/venv/bin/python /opt/netbox-web/netbox/manage.py clean_certificates
+
+[Install]
+WantedBy=multi-user.target

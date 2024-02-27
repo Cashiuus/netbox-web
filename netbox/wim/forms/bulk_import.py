@@ -415,14 +415,13 @@ class FQDNImportForm(NetBoxModelImportForm):
         to_field_name='name',
         required=False,
         help_text=_('Vendor hosting or managing this property (FK)'),
-
     )
-    # ipaddress_public_8 = CSVModelChoiceField(
-    #     queryset=IPAddress.objects.all(),
-    #     required=False,
-    #     to_field_name='address',
-    #     help_text=_('Public IP address linked to IPAM')
-    # )
+    ipaddress_public_8 = CSVModelChoiceField(
+        queryset=IPAddress.objects.all(),
+        required=False,
+        to_field_name='address',
+        help_text=_('Public IP address FK linked to IPAM')
+    )
     # ipaddress_private_8 = CSVModelChoiceField(
     #     queryset=IPAddress.objects.all(),
     #     required=False,
@@ -477,7 +476,7 @@ class FQDNImportForm(NetBoxModelImportForm):
             'location_orig', 'location',
 
             'public_ip_1',
-            # 'ipaddress_public_8',
+            'ipaddress_public_8',
             'private_ip_1', 'private_ip_2',
             # 'ipaddress_private_8',
             'hostname_orig', 'os_char',
@@ -489,11 +488,11 @@ class FQDNImportForm(NetBoxModelImportForm):
             'pentest_priority', 'date_last_pentest',
             'site_operation_age',
 
-            'cnames', 'dns_a_record_ips',
             'tls_protocol_version', 'certificate',
             'tls_cert_info', 'tls_cert_expires',
             'tls_cert_is_wildcard', 'tls_cert_self_signed', 'tls_cert_sha1',
             'scan_fingerprint_json',
+            'cnames', 'dns_a_record_ips',
 
             'is_cloud_hosted', 'cloud_provider',
             'is_akamai', 'is_load_protected', 'is_waf_protected',
@@ -544,7 +543,6 @@ class FQDNImportForm(NetBoxModelImportForm):
     #     import_method = "JSON"
     #     # Form data or Uploaded File
     #     if self.cleaned_data["scan_fingerprint_json"]
-
 
     # def _clean_json(self, data):
     #     """
