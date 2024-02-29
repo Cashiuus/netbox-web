@@ -37,7 +37,23 @@ __all__ = (
 )
 
 
+
+
+
 class CertificateFilterSet(NetBoxModelFilterSet):
+    # -- Char Fields --
+    sdn = MultiValueCharFilter(
+        lookup_expr="icontains",
+        label=_('Subject DN')
+    )
+    scn = MultiValueCharFilter(
+        lookup_expr="icontains",
+        label=_('Subject CN')
+    )
+    san = MultiValueCharFilter(
+        lookup_expr="icontains",
+        label=_('Subject AN')
+    )
     # -- Multiple Choice Fields --
     # signing_algorithm = django_filters.MultipleChoiceFilter(
     #     choices=CertSigningAlgorithmChoices,
@@ -59,7 +75,7 @@ class CertificateFilterSet(NetBoxModelFilterSet):
     class Meta:
         model = Certificate
         fields = [
-            'id', 'hash_sha1', 'san',
+            'id', 'hash_sha1', 'san', 'scn', 'sdn',
             'key_bitlength',
         ]
 
@@ -73,11 +89,18 @@ class CertificateFilterSet(NetBoxModelFilterSet):
 
 
 class DomainFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
+    # -- Char Fields --
+    name = MultiValueCharFilter(
+        lookup_expr="icontains",
+        label=_('Name')
+    )
+
     # TODO: Need to add the method this references - search_contains()
     # contains = django_filters.CharFilter(
     #     method='search_contains',
     #     label=_('Domains which contain this prefix or IP'),
     # )
+
     # -- Multiple Choice Fields --
     status = django_filters.MultipleChoiceFilter(
         choices=DomainStatusChoices,
@@ -127,9 +150,11 @@ class DomainFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
         )
 
 
-
-
 class FQDNFilterSet(NetBoxModelFilterSet, TenancyFilterSet):
+    # -- Char --
+    name = MultiValueCharFilter(
+        lookup_expr="icontains"
+    )
     # -- Choices --
     status = django_filters.MultipleChoiceFilter(
         choices=FQDNStatusChoices,
@@ -382,6 +407,13 @@ class SiteLocationFilterSet(OrganizationalModelFilterSet):
 
 
 class SoftwareFilterSet(OrganizationalModelFilterSet):
+
+    name = MultiValueCharFilter(
+        lookup_expr="icontains"
+    )
+    product = MultiValueCharFilter(
+        lookup_expr="icontains"
+    )
 
     class Meta:
         model = Software

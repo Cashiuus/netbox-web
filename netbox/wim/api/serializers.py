@@ -24,7 +24,9 @@ from wim.models import *
 
 class CertificateSerializer(NetBoxModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='wim-api:certificate-detail')
-    # tenant = NestedTenantSerializer(required=False, allow_null=True)
+    sdn = serializers.CharField(required=False)
+    scn = serializers.CharField(required=False)
+    san = serializers.CharField(required=False)
 
     signing_algorithm = ChoiceField(
         choices=CertSigningAlgorithmChoices,
@@ -41,6 +43,7 @@ class CertificateSerializer(NetBoxModelSerializer):
         model = Certificate
         fields = (
             'id', 'url', 'display', 'hash_sha1',
+            'sdn', 'scn', 'san',
             'signing_algorithm', 'key_bitlength',
             'date_expiration',
         )
@@ -52,6 +55,7 @@ class CertificateSerializer(NetBoxModelSerializer):
 
 class DomainSerializer(NestedGroupModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='wim-api:domain-detail')
+    name = serializers.CharField(required=False)
     status = ChoiceField(
         choices=DomainStatusChoices,
         required=False,
@@ -80,6 +84,7 @@ class DomainSerializer(NestedGroupModelSerializer):
 
 class FQDNSerializer(NetBoxModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='wim-api:fqdn-detail')
+    name = serializers.CharField(required=False)
     # -- Nested for FK Lookups --
     ipaddress_public_8 = NestedIPAddressSerializer(required=False, allow_null=True)
     impacted_group_orig = NestedBusinessGroupSerializer(required=False, allow_null=True)
@@ -219,6 +224,24 @@ class SiteLocationSerializer(NetBoxModelSerializer):
         fields = (
             'id', 'url', 'display', 'name', 'code',
         )
+
+
+
+#
+# Software
+#
+
+class SoftwareSerializer(NetBoxModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='wim-api:software-detail')
+    name = serializers.CharField(required=False)
+    product = serializers.CharField(required=False)
+
+    class Meta:
+        model = Software
+        fields = (
+            'id', 'url', 'display', 'name', 'product',
+        )
+
 
 
 #

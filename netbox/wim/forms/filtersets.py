@@ -40,8 +40,25 @@ __all__ = (
 # ])
 
 
+class BrandFilterForm(NetBoxModelFilterSetForm):
+    model = Brand
+
+
+class BusinessGroupFilterForm(NetBoxModelFilterSetForm):
+    model = BusinessGroup
+
+
+class BusinessDivisionFilterForm(NetBoxModelFilterSetForm):
+    model = BusinessDivision
+
+
 class CertificateFilterForm(NetBoxModelFilterSetForm):
     model = Certificate
+
+    # -- Char --
+    san = forms.CharField(required=False, label=_('Subject AN'))
+    scn = forms.CharField(required=False, label=_('Subject CN'))
+    sdn = forms.CharField(required=False, label=_('Subject DN'))
 
     # -- Choices --
     signing_algorithm = forms.MultipleChoiceField(
@@ -63,6 +80,7 @@ class CertificateFilterForm(NetBoxModelFilterSetForm):
     fieldsets = (
         (None, ('q', 'filter_id')),
         ("Filter by Fields", (
+            'san', 'scn', 'sdn',
             "signing_algorithm", "key_bitlength",
         )),
         ("Filter By Date", (
@@ -71,9 +89,11 @@ class CertificateFilterForm(NetBoxModelFilterSetForm):
     )
 
 
-
 class DomainFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
     model = Domain
+
+    # -- Char --
+    name = forms.CharField(required=False)
 
     # -- Choices --
     status = forms.MultipleChoiceField(
@@ -114,6 +134,7 @@ class DomainFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
     fieldsets = (
         (None, ('q', 'filter_id', 'tag')),
         ('Filter by Fields', (
+            'name',
             'status', 'asset_confidence', 'ownership_type',
             'meets_standards',
             'tenant_group_id', 'tenant_id', 'brand_id',
@@ -127,6 +148,9 @@ class DomainFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
 class FQDNFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
     model = FQDN
     tag = TagFilterField(model)
+
+    # -- Char --
+    name = forms.CharField(required=False)
 
     # -- Choices --
     status = forms.MultipleChoiceField(
@@ -299,6 +323,7 @@ class FQDNFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
     fieldsets = (
         (None, ('q', 'filter_id', 'tag')),
         ("Status", (
+            'name',
             'mark_triaging',
             'status',
             'asset_confidence',
@@ -329,18 +354,6 @@ class FQDNFilterForm(TenancyFilterForm, NetBoxModelFilterSetForm):
             'is_vendor_managed',
         )),
     )
-
-
-class BrandFilterForm(NetBoxModelFilterSetForm):
-    model = Brand
-
-
-class BusinessGroupFilterForm(NetBoxModelFilterSetForm):
-    model = BusinessGroup
-
-
-class BusinessDivisionFilterForm(NetBoxModelFilterSetForm):
-    model = BusinessDivision
 
 
 class OperatingSystemFilterForm(NetBoxModelFilterSetForm):
@@ -374,11 +387,12 @@ class SiteLocationFilterForm(NetBoxModelFilterSetForm):
 class SoftwareFilterForm(NetBoxModelFilterSetForm):
     model = Software
 
-    # name = forms.CharField(required=False)
-    # product = forms.CharField(required=False)
+    name = forms.CharField(required=False)
+    product = forms.CharField(required=False)
 
     fieldsets = (
         (None, ('q', 'filter_id')),
+        (None, ('name', 'product',))
     )
 
 
