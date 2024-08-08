@@ -235,11 +235,12 @@ class SoftwareSerializer(NetBoxModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='wim-api:software-detail')
     name = serializers.CharField(required=False)
     product = serializers.CharField(required=False)
+    fqdn_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Software
         fields = (
-            'id', 'url', 'display', 'name', 'product',
+            'id', 'url', 'display', 'name', 'product', 'fqdn_count',
         )
 
 

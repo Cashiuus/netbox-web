@@ -123,15 +123,15 @@ class SoftwareViewSet(NetBoxModelViewSet):
     # NOTE: This queryset points to FQDN, therefore uses the fieldname
     # that is defined there for the software M2M model field
     queryset = Software.objects.annotate(
-        fqdn_count=count_related(FQDN, 'software')
+        fqdn_count=count_related(FQDN, 'software'),
     )
     serializer_class = serializers.SoftwareSerializer
     filterset_class = filtersets.SoftwareFilterSet
 
 
 class VendorViewSet(NetBoxModelViewSet):
-    queryset = Vendor.objects.prefetch_related('tags').annotate(
-        fqdn_count=count_related(FQDN, 'vendor_company_fk')
+    queryset = Vendor.objects.annotate(
+        fqdn_count=count_related(FQDN, 'vendor_company_fk'),
     )
     serializer_class = serializers.VendorSerializer
     filterset_class = filtersets.VendorFilterSet
@@ -141,7 +141,7 @@ class WebEmailViewSet(NetBoxModelViewSet):
     queryset = WebEmail.objects.annotate(
         # For WebEmail, its related_name = "domains"
         # Its ManyToManyField FK fieldname in Domains table is "registration_emails"
-        fqdn_count=count_related(Domain, 'registration_emails')
+        fqdn_count=count_related(Domain, 'registration_emails'),
     )
     serializer_class = serializers.WebEmailSerializer
     filterset_class = filtersets.WebEmailFilterSet

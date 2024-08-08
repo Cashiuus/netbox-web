@@ -58,10 +58,11 @@ class NestedBusinessDivisionSerializer(WritableNestedSerializer):
 
 class NestedSoftwareSerializer(WritableNestedSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='wim-api:software-detail')
+    fqdn_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = models.Software
-        fields = ['id', 'url', 'display', 'name']
+        fields = ['id', 'url', 'display', 'name', 'fqdn_count']
 
 
 @extend_schema_serializer(

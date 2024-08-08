@@ -80,12 +80,12 @@ urlpatterns = [
     path('vendors/<int:pk>/', include(get_model_urls('wim', 'vendor'))),
 
     # Web Emails
-    path('web-emails/', views.WebEmailListView.as_view(), name='webemail_list'),
-    # path('web-emails/add/', views.WebEmailEditView.as_view(), name='webemail_add'),
-    # path('web-emails/import/', views.WebEmailBulkImportView.as_view(), name='webemail_import'),
-    # path('web-emails/edit/', views.WebEmailBulkEditView.as_view(), name='webemail_bulk_edit'),
-    # path('web-emails/delete/', views.WebEmailBulkDeleteView.as_view(), name='webemail_bulk_delete'),
-    # path('web-emails/<int:pk>/', include(get_model_urls('wim', 'webemail'))),
+    path('emails/', views.WebEmailListView.as_view(), name='email_list'),
+    # path('emails/add/', views.WebEmailEditView.as_view(), name='webemail_add'),
+    # path('emails/import/', views.WebEmailBulkImportView.as_view(), name='webemail_import'),
+    # path('emails/edit/', views.WebEmailBulkEditView.as_view(), name='webemail_bulk_edit'),
+    # path('emails/delete/', views.WebEmailBulkDeleteView.as_view(), name='webemail_bulk_delete'),
+    # path('emails/<int:pk>/', include(get_model_urls('wim', 'webemail'))),
 
     # Software, Tech, Webserver Frameworks
     path('software/', views.SoftwareListView.as_view(), name='software_list'),

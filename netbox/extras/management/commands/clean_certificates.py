@@ -8,7 +8,7 @@ from wim.models import Certificate
 
 
 class Command(BaseCommand):
-    help = "Perform housekeeping on TLS certificates records to remove orphaned records no longer tied to any resources."
+    help = "Delete orphaned TLS certificates records no longer tied to any resources."
 
     def handle(self, *args, **options):
         config = Config()
@@ -27,7 +27,6 @@ class Command(BaseCommand):
                 self.stdout.flush()
 
             # Execute the deletion
-            # Certificate.objects.filter(fqdn__isnull=True, date_expiration__lt=cutoff)._raw_delete(using=DEFAULT_DB_ALIAS)
             stale_records._raw_delete(using=DEFAULT_DB_ALIAS)
 
             if options['verbosity']:

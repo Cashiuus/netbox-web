@@ -30,6 +30,7 @@ __all__ = (
     'SiteLocationImportForm',
     'SoftwareImportForm',
     'VendorImportForm',
+    # 'WebEmailIMportForm',
 )
 
 
@@ -617,3 +618,12 @@ class VendorImportForm(NetBoxModelImportForm):
             'url',
             'vendor_pocs_orig', 'notes',
         )
+
+
+# class WebEmailImportForm(NetBoxModelImportForm):
+
+#     class Meta:
+#         model = WebEmail
+#         fields = (
+#             'email_address',
+#         )

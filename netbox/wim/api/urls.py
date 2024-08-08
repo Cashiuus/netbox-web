@@ -17,7 +17,7 @@ router.register('business-divisions', views.BusinessDivisionViewSet)
 router.register('operating-systems', views.OperatingSystemViewSet)
 router.register('site-locations', views.SiteLocationViewSet)
 router.register('vendors', views.VendorViewSet)
-router.register('webemails', views.WebEmailViewSet)
+router.register('emails', views.WebEmailViewSet)
 router.register('software', views.SoftwareViewSet)
 
 
