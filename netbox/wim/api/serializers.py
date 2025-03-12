@@ -85,6 +85,9 @@ class DomainSerializer(NestedGroupModelSerializer):
 class FQDNSerializer(NetBoxModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='wim-api:fqdn-detail')
     name = serializers.CharField(required=False)
+    public_ip_1 = serializers.CharField(required=False)
+    location_orig = serializers.CharField(required=False)
+
     # -- Nested for FK Lookups --
     ipaddress_public_8 = NestedIPAddressSerializer(required=False, allow_null=True)
     impacted_group_orig = NestedBusinessGroupSerializer(required=False, allow_null=True)
@@ -127,10 +130,11 @@ class FQDNSerializer(NetBoxModelSerializer):
             'id', 'url', 'display', 'name', 'status',
             'fqdn_status', 'website_status',
             'impacted_group_orig', 'impacted_division_orig',
-            'ipaddress_public_8',
+            'location_orig', 'public_ip_1',
+            # 'ipaddress_public_8',
             'software', 'certificate',
             'vendor_company_fk',
-            'tenant', 'location',
+            # 'tenant', 'location',
             'sitelocation_count',
         )
 

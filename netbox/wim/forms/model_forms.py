@@ -524,7 +524,6 @@ class FQDNForm(TenancyForm, NetBoxModelForm):
 
 
 class OperatingSystemForm(NetBoxModelForm):
-
     slug = SlugField()
 
     class Meta:
@@ -537,7 +536,6 @@ class OperatingSystemForm(NetBoxModelForm):
 
 
 class SiteLocationForm(NetBoxModelForm):
-
     slug = SlugField()
 
     timezone = TimeZoneFormField(
@@ -563,7 +561,6 @@ class SiteLocationForm(NetBoxModelForm):
 
 
 class VendorForm(NetBoxModelForm):
-
     slug = SlugField()
 
     class Meta:
@@ -577,15 +574,6 @@ class VendorForm(NetBoxModelForm):
         )
 
 
-class WebEmailForm(NetBoxModelForm):
-
-    class Meta:
-        model = WebEmail
-        fields = (
-            'email_address',
-        )
-
-
 class SoftwareForm(NetBoxModelForm):
     slug = SlugField()
 
@@ -595,4 +583,13 @@ class SoftwareForm(NetBoxModelForm):
             'name', 'slug', 'product', 'version',
             'raw_banner', 'cpe',
             'order',
+        )
+
+
+class WebEmailForm(NetBoxModelForm):
+
+    class Meta:
+        model = WebEmail
+        fields = (
+            'email_address',
         )

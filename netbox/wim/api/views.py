@@ -96,7 +96,8 @@ class DomainViewSet(NetBoxModelViewSet):
 class FQDNViewSet(NetBoxModelViewSet):
     queryset = FQDN.objects.prefetch_related(
         'impacted_group_orig', 'impacted_division_orig', 'domain',
-        'ipaddress_public_8',
+        'public_ip_1',
+        # 'ipaddress_public_8',
         'vendor_company_fk', 'software', 'location_orig', 'location',
         'certificate',
         'tags',
