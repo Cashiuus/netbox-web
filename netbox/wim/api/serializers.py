@@ -89,7 +89,7 @@ class FQDNSerializer(NetBoxModelSerializer):
     location_orig = serializers.CharField(required=False)
 
     # -- Nested for FK Lookups --
-    ipaddress_public_8 = NestedIPAddressSerializer(required=False, allow_null=True)
+    # ipaddress_public_8 = NestedIPAddressSerializer(required=False, allow_null=True)
     impacted_group_orig = NestedBusinessGroupSerializer(required=False, allow_null=True)
     impacted_division_orig = NestedBusinessDivisionSerializer(required=False, allow_null=True)
     vendor_company_fk = NestedVendorSerializer(required=False, allow_null=True)
