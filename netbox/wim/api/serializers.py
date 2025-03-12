@@ -136,6 +136,7 @@ class FQDNSerializer(NetBoxModelSerializer):
             'vendor_company_fk',
             # 'tenant', 'location',
             'sitelocation_count',
+            'tenant',
         )
 
 
