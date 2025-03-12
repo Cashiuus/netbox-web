@@ -130,6 +130,7 @@ class FQDNSerializer(NetBoxModelSerializer):
             'id', 'url', 'display', 'name', 'status',
             'fqdn_status', 'website_status',
             'impacted_group_orig', 'impacted_division_orig',
+            'location',
             'location_orig', 'public_ip_1',
             # 'ipaddress_public_8',
             'software', 'certificate',
