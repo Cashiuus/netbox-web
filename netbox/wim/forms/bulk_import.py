@@ -365,6 +365,9 @@ class FQDNImportForm(NetBoxModelImportForm):
     tls_cert_is_wildcard = forms.BooleanField(
         required=False,
     )
+    vuln_scan_coverage = forms.BooleanField(
+        required=False,
+    )
 
     # -- FK Fields --
     domain = CSVModelChoiceField(
